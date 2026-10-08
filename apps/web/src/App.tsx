@@ -44,7 +44,7 @@ export default function App() {
         const nextCatalog = await json<Catalog>(`./locales/${nextRegistry.app.locale}.json`);
         const nextGeometry = await json<FeatureCollection>(nextRegistry.territory.geometryUri);
         const policies = await json<MunicipalComparisonPolicy[]>('./comparison-policies.json');
-        setComparisonPolicy(policies.find(item => item.id === 'municipality-aggregate-v1') ?? null);
+        setComparisonPolicy(policies.find(item => item.id === nextRegistry.comparisonPolicyId) ?? null);
         setRegistry(nextRegistry); setCatalog(nextCatalog); setGeometry(nextGeometry);
         setSelectedDatasetId(readSelection(nextRegistry.defaultDatasetId));
       } catch (cause) { setError(String(cause)); }

@@ -9,7 +9,10 @@ function signed(value: number, unit = ''): string {
   return (value > 0 ? '+' : '') + decimal.format(value) + unit;
 }
 export function ComparisonPanel({ current, baseline, policy }: Props) {
-  const result = assessMunicipalComparison(baseline.descriptor, current.descriptor, baseline.data, current.data, policy);
+  // Order by source period, not by the currently selected map. Delta always means later minus earlier.
+  const [older, newer] = [baseline, current].sort((a,b) =>
+    a.descriptor.periodId.localeCompare(b.descriptor.periodId));
+  const result = assessMunicipalComparison(older.descriptor, newer.descriptor, older.data, newer.data, policy);
   return <section className="comparison-panel" aria-label="Comparação dos resultados municipais" aria-live="polite">
     <div className="comparison-heading">
       <h3>Comparação municipal</h3>
@@ -19,7 +22,7 @@ export function ComparisonPanel({ current, baseline, policy }: Props) {
       Apenas totais de Jaraguá do Sul. As cores do mapa representam dados experimentais de locais de votação, não residência dos eleitores.
     </p>
     <div className="comparison-columns">
-      {[baseline, current].map((item, index) => {
+      {[older, newer].map((item, index) => {
         const metrics = index === 0 ? result.left : result.right;
         return <article key={item.descriptor.id} className="comparison-column">
           <div className="comparison-period">{item.label}</div>

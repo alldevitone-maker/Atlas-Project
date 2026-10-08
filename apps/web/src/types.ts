@@ -16,6 +16,7 @@ export interface WebRegistry {
   module: { id: string; labelKey: string; domainId: string };
   datasets: DatasetRef[];
   defaultDatasetId: string;
+  comparisonPolicyId: string;
   metric: { id: string; labelKey: string; rowField: string; format: 'integer' | 'percent' };
   join: { strategy: string; datasetField: string; prototype: boolean };
 }

@@ -55,5 +55,6 @@
     "strategy": "normalized-exact-label",
     "datasetField": "sourceUnitId",
     "prototype": true
-  }
+  },
+  "comparisonPolicyId": "municipality-aggregate-v1"
 }
