@@ -31,6 +31,7 @@ export interface DatasetDescriptor {
   analysisUnit: string;
   moduleId: string;
   domainId?: string | null;
+  periodId: string;
   roundId?: string | null;
   asOf: string;
   quality: { coveragePct: number; reconciled: boolean; notes: string[] };
