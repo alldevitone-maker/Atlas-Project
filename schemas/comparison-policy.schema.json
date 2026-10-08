@@ -32,6 +32,21 @@
     "messageKey": {
       "type": "string",
       "minLength": 1
+    },
+    "aggregationScope": {
+      "enum": [
+        "municipality",
+        "source-unit"
+      ]
+    },
+    "requiresSameTerritory": {
+      "type": "boolean"
+    },
+    "requiresSameDomain": {
+      "type": "boolean"
+    },
+    "requiresSameRound": {
+      "type": "boolean"
     }
   },
   "required": [

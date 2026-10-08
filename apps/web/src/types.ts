@@ -24,6 +24,13 @@ export interface DatasetDescriptor {
   id: string;
   revision: string;
   status: DatasetStatus;
+  territoryId: string;
+  territoryVintage: string;
+  sourceGrain: string;
+  analysisUnit: string;
+  moduleId: string;
+  domainId?: string | null;
+  roundId?: string | null;
   asOf: string;
   quality: { coveragePct: number; reconciled: boolean; notes: string[] };
   provenance: { sourceId: string; sourceUrl: string; collectedAt: string };

@@ -49,10 +49,11 @@ export function AtlasMap(props: Props) {
       };
     });
     const fc: FeatureCollection = { type: 'FeatureCollection', features };
-    const numeric = features.map(f => Number(f.properties?.__atlasMetric)).filter(Number.isFinite);
+    const numeric = features.map(f => f.properties?.__atlasMetric).filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
     const min = numeric.length ? Math.min(...numeric) : 0;
     const max = numeric.length ? Math.max(...numeric) : 1;
-    const middle = min + (max - min) / 2;
+    const upper = max > min ? max : min + 1;
+    const middle = min + (upper - min) / 2;
     const bounds = boundsFor(fc);
 
     const map = new maplibregl.Map({
@@ -66,9 +67,9 @@ export function AtlasMap(props: Props) {
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
     map.on('load', () => {
-      map.addSource('territory', { type: 'geojson', data: fc, promoteId: '__atlasId' } as never);
+      map.addSource('territory', { type: 'geojson', data: fc } as never);
       map.addLayer({ id: 'territory-fill', type: 'fill', source: 'territory', paint: {
-        'fill-color': ['case', ['!=', ['get', '__atlasMetric'], null], ['interpolate', ['linear'], ['get', '__atlasMetric'], min, '#162536', middle, '#315e89', max, '#9fc4ff'], '#26313a'],
+        'fill-color': ['case', ['!=', ['get', '__atlasMetric'], null], ['interpolate', ['linear'], ['get', '__atlasMetric'], min, '#162536', middle, '#315e89', upper, '#9fc4ff'], '#26313a'],
         'fill-opacity': 0.9
       }});
       map.addLayer({ id: 'territory-line', type: 'line', source: 'territory', paint: { 'line-color': 'rgba(238,244,248,.55)', 'line-width': 1 }});

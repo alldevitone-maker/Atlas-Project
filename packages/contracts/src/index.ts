@@ -97,6 +97,10 @@ export interface MetricDefinition {
 
 export interface ComparisonPolicy {
   id: string;
+  aggregationScope?: 'municipality' | 'source-unit';
+  requiresSameTerritory?: boolean;
+  requiresSameDomain?: boolean;
+  requiresSameRound?: boolean;
   requiresSameTerritoryVintage: boolean;
   requiresSameAnalysisUnit: boolean;
   allowAbsoluteDelta: boolean;
