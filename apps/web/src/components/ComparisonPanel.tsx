@@ -19,7 +19,7 @@ export function ComparisonPanel({ current, baseline, policy }: Props) {
       <span className={result.compatible ? 'comparison-ok' : 'comparison-blocked'}>{result.compatible ? 'Comparável' : 'Comparação limitada'}</span>
     </div>
     <p className="comparison-disclaimer">
-      Apenas totais de Jaraguá do Sul. As cores do mapa representam dados experimentais de locais de votação, não residência dos eleitores.
+      Apenas totais de Jaraguá do Sul. A malha exploratória não recebe contagens eleitorais e não representa residência dos eleitores.
     </p>
     <div className="comparison-columns">
       {[older, newer].map((item, index) => {

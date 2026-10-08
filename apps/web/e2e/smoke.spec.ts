@@ -18,7 +18,7 @@ test('municipal comparison is available without representing neighborhood votes 
   await page.getByRole('checkbox', { name: 'Comparar municípios' }).check();
   await expect(page.locator('.comparison-panel')).toContainText('Comparável');
   await expect(page.locator('.comparison-panel')).toContainText('6.065');
-  await expect(page.locator('.comparison-panel')).toContainText(/não residência dos eleitores/i);
+  await expect(page.locator('.comparison-panel')).toContainText(/não representa residência dos eleitores/i);
   await expect(page).toHaveURL(/compare=/);
 });
 
