@@ -6,7 +6,7 @@
   "domainId": "presidential",
   "periodId": "2022",
   "roundId": "2",
-  "status": "official",
+  "status": "totalized",
   "asOf": "2022-10-30T23:59:59Z",
   "publishedAt": "2026-10-07T09:06:25Z",
   "sourceGrain": "polling-place-neighborhood-label",
@@ -30,8 +30,11 @@
     "coveragePct": 100.0,
     "reconciled": true,
     "notes": [
-      "Migrated from validated legacy deploy artifact; raw TSE source archive still to be captured independently."
+      "Migrated from validated legacy deploy artifact; raw TSE source archive still to be captured independently.",
+      "Totais conciliados internamente com o artefato legado; não equivale a verificação independente da fonte TSE. Não há crosswalk espacial auditado nem resultado oficial por bairro."
     ]
   },
-  "checksum": "e45a9bef90a501945533663d2d2ab7c5a4756e268e558fc959eb20edab431be5"
+  "checksum": "e45a9bef90a501945533663d2d2ab7c5a4756e268e558fc959eb20edab431be5",
+  "sourceStatus": "unverified-legacy",
+  "derivedStatus": "totalized"
 }

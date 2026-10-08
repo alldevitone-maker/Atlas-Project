@@ -28,3 +28,11 @@
 .comparison-blocked-message{margin:10px 0;padding:10px;border:1px solid #816a4c;border-radius:10px;background:#342c24;color:#ffe0b5;font-size:12px}
 .comparison-blocked-message button{margin-left:8px;border:0;padding:7px 10px;background:#ffddb5;color:#201d19;border-radius:7px;cursor:pointer}
 @media(max-width:800px){.comparison-panel{padding:10px}.comparison-column{padding:8px}.comparison-column strong{font-size:17px}.comparison-deltas{flex-direction:column;gap:5px}}
+
+.map-unavailable{position:absolute;top:90px;left:16px;right:16px;padding:18px;background:#14283a;color:#eef4fa;z-index:6}.territory-selector{position:absolute;bottom:16px;left:16px;z-index:6;display:grid;gap:6px;max-width:calc(100% - 80px);padding:10px;background:#0b151f;color:#eef4fa;border-radius:10px;font-size:12px}.territory-selector select{min-height:44px;max-width:100%;background:#14283a;color:#fff}.provenance a{color:#badcff;overflow-wrap:anywhere}button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #9fc4ff;outline-offset:3px}.icon-button,.sheet-handle{min-width:44px;min-height:44px}.sidebar.closed{visibility:hidden}.shell:has(.sidebar.closed){grid-template-columns:0 1fr}@media(max-width:800px){.territory-selector{bottom:39dvh}.bottom-sheet.expanded{max-height:65dvh}}
+
+.map-stage .atlas-map{position:absolute;inset:0;width:100%;height:100%}
+
+@media(max-width:800px){.map-stage .maplibregl-ctrl-bottom-right{bottom:39dvh!important}}
+
+.bottom-sheet:focus-visible{outline:3px solid #9fc4ff;outline-offset:-3px}

@@ -3,7 +3,7 @@
     {
       "datasetId": "elections-presidential-2022-r1",
       "revision": "legacy-1b7f4f116ed7",
-      "status": "official",
+      "status": "totalized",
       "geometryFeatures": 37,
       "sourceRows": 35,
       "matchedLabels": 29,
@@ -15,7 +15,7 @@
     {
       "datasetId": "elections-presidential-2022-r2",
       "revision": "legacy-e45a9bef90a5",
-      "status": "official",
+      "status": "totalized",
       "geometryFeatures": 37,
       "sourceRows": 35,
       "matchedLabels": 29,

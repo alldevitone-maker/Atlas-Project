@@ -173,6 +173,23 @@
     "checksum": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceStatus": {
+      "enum": [
+        "unverified-legacy",
+        "draft",
+        "provisional",
+        "totalized",
+        "official"
+      ]
+    },
+    "derivedStatus": {
+      "enum": [
+        "draft",
+        "provisional",
+        "totalized",
+        "official"
+      ]
     }
   },
   "required": [

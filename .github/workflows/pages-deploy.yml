@@ -25,11 +25,16 @@ jobs:
         with:
           node-version: '24'
       - name: Install pinned dependencies
-        run: npm install --prefix apps/web --no-audit --no-fund
+        run: npm ci --prefix apps/web --no-audit --no-fund
       - name: Typecheck and produce web bundle
         run: npm run build --prefix apps/web
       - name: Run F6 comparison regression tests
         run: npm run test --prefix apps/web
+      - name: Install browser for release gate
+        working-directory: apps/web
+        run: npx playwright install chromium --with-deps
+      - name: Desktop and mobile release gate
+        run: npm run test:e2e --prefix apps/web
       - name: Upload for GitHub Pages
         uses: actions/upload-pages-artifact@v4
         with:

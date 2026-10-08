@@ -1,6 +1,6 @@
 import type { FeatureCollection } from 'geojson';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AtlasMap } from './components/AtlasMap';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+const AtlasMap = lazy(() => import('./components/AtlasMap').then(module => ({ default: module.AtlasMap })));
 import { ComparisonPanel } from './components/ComparisonPanel';
 import type { MunicipalComparisonPolicy } from './lib/comparison';
 import { translator, type Catalog } from './lib/i18n';
@@ -132,13 +132,13 @@ export default function App() {
 
   return <main className="shell">
     <header className="topbar">
-      <button className="icon-button" onClick={() => setSidebarOpen(value => !value)} aria-label={t('nav.toggle')}>☰</button>
+      <button className="icon-button" onClick={() => setSidebarOpen(value => !value)} aria-label={t('nav.toggle')} aria-expanded={sidebarOpen} aria-controls="atlas-sidebar">☰</button>
       <div className="brand"><strong>{t(registry.app.titleKey)}</strong><span>{t(registry.app.subtitleKey)}</span></div>
       <div className="topbar-spacer" />
       {descriptor && <div className={`data-status status-${descriptor.status}`}><span>{t(`status.${descriptor.status}`)}</span><small>{new Date(descriptor.asOf).toLocaleString('pt-BR')}</small></div>}
     </header>
 
-    <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+    <aside id="atlas-sidebar" inert={!sidebarOpen} className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
       <div className="sidebar-section">
         <span className="eyebrow">{t('nav.module')}</span>
         <h2>{t(registry.module.labelKey)}</h2>
@@ -167,23 +167,26 @@ export default function App() {
               <option key={item.id} value={item.id}>{t(item.labelKey)} · {item.roundId}º turno</option>)
               : <option value="">Sem período do mesmo turno</option>}
           </select>
-          <small>Somente totais da cidade; votos por bairro são experimentais.</small>
+          <small>Somente totais da cidade. A malha exploratória não representa resultados oficiais por bairro.</small>
         </div>}
       </div>
       {descriptor && <section className="provenance">
         <span className="eyebrow">{t('data.provenance')}</span>
-        <strong>{descriptor.provenance.sourceId}</strong>
+        <a href={descriptor.provenance.sourceUrl} target="_blank" rel="noreferrer">{descriptor.provenance.sourceId}</a>
+        <span>Origem: {descriptor.sourceGrain}</span><span>Unidade: {descriptor.analysisUnit}</span>
+        <span>Cobertura declarada da extração, não cobertura espacial auditada.</span>
+        {descriptor.quality.notes.map(note => <span key={note}>{note}</span>)}
         <span>{t('data.revision',{revision:descriptor.revision})}</span>
         <span>{t('data.coverage',{coverage:descriptor.quality.coveragePct})}</span>
       </section>}
     </aside>
 
     <section className="map-stage">
-      {dataset && <AtlasMap geometry={geometry} geometryLabelField={registry.territory.geometryLabelField} dataset={dataset} datasetField={registry.join.datasetField} metricField={registry.metric.rowField} metricLabel={t(registry.metric.labelKey)} onSelect={handleSelect} />}
-      {registry.join.prototype && <div className="method-badge">{t('method.prototype')}</div>}
+      {dataset && <Suspense fallback={<p role="status">Carregando mapa…</p>}><AtlasMap geometry={geometry} geometryLabelField={registry.territory.geometryLabelField} dataset={dataset} datasetField={registry.join.datasetField} metricField={registry.metric.rowField} prototype={registry.join.prototype} metricLabel={t(registry.metric.labelKey)} onSelect={handleSelect} /></Suspense>}
+      {registry.join.prototype && <div className="method-badge">{t('method.prototype')} Malha exploratória, sem coloração eleitoral: associação espacial não auditada.</div>}
     </section>
 
-    <section className={`bottom-sheet ${sheetExpanded ? 'expanded' : ''}`}>
+    <section tabIndex={0} aria-label="Resumo eleitoral municipal" className={`bottom-sheet ${sheetExpanded ? 'expanded' : ''}`}>
       <button className="sheet-handle" onClick={() => setSheetExpanded(value => !value)} aria-label={t('sheet.toggle')}><span /></button>
       {revisionUnavailable && <p className="comparison-blocked-message" role="alert">
         A revisão fixa solicitada não está disponível neste build. Exibimos apenas a revisão carregada.

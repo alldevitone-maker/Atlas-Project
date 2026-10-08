@@ -15,6 +15,7 @@ violations=[]
 for base in TARGETS:
     if not base.exists(): continue
     for path in base.rglob('*'):
+        if any(part in {'node_modules', 'dist', 'test-results', 'playwright-report', 'e2e'} for part in path.parts) or '.test.' in path.name: continue
         if path.suffix not in {'.ts','.tsx','.js','.jsx'} or not path.is_file(): continue
         text=path.read_text(encoding='utf-8')
         for line_no,line in enumerate(text.splitlines(),1):

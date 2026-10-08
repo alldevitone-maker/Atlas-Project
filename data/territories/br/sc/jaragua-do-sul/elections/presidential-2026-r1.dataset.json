@@ -31,8 +31,11 @@
     "reconciled": true,
     "notes": [
       "Migrated from the validated legacy deploy artifact.",
-      "Marked totalized rather than official until raw TSE 2026 source and lifecycle are independently archived and verified."
+      "Marked totalized rather than official until raw TSE 2026 source and lifecycle are independently archived and verified.",
+      "Totais conciliados internamente com o artefato legado; não equivale a verificação independente da fonte TSE. Não há crosswalk espacial auditado nem resultado oficial por bairro."
     ]
   },
-  "checksum": "6f965e3f3c00ade51ceeb50dd5efc17315d852c9ae7a7d6de67d4eea90853c3e"
+  "checksum": "6f965e3f3c00ade51ceeb50dd5efc17315d852c9ae7a7d6de67d4eea90853c3e",
+  "sourceStatus": "unverified-legacy",
+  "derivedStatus": "totalized"
 }

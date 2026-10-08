@@ -1,8 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { Map as MlMap } from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+maplibregl.setWorkerUrl(workerUrl);
 import type { ElectionDataset } from '../types';
 
 interface Props {
@@ -12,6 +14,7 @@ interface Props {
   datasetField: string;
   metricField: string;
   metricLabel: string;
+  prototype: boolean;
   onSelect: (selection: { label: string; value: number | null }) => void;
 }
 
@@ -32,15 +35,17 @@ function boundsFor(fc: FeatureCollection): [[number, number], [number, number]] 
 }
 
 export function AtlasMap(props: Props) {
+  const [mapError, setMapError] = useState(false);
   const host = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
 
   useEffect(() => {
     if (!host.current) return;
+    setMapError(false);
     const rowByLabel = new Map(props.dataset.rows.map(row => [normalize(row[props.datasetField as keyof typeof row]), row]));
     const features = props.geometry.features.map((feature, index) => {
       const label = String(feature.properties?.[props.geometryLabelField] ?? '');
-      const row = rowByLabel.get(normalize(label));
+      const row = props.prototype ? undefined : rowByLabel.get(normalize(label));
       const value = row ? Number((row as unknown as Record<string, unknown>)[props.metricField]) : NaN;
       return {
         ...feature,
@@ -56,13 +61,16 @@ export function AtlasMap(props: Props) {
     const middle = min + (upper - min) / 2;
     const bounds = boundsFor(fc);
 
-    const map = new maplibregl.Map({
+    let map: MlMap;
+    try { map = new maplibregl.Map({
       container: host.current,
       style: { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#081018' } }] },
       center: [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2],
       zoom: 10,
       attributionControl: false
     });
+    } catch { setMapError(true); return; }
+    map.on("error", () => setMapError(true));
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
@@ -74,7 +82,7 @@ export function AtlasMap(props: Props) {
       }});
       map.addLayer({ id: 'territory-line', type: 'line', source: 'territory', paint: { 'line-color': 'rgba(238,244,248,.55)', 'line-width': 1 }});
       map.addLayer({ id: 'territory-selected', type: 'line', source: 'territory', filter: ['==', ['get', '__atlasLabel'], '__none__'], paint: { 'line-color': '#fff', 'line-width': 3 }});
-      map.fitBounds(bounds, { padding: window.innerWidth < 760 ? { top: 96, right: 20, bottom: 220, left: 20 } : { top: 72, right: 32, bottom: 184, left: 312 }, duration: 0 });
+      map.fitBounds(bounds, { padding: window.innerWidth < 760 ? { top: 90, right: 20, bottom: Math.min(260, window.innerHeight * .38), left: 20 } : 48, duration: 0 });
 
       map.on('click', 'territory-fill', event => {
         const feature = event.features?.[0]; if (!feature) return;
@@ -90,7 +98,18 @@ export function AtlasMap(props: Props) {
     });
 
     return () => { map.remove(); mapRef.current = null; };
-  }, [props.geometry, props.dataset, props.geometryLabelField, props.datasetField, props.metricField, props.metricLabel, props.onSelect]);
+  }, [props.geometry, props.dataset, props.geometryLabelField, props.datasetField, props.metricField, props.metricLabel, props.prototype, props.onSelect]);
 
-  return <div className="atlas-map" ref={host} aria-label={props.metricLabel} />;
+  return <><div className="atlas-map" ref={host} aria-label="Mapa territorial exploratório" />
+    {mapError && <p className="map-unavailable" role="status">O mapa não está disponível neste navegador. Os dados municipais e a seleção territorial continuam acessíveis.</p>}
+    <div className="territory-selector"><label htmlFor="territory-selection">Selecionar território</label>
+      <select id="territory-selection" defaultValue="" onChange={event => {
+        const label = event.target.value;
+        props.onSelect({ label, value: null });
+        const map = mapRef.current;
+        if (map?.getLayer('territory-selected')) map.setFilter('territory-selected', ['==', ['get', '__atlasLabel'], label]);
+      }}><option value="">Nenhum território selecionado</option>{props.geometry.features.map((feature, i) => {
+        const label = String(feature.properties?.[props.geometryLabelField] ?? '');
+        return <option key={i} value={label}>{label}</option>;
+      })}</select></div></>;
 }
