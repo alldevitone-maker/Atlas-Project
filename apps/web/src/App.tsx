@@ -110,7 +110,7 @@ export default function App() {
   }, [comparisonEnabled, comparisonRef?.id, comparisonRef?.descriptorUri, comparisonRef?.dataUri]);
 
   const t = useMemo(() => translator(catalog), [catalog]);
-  const handleSelect = useCallback((next:{label:string;value:number|null}) => setSelection(next), []);
+  const handleSelect = useCallback((next:{label:string;value:number|null}) => setSelection(next.label ? next : null), []);
 
   const candidateRows = useMemo(() => {
     if (!dataset || !candidates.length) return [];
@@ -198,7 +198,7 @@ export default function App() {
       {comparisonEnabled && comparisonError && <p role="alert">Falha ao carregar comparação: {comparisonError}</p>}
       {comparisonEnabled && !comparisonRef && <p role="status" className="comparison-blocked-message">Não há outro período do mesmo turno disponível para a comparação.</p>}
       {comparisonEnabled && comparisonRef && !comparisonData && !comparisonError && <p>Carregando comparação…</p>}
-      {comparisonEnabled && !revisionUnavailable && comparisonData && comparisonDescriptor && dataset && descriptor && activeRef &&
+      {comparisonEnabled && comparisonRef && !revisionUnavailable && comparisonData && comparisonDescriptor && dataset && descriptor && activeRef &&
         <ComparisonPanel policy={comparisonPolicy}
           baseline={{descriptor: comparisonDescriptor, data: comparisonData, label: t(comparisonRef!.labelKey) + ' · ' + comparisonRef!.roundId + 'º turno'}}
           current={{descriptor, data: dataset, label: t(activeRef.labelKey) + ' · ' + activeRef.roundId + 'º turno'}} />}

@@ -95,3 +95,19 @@ test('unknown pinned revision is not silently replaced', async ({ page }) => {
   console.log(JSON.stringify(result.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => ({ target:n.target, summary:n.failureSummary })) })), null, 2));
   expect(result.violations).toEqual([]);
  });
+
+ test('changing round with comparison open fails closed without crashing', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await page.getByLabel('Selecionar território').selectOption('Centro');
+  if (test.info().project.name.startsWith('mobile')) await page.getByRole('button', { name: 'Abrir ou fechar navegação' }).click();
+  await page.getByRole('checkbox', { name: 'Comparar municípios' }).check();
+  await expect(page.locator('.comparison-panel')).toBeVisible();
+  await page.getByRole('button', { name: '2022 2º turno', exact: true }).click();
+  await expect(page.getByText('Não há outro período do mesmo turno disponível para a comparação.')).toBeVisible();
+  await expect(page.getByText('104.007')).toBeVisible();
+  await expect(page.getByLabel('Selecionar território')).toHaveValue('');
+  await expect(page.locator('.comparison-panel')).toHaveCount(0);
+  expect(errors).toEqual([]);
+ });

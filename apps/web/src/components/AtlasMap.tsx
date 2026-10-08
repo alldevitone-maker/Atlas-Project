@@ -35,6 +35,7 @@ function boundsFor(fc: FeatureCollection): [[number, number], [number, number]] 
 }
 
 export function AtlasMap(props: Props) {
+  const [selectedLabel, setSelectedLabel] = useState('');
   const [mapError, setMapError] = useState(false);
   const host = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
@@ -42,6 +43,7 @@ export function AtlasMap(props: Props) {
   useEffect(() => {
     if (!host.current) return;
     setMapError(false);
+    setSelectedLabel('');
     const rowByLabel = new Map(props.dataset.rows.map(row => [normalize(row[props.datasetField as keyof typeof row]), row]));
     const features = props.geometry.features.map((feature, index) => {
       const label = String(feature.properties?.[props.geometryLabelField] ?? '');
@@ -90,6 +92,7 @@ export function AtlasMap(props: Props) {
         const raw = feature.properties?.__atlasMetric;
         const value = typeof raw === 'number' ? raw : raw == null ? null : Number(raw);
         map.setFilter('territory-selected', ['==', ['get', '__atlasLabel'], label]);
+        setSelectedLabel(label);
         props.onSelect({ label, value: Number.isFinite(value) ? value : null });
       });
 
@@ -103,8 +106,10 @@ export function AtlasMap(props: Props) {
   return <><div className="atlas-map" ref={host} aria-label="Mapa territorial exploratório" />
     {mapError && <p className="map-unavailable" role="status">O mapa não está disponível neste navegador. Os dados municipais e a seleção territorial continuam acessíveis.</p>}
     <div className="territory-selector"><label htmlFor="territory-selection">Selecionar território</label>
-      <select id="territory-selection" defaultValue="" onChange={event => {
+      <select id="territory-selection" value={selectedLabel} onChange={event => {
         const label = event.target.value;
+        setSelectedLabel(label);
+        setSelectedLabel(label);
         props.onSelect({ label, value: null });
         const map = mapRef.current;
         if (map?.getLayer('territory-selected')) map.setFilter('territory-selected', ['==', ['get', '__atlasLabel'], label]);
