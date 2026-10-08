@@ -1,7 +1,7 @@
 export type UrlState = Record<string, string | undefined>;
 
 const ALLOWED_KEYS = [
-  'territory', 'module', 'domain', 'period', 'round', 'dataset', 'revision', 'compare',
+  'territory', 'module', 'domain', 'period', 'round', 'dataset', 'revision', 'compare', 'compareRevision',
   'metric', 'candidate', 'layers', 'feature', 'basemap', 'panel', 'theme', 'locale'
 ] as const;
 

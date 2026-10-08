@@ -7,7 +7,7 @@ Esta entrega implementa as pendências técnicas reproduzíveis da auditoria. N�
 | Proveniência | Migrações legadas geram `sourceStatus: unverified-legacy`, nunca `official`; input ausente não cria saída. |
 | Fontes 2022/2026 | Três ZIPs estaduais capturados; hashes revalidados antes da extração; recortes municipais comprimidos e manifestos persistidos no Git. Em 2022 os hashes são da captura, sem digest oficial independente confirmado. Testes reproduzem payloads e catálogos dos três recortes. |
 | Divergência | BU nominal 108.638 versus legado 108.628. Número 28 tem dez votos no BU e está ausente do legado. Demais candidatos coincidem. Estado jurídico/final não inferido; métricas distintas não se comparam. |
-| Revisões | Registro mantém id/revisão e rejeita reutilização com checksum diferente. Links fixos e cópias de revisões são preservados; geradores arquivam saídas. |
+| Revisões | Registro mantém id/revisão e rejeita reutilização com checksum diferente. Links fixos e cópias de revisões são preservados; geradores arquivam saídas. Seletores permitem escolher revisão do dataset e da referência de comparação; `compareRevision` fixa o segundo lado e revisão desconhecida bloqueia a comparação. |
 | Integridade | DataLoader valida os bytes antes do JSON, incluindo catálogos; Zod valida registry, AST de métricas, descritores, estrutura, unicidade e reconciliação. Dataset ou catálogo adulterado falha sem exibir totais. |
 | Contratos | Fonte/derivação tipadas; `official` exige evidência e reconciliação; associação revisada exige evidenceRef e não pode ser ambígua. |
 | Core/web | Runtime, Registry, DataLoader, MetricEngine, MapEngine, LayerManager, InteractionManager, Router e i18n integrados. Agregação/ranking de candidatos movidos para domain-elections. Fixture não eleitoral validada no frontend, mapa/KPI/URL e E2E. |
@@ -17,7 +17,7 @@ Esta entrega implementa as pendências técnicas reproduzíveis da auditoria. N�
 | Acessibilidade | Temas claro/escuro; contraste do tema claro corrigido com axe; seleção por teclado, menu inert e ausência de WebGL mantidos. |
 | Publicação | CSP compatível com workers, lint AST com allowlist documentada e budgets automatizados; Pages passa a depender da fundação, contratos, payloads, Vitest e E2E. WebKit desktop/iPhone adicionado ao gate. Smoke pós-deploy testa a URL publicada em desktop/mobile e preserva screenshots/traces como artefato. |
 
-Validação local: build de produção; fundação, contratos com 10 válidos e 4 inválidos; 21 testes core, 20 testes Vitest e 40 E2E Chromium desktop/mobile. Contagens e links finais dos Actions constarão da evidência de publicação abaixo. WebKit não executa neste ambiente por bibliotecas de sistema ausentes; é obrigatório no Actions antes de publicar e passou no primeiro deploy desta implementação.
+Validação local: build de produção; fundação, contratos com 10 válidos e 4 inválidos; 21 testes core, 20 testes Vitest e 42 E2E Chromium desktop/mobile. Contagens e links finais dos Actions constarão da evidência de publicação abaixo. WebKit não executa neste ambiente por bibliotecas de sistema ausentes; é obrigatório no Actions antes de publicar e passou no primeiro deploy desta implementação.
 
 Budgets: JS inicial gzip <=110.000 bytes; chunk de mapa gzip <=300.000 bytes; worker <=520.000 bytes. São limites de artefatos medidos, não alegação de desempenho em campo.
 

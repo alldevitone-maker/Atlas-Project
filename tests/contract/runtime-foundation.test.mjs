@@ -67,9 +67,11 @@ test('AtlasRuntime preserves explicit immutable revision in permalink', async ()
   const registry=new Registry({modules:[module],datasets:[{...descriptor,checksum:createHash('sha256').update(JSON.stringify({ok:true})).digest('hex')}]});
   const fetcher=async()=>new Response(JSON.stringify({ok:true}),{status:200});
   const runtime=new AtlasRuntime({registry,store:new AtlasStore(),loader:new DataLoader(undefined,fetcher)});
-  runtime.hydrateFromSearch('?module=module-alpha&dataset=dataset-alpha&revision=rev-a');
+  runtime.hydrateFromSearch('?module=module-alpha&dataset=dataset-alpha&revision=rev-a&compare=dataset-beta&compareRevision=rev-b');
   assert.equal(runtime.resolveDataset().revision,'rev-a');
   assert.match(runtime.permalink(),/revision=rev-a/);
+  assert.match(runtime.permalink(),/compare=dataset-beta/);
+  assert.match(runtime.permalink(),/compareRevision=rev-b/);
   assert.deepEqual(await runtime.loadResolved(),{ok:true});
 });
 

@@ -43,6 +43,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(() => window.matchMedia('(min-width: 801px)').matches);
   const [comparisonEnabled, setComparisonEnabled] = useState(() => Boolean(new URLSearchParams(location.search).get('compare')));
   const [comparisonDatasetId, setComparisonDatasetId] = useState(() => new URLSearchParams(location.search).get('compare') || '');
+  const [comparisonPin,setComparisonPin] = useState(() => ({dataset:new URLSearchParams(location.search).get('compare'),revision:new URLSearchParams(location.search).get('compareRevision')}));
   const [comparisonData, setComparisonData] = useState<ElectionDataset | null>(null);
   const [comparisonDescriptor, setComparisonDescriptor] = useState<DatasetDescriptor | null>(null);
   const [comparisonError, setComparisonError] = useState<string | null>(null);
@@ -92,9 +93,11 @@ export default function App() {
     () => registry?.datasets.filter(item => item.id !== selectedDatasetId && item.roundId === activeRef?.roundId && item.periodId !== activeRef?.periodId) ?? [],
     [registry, activeRef, selectedDatasetId]
   );
-  const resolvedComparisonId = comparisonOptions.some(item => item.id === comparisonDatasetId)
+  const resolvedComparisonId = comparisonPin.revision && comparisonPin.dataset === comparisonDatasetId || comparisonOptions.some(item => item.id === comparisonDatasetId)
     ? comparisonDatasetId : comparisonOptions.find(item=>item.measureKind === activeRef?.measureKind)?.id ?? comparisonOptions[0]?.id ?? '';
-  const comparisonRef = registry?.datasets.find(item => item.id === resolvedComparisonId) ?? null;
+  const requestedComparisonRevision = comparisonPin.dataset === resolvedComparisonId ? comparisonPin.revision : null;
+  const comparisonRef = (requestedComparisonRevision ? registry?.revisions?.find(item=>item.id===resolvedComparisonId && item.revision===requestedComparisonRevision) : null) ?? registry?.datasets.find(item => item.id === resolvedComparisonId) ?? null;
+  const comparisonRevision = requestedComparisonRevision ?? (comparisonRef ? runtime?.registry.getDataset(comparisonRef.id,comparisonRef.revision)?.revision : undefined);
 
   useEffect(() => {
     if (!activeRef || !runtime) return;
@@ -124,22 +127,25 @@ export default function App() {
 
   useEffect(() => {
     if (!descriptor || !activeRef || revisionUnavailable) return;
-    writeSelection(activeRef.id, descriptor.revision, comparisonEnabled ? resolvedComparisonId : undefined);
-  }, [descriptor, activeRef, comparisonEnabled, resolvedComparisonId, revisionUnavailable]);
+    writeSelection(activeRef.id, descriptor.revision, comparisonEnabled ? resolvedComparisonId : undefined, comparisonRevision ?? undefined);
+  }, [descriptor, activeRef, comparisonEnabled, resolvedComparisonId, comparisonRevision, revisionUnavailable]);
 
   useEffect(() => {
     let live = true;
     setComparisonData(null); setComparisonDescriptor(null); setComparisonError(null);
-    if (!comparisonEnabled || !comparisonRef) return;
+    if (!comparisonEnabled) return;
+    if (requestedComparisonRevision && !runtime?.registry.getDataset(resolvedComparisonId,requestedComparisonRevision)) {setComparisonError(`comparison-revision-unavailable:${requestedComparisonRevision}`);return;}
+    if (!comparisonRef) return;
     void (async () => {
       try {
-        const desc = descriptorSchema.parse(await json<unknown>(comparisonRef.descriptorUri));
+        const desc = runtime?.registry.getDataset(comparisonRef.id,comparisonRevision ?? undefined);
+        if (!desc) throw new Error('comparison-dataset-unavailable');
         const data = await loadElection(desc, comparisonRef.dataUri);
         if (live) { setComparisonDescriptor(desc); setComparisonData(data); }
       } catch (cause) { if (live) setComparisonError(String(cause)); }
     })();
     return () => { live = false; };
-  }, [comparisonEnabled, comparisonRef?.id, comparisonRef?.descriptorUri, comparisonRef?.dataUri]);
+  }, [comparisonEnabled, comparisonRef?.id, comparisonRef?.descriptorUri, comparisonRef?.dataUri,requestedComparisonRevision,runtime,resolvedComparisonId]);
 
   const t = useMemo(() => translator(catalog), [catalog]);
   const handleSelect = useCallback((next:{label:string;value:number|null}) => {
@@ -154,7 +160,7 @@ export default function App() {
   const metric = registry?.metrics?.find(item=>item.id === selectedMetric) ?? registry?.metrics?.[0];
   const primary = dataset && metric ? evaluateExpression(metric.expression,{...dataset.summary,validVotes:dataset.summary.validVotes ?? dataset.summary.valid,blankVotes:dataset.summary.blankVotes ?? dataset.summary.blank,eligible:dataset.summary.eligible ?? dataset.summary.apt}) : null;
   useEffect(()=>{if(dataset && candidateFilter && !candidateRows.some(item=>item.id===candidateFilter))setCandidateFilter('');},[dataset,candidateRows,candidateFilter]);
-  useEffect(()=>{if(runtime)runtime.store.set({theme,metric:selectedMetric,candidate:candidateFilter,feature:selection?.label ?? '',basemap:selectedBasemap,layers:showTerritory ? 'territory' : 'none',panel:sheetExpanded ? 'expanded' : 'collapsed',compare:comparisonEnabled ? resolvedComparisonId : ''});},[runtime,theme,selectedMetric,candidateFilter,selection?.label,selectedBasemap,showTerritory,sheetExpanded,comparisonEnabled,resolvedComparisonId]);
+  useEffect(()=>{if(runtime)runtime.store.set({theme,metric:selectedMetric,candidate:candidateFilter,feature:selection?.label ?? '',basemap:selectedBasemap,layers:showTerritory ? 'territory' : 'none',panel:sheetExpanded ? 'expanded' : 'collapsed',compare:comparisonEnabled ? resolvedComparisonId : '',compareRevision:comparisonEnabled ? comparisonRevision ?? '' : ''});},[runtime,theme,selectedMetric,candidateFilter,selection?.label,selectedBasemap,showTerritory,sheetExpanded,comparisonEnabled,resolvedComparisonId,comparisonRevision]);
   const measures = dataset ? extractMunicipalMeasure(dataset) : null;
   const summaryCount = (key: string) => typeof dataset?.summary[key] === 'number' ? number.format(dataset.summary[key] as number) : '—';
 
@@ -181,6 +187,7 @@ export default function App() {
           setPinEpoch(value=>value+1);
           setRevisionUnavailable(false);
           setSelectedDatasetId(item.id);
+          setComparisonPin({dataset:null,revision:null});
           setCandidateFilter('');
           const params = new URLSearchParams(location.search); params.delete('feature'); history.replaceState(null,'',`${location.pathname}?${params}${location.hash}`);
           if (window.innerWidth <= 800) setSidebarOpen(false);
@@ -188,6 +195,7 @@ export default function App() {
           <span>{t(item.labelKey)}</span><small>{item.roundId ? t('period.round',{round:item.roundId}) : ''}</small>
         </button>)}
       </nav>
+      {descriptor && <div className="analysis-controls"><label htmlFor="dataset-revision">Revisão do dataset</label><select id="dataset-revision" value={initialPin.current.dataset===selectedDatasetId && initialPin.current.revision ? initialPin.current.revision : descriptor.revision} onChange={event=>{initialPin.current={dataset:selectedDatasetId,revision:event.target.value};setPinEpoch(value=>value+1);setRevisionUnavailable(false);}}>{revisionUnavailable && <option value={initialPin.current.revision ?? ''}>Revisão indisponível: {initialPin.current.revision}</option>}{runtime?.registry.listRevisions(selectedDatasetId).map(item=><option key={item.revision} value={item.revision}>{item.revision}</option>)}</select></div>}
       <div className="analysis-controls"><label htmlFor="basemap-choice">Fundo do mapa</label><select id="basemap-choice" value={basemap?.id ?? selectedBasemap} onChange={event=>setSelectedBasemap(event.target.value)}>{registry.basemaps?.map(item=><option key={item.id} value={item.id}>{t(item.labelKey)}</option>)}</select><label><input type="checkbox" checked={showTerritory} onChange={event=>setShowTerritory(event.target.checked)}/> Exibir malha exploratória</label><label htmlFor="metric-choice">Selecionar métrica municipal</label><select id="metric-choice" value={metric?.id ?? selectedMetric} onChange={event=>setSelectedMetric(event.target.value)}>{registry.metrics?.map(item=><option key={item.id} value={item.id}>{dataset?.validVotesMeaning === 'nominal-bu' && item.id === 'valid-votes' ? 'Votos nominais nos boletins' : t(item.labelKey)}</option>)}</select><label htmlFor="candidate-choice">Filtrar candidato</label><select id="candidate-choice" value={candidateFilter} onChange={event=>setCandidateFilter(event.target.value)}><option value="">Todos os candidatos</option>{candidateRows.map(candidate=><option key={candidate.id} value={candidate.id}>{candidate.officialName || `Número de urna ${candidate.ballotNumber} (nome não catalogado)`}</option>)}</select><button onClick={()=>{handleSelect({label:'',value:null});setCandidateFilter('');setSelectedMetric(registry.metric.id);}}>Limpar filtros e seleção</button></div>
       <div className="comparison-controls">
         <label className="comparison-toggle">
@@ -198,11 +206,12 @@ export default function App() {
         {comparisonEnabled && <div className="comparison-choose">
           <label htmlFor="atlas-compare-ref">Comparar com</label>
           <select id="atlas-compare-ref" value={resolvedComparisonId}
-            onChange={event => { setComparisonDatasetId(event.target.value); setSheetExpanded(true); }}>
+            onChange={event => { setComparisonDatasetId(event.target.value); setComparisonPin({dataset:null,revision:null}); setSheetExpanded(true); }}>
             {comparisonOptions.length ? comparisonOptions.map(item =>
               <option key={item.id} value={item.id}>{t(item.labelKey)} · {item.roundId}º turno</option>)
               : <option value="">Sem período do mesmo turno</option>}
           </select>
+          {comparisonRef && <><label htmlFor="atlas-compare-revision">Revisão da comparação</label><select id="atlas-compare-revision" value={comparisonRevision ?? ''} onChange={event=>setComparisonPin({dataset:resolvedComparisonId,revision:event.target.value})}>{requestedComparisonRevision && !runtime?.registry.getDataset(resolvedComparisonId,requestedComparisonRevision) && <option value={requestedComparisonRevision}>Revisão indisponível: {requestedComparisonRevision}</option>}{runtime?.registry.listRevisions(resolvedComparisonId).map(item=><option key={item.revision} value={item.revision}>{item.revision}</option>)}</select></>}
           <small>Somente totais da cidade. A malha exploratória não representa resultados oficiais por bairro.</small>
         </div>}
       </div>

@@ -223,6 +223,10 @@ test('selecting the current dataset exits an older pin for the same id',async({p
  if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
  await page.locator('.period-list button.active').click();
  await expect(page).toHaveURL(/revision=legacy-6f965e3f3c00/);
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await page.getByLabel('Revisão do dataset',{exact:true}).selectOption('historical-test');
+ await expect(page).toHaveURL(/revision=historical-test/);
+ await expect(page.getByText('108.628')).toBeVisible();
 });
 
 test('exploratory cartography retains its neutral visual baseline',async({page})=>{
@@ -237,4 +241,28 @@ test('altered candidate catalog cannot replace source-backed candidate names',as
  await page.goto('/');
  await expect(page.getByText(/dataset-checksum-mismatch/)).toBeVisible();
  await expect(page.getByText('Adulterated catalog')).toHaveCount(0);
+});
+
+test('comparison independently loads a historical pin and rejects an unavailable revision',async({page})=>{
+ await page.route('**/registry.json',async route=>{
+  const response=await route.fetch();const registry=await response.json();
+  const ref=registry.datasets.find((item:any)=>item.id==='elections-presidential-2022-r1');
+  registry.revisions.push({...ref,revision:'comparison-history-test',descriptorUri:'./data/comparison-history-test.dataset.json'});
+  await route.fulfill({json:registry});
+ });
+ await page.route('**/data/comparison-history-test.dataset.json',async route=>{
+  const response=await page.request.get('/data/presidential-2022-r1.dataset.json');const descriptor=await response.json();
+  await route.fulfill({json:{...descriptor,revision:'comparison-history-test',publishedAt:'2000-01-01T00:00:00Z'}});
+ });
+ await page.goto('/?dataset=elections-presidential-2026-r1&compare=elections-presidential-2022-r1&compareRevision=comparison-history-test&panel=expanded');
+ await expect(page.locator('.comparison-panel')).toContainText('comparison-history-test');
+ await page.reload();await expect(page.locator('.comparison-panel')).toContainText('comparison-history-test');
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await page.getByLabel('Revisão da comparação').selectOption('legacy-1b7f4f116ed7');
+ await expect(page).toHaveURL(/compareRevision=legacy-1b7f4f116ed7/);
+ await expect(page.locator('.comparison-panel')).not.toContainText('comparison-history-test');
+ await page.goto('/?dataset=elections-presidential-2026-r1&compare=elections-presidential-2022-r1&compareRevision=missing-comparison-revision');
+ await expect(page.getByText(/comparison-revision-unavailable:missing-comparison-revision/)).toBeVisible();
+ await expect(page.locator('.comparison-panel')).toHaveCount(0);
+ await expect(page).toHaveURL(/compareRevision=missing-comparison-revision/);
 });
