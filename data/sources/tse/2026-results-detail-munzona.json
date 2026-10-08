@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "source-snapshot-v1",
+  "id": "tse-results-2026-detail-munzona",
+  "authority": "Tribunal Superior Eleitoral (TSE/AGEL)",
+  "datasetPage": "https://dadosabertos.tse.jus.br/dataset/resultados-2026",
+  "license": "Creative Commons Atribuição",
+  "scope": {
+    "country": "BR",
+    "electionYear": 2026,
+    "grain": "municipality-zone",
+    "resultType": "totalization-detail"
+  },
+  "resources": {
+    "dataUrl": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2026.zip"
+  },
+  "retention": {
+    "commitRawToGit": false,
+    "strategy": "captured-snapshot-artifact",
+    "note": "The dataset page exposes the official ZIP but no published digest sidecar was identified."
+  }
+}
