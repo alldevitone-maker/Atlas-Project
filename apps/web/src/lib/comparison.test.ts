@@ -11,7 +11,7 @@ const policy: MunicipalComparisonPolicy = {
 };
 function descriptor(id:string, year:string, round='1'):DatasetDescriptor {
   return {
-    id, revision:'immutable-'+year, status:'totalized', asOf:year+'-10-04T00:00:00Z',
+    id, periodId:year, revision:'immutable-'+year, status:'totalized', asOf:year+'-10-04T00:00:00Z',
     territoryId:'territory-alpha', territoryVintage:year+'-map',
     moduleId:'elections', domainId:'presidential', sourceGrain:'polling-place-neighborhood-label',
     analysisUnit:'polling-place-neighborhood-label', roundId:round, quality:{coveragePct:100,reconciled:true,notes:[]},
