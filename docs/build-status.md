@@ -1,3 +1,28 @@
+# F6 e publicação · verificação de 08/10/2026
+
+**Versão da documentação:** roadmap v3.2.
+**Último commit de código verificado:** `edef1eec7ba6358e439291fbe12e7c39a3202fe7`.
+
+| Gate | Estado | Evidência |
+|---|---|---|
+| Fundação, contratos e no-hardcode | PASS | https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37758436281 |
+| Build TypeScript + Vite | PASS | https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37758436306 |
+| Testes F6 (municipais e fixtures) | PASS, 7 testes | Mesmo web build |
+| Upload da build web | PASS | Mesmo web build, artifact `atlas-web-dist` |
+| Workflow de publicação GitHub Pages | BLOQUEADO | https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37758436311 |
+| Site publicado e inspecionado | PENDENTE | `has_pages=false` na API do repo e Pages não habilitado |
+| E2E Playwright + mobile real | PENDENTE | Não executados nesta fase |
+
+**Ativação necessária:** proprietário deve selecionar `Settings → Pages → Source → GitHub Actions` antes da publicação. Veja [guia de deployment](deployment.md).
+
+**F6 entregue:** comparador de agregados municipais para turnos equivalentes, períodos do registry, política `municipality-aggregate-v1`, deltas municipais, aviso de proveniência, testes com dados reais, controles responsivos.
+
+**Não entregue:** comparações territoriais por bairro, inferências sobre domicílio do eleitor, tendências por candidato ao longo do tempo sem identidade verificada, ou confirmação visual em navegador.
+
+**Risco de performance:** bundle JavaScript medido no GitHub Actions em aproximadamente 1.27 MB sem compactação (353 KB gzip). Estabelecer budget e lazy loading do MapLibre antes de classificar como hardening concluído.
+
+---
+
 # Situação atual do Projeto Atlas · 08/10/2026
 
 - **Branch:** `main`, repositório `alldevitone-maker/Atlas-Project`.
