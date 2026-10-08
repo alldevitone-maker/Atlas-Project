@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "source-snapshot-request-v1",
+  "sourceManifest": "data/sources/tse/2026-sc-r1.json",
+  "reason": "Capture the first verified official TSE raw snapshot for Atlas F4.",
+  "requestedAt": "2026-10-07",
+  "retentionDays": 90
+}
