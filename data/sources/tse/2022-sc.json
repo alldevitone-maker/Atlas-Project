@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "source-snapshot-v1",
+  "id": "tse-2022-sc",
+  "authority": "Tribunal Superior Eleitoral (TSE)",
+  "datasetPage": "https://dadosabertos.tse.jus.br/dataset/resultados-2022-boletim-de-urna",
+  "scope": {
+    "country": "BR",
+    "state": "SC"
+  },
+  "resources": [
+    {
+      "id": "bu-r1",
+      "round": "1",
+      "dataUrl": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2022/buweb/bweb_1t_SC_051020221321.zip",
+      "integrityState": "official-hash-capture-pending"
+    },
+    {
+      "id": "bu-r2",
+      "round": "2",
+      "dataUrl": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2022/buweb/bweb_2t_SC_311020221535.zip",
+      "integrityState": "official-hash-capture-pending"
+    },
+    {
+      "id": "polling-places",
+      "dataUrl": "https://cdn.tse.jus.br/estatistica/sead/odsele/eleitorado_locais_votacao/eleitorado_local_votacao_2022.zip",
+      "integrityState": "official-hash-capture-pending"
+    }
+  ],
+  "retention": {
+    "commitRawToGit": false,
+    "strategy": "verified-snapshot-artifact"
+  },
+  "note": "URLs preserved from the immutable legacy baseline; official hash resources must be captured before F3 is marked complete."
+}
