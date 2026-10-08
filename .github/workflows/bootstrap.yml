@@ -34,7 +34,7 @@ jobs:
           base64 -d /tmp/atlas.tar.gz.b64 > /tmp/atlas.tar.gz
           tar -xzf /tmp/atlas.tar.gz -C .
           rm -rf .bootstrap
-          rm -f .github/workflows/bootstrap.yml
+          rm -f .github/workflows/ci.yml .github/workflows/.gitkeep
       - name: Commit expanded source
         if: steps.ready.outputs.ready == 'true'
         shell: bash
