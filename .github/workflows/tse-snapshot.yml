@@ -22,24 +22,60 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Resolve source manifest
+      - name: Resolve source manifests
         id: source
         shell: bash
         run: |
-          MANIFEST_PATH="${{ inputs.manifest_path }}"
-          if [ -z "$MANIFEST_PATH" ]; then
-            MANIFEST_PATH="data/sources/tse/2026-sc-r1.json"
+          mkdir -p /tmp/atlas
+          : > /tmp/atlas/manifests.txt
+
+          if [ -n "${{ inputs.manifest_path }}" ]; then
+            printf '%s\n' "${{ inputs.manifest_path }}" >> /tmp/atlas/manifests.txt
+          else
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" |
+              grep '^data/sources/tse/requests/.*\.json$' |
+              while read -r request; do
+                python - "$request" <<'PY' >> /tmp/atlas/manifests.txt
+          import json
+          import sys
+          from pathlib import Path
+
+          request = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          print(request["sourceManifest"])
+          PY
+              done
           fi
-          echo "manifest_path=$MANIFEST_PATH" >> "$GITHUB_OUTPUT"
-      - name: Download and verify official source
-        run: python scripts/fetch_tse_snapshot.py "${{ steps.source.outputs.manifest_path }}" --out-dir raw-snapshot
-      - name: Upload verified raw snapshot
+
+          sort -u /tmp/atlas/manifests.txt -o /tmp/atlas/manifests.txt
+          if [ ! -s /tmp/atlas/manifests.txt ]; then
+            echo "No source manifests resolved." >&2
+            exit 1
+          fi
+          cat /tmp/atlas/manifests.txt
+
+      - name: Capture official sources
+        shell: bash
+        run: |
+          while read -r manifest; do
+            source_id="$(python - "$manifest" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          print(json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))["id"])
+          PY
+            )"
+            python scripts/fetch_tse_snapshot.py "$manifest" --out-dir "raw-snapshots/$source_id"
+          done < /tmp/atlas/manifests.txt
+
+      - name: Upload source snapshots
         uses: actions/upload-artifact@v4
         with:
           name: tse-source-snapshot-${{ github.run_id }}
-          path: raw-snapshot/
+          path: raw-snapshots/
           if-no-files-found: error
           retention-days: 90
