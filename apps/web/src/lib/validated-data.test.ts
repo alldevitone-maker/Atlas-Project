@@ -1,5 +1,6 @@
+import registry from '../../public/registry.json';
 import { describe, it, expect } from 'vitest';
-import { electionSchema, descriptorSchema } from './validated-data';
+import { electionSchema, descriptorSchema, webRegistrySchema, candidateCatalogSchema } from './validated-data';
 
 describe('contrato eleitoral em runtime',()=>{
  it('rejeita votos negativos e payload sem linhas',()=>{
@@ -17,4 +18,19 @@ it('rejects an official seal without source evidence',()=>{
 });
 it('rejects internally inconsistent electoral rows',()=>{
  expect(()=>electionSchema.parse({schemaVersion:'election-results-v1',summary:{validVotes:3},rows:[{sourceUnitId:'x',label:'x',validVotes:3,candidateVotes:{a:2}}]})).toThrow(/reconcile/);
+});
+
+it('rejects malformed municipal candidate totals and electorate counts',()=>{
+ const row={sourceUnitId:'x',label:'x',validVotes:3,candidateVotes:{a:3}};
+ expect(()=>electionSchema.parse({schemaVersion:'election-results-v1',rows:[row],summary:{validVotes:3,candidateVotes:{a:4}}})).toThrow(/reconcile/);
+ expect(()=>electionSchema.parse({schemaVersion:'election-results-v1',rows:[row],summary:{validVotes:3,eligible:'5'}})).toThrow(/Invalid municipal/);
+});
+
+it('registry preserves generic metric expressions and requires catalog integrity',()=>{
+ const config=structuredClone(registry) as any;config.metrics[0].expression={op:'ratio',numerator:{op:'field',field:'a'},denominator:{op:'field',field:'b'}};
+ expect(webRegistrySchema.parse(config).metrics?.[0].expression.op).toBe('ratio');
+ delete config.datasets[0].candidateCatalogChecksum;expect(()=>webRegistrySchema.parse(config)).toThrow(/checksum/);
+});
+it('candidate catalog rejects duplicate ballot identifiers',()=>{
+ expect(()=>candidateCatalogSchema.parse([{id:'a',officialName:'Fixture',ballotNumber:'x'},{id:'b',officialName:'Other fixture',ballotNumber:'x'}])).toThrow(/Duplicate/);
 });

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "source-snapshot-v2",
+  "sourceManifest": "data/sources/tse/2022-sc-r2.json",
+  "sourceId": "tse-bu-2022-sc-r2",
+  "authority": "Tribunal Superior Eleitoral (TSE)",
+  "retrievedAt": "2026-10-08T21:28:49.384780+00:00",
+  "dataUrl": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2022/buweb/bweb_2t_SC_311020221535.zip",
+  "hashUrl": null,
+  "fileName": "bweb_2t_SC_311020221535.zip",
+  "sizeBytes": 2776735,
+  "sha512": "1a0a6ba32a9b589896ca68e6fdc85a8580645ea5af48778cd6bde11159e8691e3f0ff94c3ffc1b1c28aa311889a5704a304c2efe67a6bec5affc6ff55aeea352",
+  "sha256": "cf67057ad095817a1c4bb30ef1cb9349bd0843a5f6bfd29a26aa21ee7c719c16",
+  "publishedSha512": null,
+  "publishedDigestVerified": false,
+  "integrity": "captured-no-published-digest",
+  "githubActions": {
+    "runId": 37846922081,
+    "runUrl": "https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37846922081",
+    "artifactId": 11579274186,
+    "expiresAt": "2027-01-06T21:27:36Z"
+  }
+}

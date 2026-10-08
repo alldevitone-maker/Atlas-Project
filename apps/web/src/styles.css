@@ -41,3 +41,7 @@
 :root[data-theme="light"] .eyebrow,:root[data-theme="light"] .period-list small{color:#39536c}
 
 .analysis-controls{display:grid;gap:7px;margin-top:16px;font-size:12px}.analysis-controls select,.analysis-controls button{max-width:100%;min-height:44px;background:#14283a;border:1px solid #49627a;color:#eef4fa;border-radius:7px;padding:7px}.semantics select{max-width:100%;min-height:44px}
+
+:root[data-theme="light"] .comparison-heading h3{color:#eaf6ff}:root[data-theme="light"] .comparison-choose,:root[data-theme="light"] .comparison-choose small{color:#39536c}
+
+.territory-selector button{min-height:44px;background:#14283a;color:#eef4fa;border:1px solid #49627a;border-radius:6px;padding:7px}.territory-selector button:disabled{opacity:.7}

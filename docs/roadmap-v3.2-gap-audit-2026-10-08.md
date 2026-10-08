@@ -1,3 +1,5 @@
+> Auditoria histórica anterior à implementação. Consulte o [estado implementado e suas limitações](implementation-roadmap-2026-10-08.md).
+
 # Auditoria de aderência ao roadmap v3.2
 
 Data: 08/10/2026. Árvore auditada: `1261d602792c69b239959f0b4e2f5de0644a861f`, confirmada como main pela API do GitHub. Referência: [roadmap integral v3.2](reference/roadmap-v3.2-execution.md).

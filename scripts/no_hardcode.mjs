@@ -9,12 +9,12 @@ export function lintSource(source,file,exceptions=[]){
  const visit=(node,parent)=>{
   if(!node || typeof node!=='object')return;
   let literal;
-  if(node.type==='StringLiteral')literal=node.value;
+  if(node.type==='StringLiteral' || node.type==='JSXText')literal=node.value;
   if(node.type==='TemplateLiteral' && node.expressions.length===0)literal=node.quasis.map(part=>part.value.cooked).join('');
   let rule;
   if(typeof literal==='string'){
    if(/^20[1-3][0-9]$/.test(literal))rule='election-year-literal';
-   if(/jaragua[-_ ]do[-_ ]sul/i.test(literal))rule='municipality-slug';
+   if(/jaragua[-_ ]do[-_ ]sul/i.test(literal.normalize('NFD').replace(/[\u0300-\u036f]/g,'')))rule='municipality-slug';
    if(/\b(?:Lula|Bolsonaro)\b/i.test(literal))rule='political-name';
   }
   if(node.type==='NumericLiteral' && parent?.type==='ObjectProperty' && /^(?:ballotNumber|candidateNumber|partyNumber)$/.test(parent.key?.name ?? parent.key?.value ?? ''))rule='ballot-number-literal';

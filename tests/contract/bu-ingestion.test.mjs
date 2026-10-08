@@ -28,3 +28,17 @@ assert payload['summary']['validVotes']==108638
 `;
  const result=spawnSync('python',['-c',code],{encoding:'utf8'});assert.equal(result.status,0,result.stderr);
 });
+
+test('both captured 2022 turns reproduce payloads and candidate catalogs without neighborhood inference',()=>{
+ const code=`import csv,gzip,hashlib,io,json,importlib.util
+from pathlib import Path
+spec=importlib.util.spec_from_file_location('ingest','pipelines/elections/ingest_verified_bu.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+for turn,revision,total in [('1','bu-b96488de00f0',102563),('2','bu-250b633bdcf3',104007)]:
+ p=Path(f'data/raw/tse/2022-sc-r{turn}-81752-president.csv.gz');compressed=p.read_bytes();raw=gzip.decompress(compressed);manifest=json.loads(p.with_suffix('').with_suffix('.provenance.json').read_text());assert hashlib.sha256(raw).hexdigest()==manifest['subsetSha256'];assert hashlib.sha256(compressed).hexdigest()==manifest['compressedSha256']
+ data,catalog=m.extract(csv.DictReader(io.StringIO(raw.decode('utf-8')),delimiter=';'),'81752','2022',turn)
+ base=Path(f'data/territories/br/sc/jaragua-do-sul/elections/presidential-2022-r{turn}-{revision}')
+ assert data==json.loads(base.with_suffix('.json').read_text());assert catalog==json.loads(base.with_suffix('.candidates.json').read_text());assert data['summary']['validVotes']==total
+ assert data['analysisUnit']=='polling-section';assert json.loads(base.with_suffix('.dataset.json').read_text())['crosswalkId'] is None
+`;
+ const result=spawnSync('python',['-c',code],{encoding:'utf8'});assert.equal(result.status,0,result.stderr);
+});

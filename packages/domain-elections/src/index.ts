@@ -33,7 +33,8 @@ export function municipalCandidates(data: {
       return out;
     }, {});
   const valid = data.summary.validVotes ?? data.summary.valid;
-  const entries = catalog.length ? catalog : Object.keys(votes).map(ballotNumber => ({id:`ballot-${ballotNumber}`,ballotNumber,officialName:''}));
+  const known=new Set(catalog.map(item=>String(item.ballotNumber)));
+  const entries = [...catalog,...Object.keys(votes).filter(number=>!known.has(number)).map(ballotNumber => ({id:`ballot-${ballotNumber}`,ballotNumber,officialName:''}))];
   const ranked=rankCandidates(entries.map(entry=>({candidateId:entry.id,votes:votes[String(entry.ballotNumber)] ?? 0})));
   return ranked.map(result=>({ ...entries.find(entry=>entry.id === result.candidateId)!, votes:result.votes,
     share:typeof valid === 'number' && valid > 0 ? result.votes/valid : null }));

@@ -29,5 +29,8 @@
   "metric.blankVotes": "Votos brancos",
   "metric.nullVotes": "Votos nulos",
   "metric.turnout.count": "Comparecimento",
-  "metric.eligible": "Eleitores aptos"
+  "metric.eligible": "Eleitores aptos",
+  "period.2022.bu": "2022 · Boletins capturados",
+  "basemap.neutralDark": "Fundo neutro escuro (sem tiles)",
+  "basemap.neutralLight": "Fundo neutro claro (sem tiles)"
 }

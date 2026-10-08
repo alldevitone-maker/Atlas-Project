@@ -18,6 +18,8 @@ interface Props {
   metricLabel: string;
   prototype: boolean;
   selectedLabel: string;
+  showTerritory?:boolean;
+  basemap?:{background:string;fill:string;line:string;highlight:string};
   onSelect: (selection: { label: string; value: number | null }) => void;
 }
 
@@ -38,6 +40,7 @@ function boundsFor(fc: FeatureCollection): [[number, number], [number, number]] 
 }
 
 export function AtlasMap(props: Props) {
+  const liveProps=useRef(props);liveProps.current=props;
   const [selectedLabel, setSelectedLabel] = useState(props.selectedLabel);
   const [mapError, setMapError] = useState(false);
   const engineRef = useRef<MapEngine | null>(null);
@@ -75,7 +78,7 @@ export function AtlasMap(props: Props) {
     let map: MlMap;
     try { map = new maplibregl.Map({
       container: host.current,
-      style: { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#081018' } }] },
+      style: { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': props.basemap?.background ?? '#081018' } }] },
       center: [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2],
       zoom: 10,
       attributionControl: false
@@ -86,7 +89,9 @@ export function AtlasMap(props: Props) {
     const engine = new MapEngine({
       addSource:(id,spec)=>map.addSource(id,spec as unknown as maplibregl.SourceSpecification),
       addLayer:(spec,before)=>map.addLayer(spec as unknown as maplibregl.LayerSpecification,before),
-      setFilter:(id,filter)=>map.setFilter(id,filter as maplibregl.FilterSpecification)
+      setFilter:(id,filter)=>map.setFilter(id,filter as maplibregl.FilterSpecification),
+      setLayoutProperty:(id,key,value)=>{if(key !== 'visibility' || (value !== 'none' && value !== 'visible'))throw new Error('unsupported-layout-property');map.setLayoutProperty(id,'visibility',value);},
+      fitBounds:(bounds,options)=>map.fitBounds(bounds,options)
     });
     engineRef.current=engine;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
@@ -94,12 +99,14 @@ export function AtlasMap(props: Props) {
     map.on('load', () => {
       new LayerManager(engine).mount({sources:[{id:'territory',spec:{type:'geojson',data:fc}}],layers:[
         {id:'territory-fill',sourceId:'territory',spec:{type:'fill',paint:{
-          'fill-color':['case',['!=',['get','__atlasMetric'],null],['interpolate',['linear'],['get','__atlasMetric'],min,'#162536',middle,'#315e89',upper,'#9fc4ff'],'#26313a'],'fill-opacity':0.9
+          'fill-color':['case',['!=',['get','__atlasMetric'],null],['interpolate',['linear'],['get','__atlasMetric'],min,'#162536',middle,'#315e89',upper,'#9fc4ff'],props.basemap?.fill ?? '#26313a'],'fill-opacity':0.9
         }}},
-        {id:'territory-line',sourceId:'territory',spec:{type:'line',paint:{'line-color':'rgba(238,244,248,.55)','line-width':1}}},
-        {id:'territory-selected',sourceId:'territory',spec:{type:'line',filter:['==',['get','__atlasLabel'],props.selectedLabel || '__none__'],paint:{'line-color':'#fff','line-width':3}}}
+        {id:'territory-line',sourceId:'territory',spec:{type:'line',paint:{'line-color':props.basemap?.line ?? 'rgba(238,244,248,.55)','line-width':1}}},
+        {id:'territory-selected',sourceId:'territory',spec:{type:'line',filter:['==',['get','__atlasLabel'],props.selectedLabel || '__none__'],paint:{'line-color':props.basemap?.highlight ?? '#fff','line-width':3}}}
       ]});
-      map.fitBounds(bounds, { padding: window.innerWidth < 760 ? { top: 90, right: 20, bottom: Math.min(260, window.innerHeight * .38), left: 20 } : 48, duration: 0 });
+      engine.setFilter('territory-selected',['==',['get','__atlasLabel'],liveProps.current.selectedLabel || '__none__']);
+      for(const id of ['territory-fill','territory-line','territory-selected'])engine.setVisibility(id,liveProps.current.showTerritory !== false);
+      engine.fitBounds(bounds, { padding: window.innerWidth < 760 ? { top: 90, right: 20, bottom: Math.min(260, window.innerHeight * .38), left: 20 } : 48, duration: 0 });
 
       map.on('click', 'territory-fill', event => {
         const feature = event.features?.[0]; if (!feature) return;
@@ -116,7 +123,7 @@ export function AtlasMap(props: Props) {
     });
 
     return () => { map.remove(); mapRef.current = null; engineRef.current=null; };
-  }, [props.geometry, props.dataset, props.geometryLabelField, props.datasetField, props.metricField, props.metricLabel, props.prototype, props.onSelect]);
+  }, [props.geometry, props.dataset, props.geometryLabelField, props.datasetField, props.metricField, props.metricLabel, props.prototype, props.onSelect, props.basemap]);
 
   useEffect(() => {
     setSelectedLabel(props.selectedLabel);
@@ -124,9 +131,11 @@ export function AtlasMap(props: Props) {
     if (map?.getLayer('territory-selected')) engineRef.current?.setFilter('territory-selected', ['==', ['get', '__atlasLabel'], props.selectedLabel]);
   }, [props.selectedLabel]);
 
+  useEffect(()=>{const engine=engineRef.current;if(engine?.hasLayer('territory-fill'))for(const id of ['territory-fill','territory-line','territory-selected'])engine.setVisibility(id,props.showTerritory !== false);},[props.showTerritory]);
+
   return <><div className="atlas-map" ref={host} aria-label="Mapa territorial exploratório" />
     {mapError && <p className="map-unavailable" role="status">O mapa não está disponível neste navegador. Os dados municipais e a seleção territorial continuam acessíveis.</p>}
-    <div className="territory-selector"><label htmlFor="territory-selection">Selecionar território</label>
+    <div className="territory-selector"><button disabled={mapError} onClick={()=>engineRef.current?.fitBounds(boundsFor(props.geometry),{padding:window.innerWidth < 760 ? {top:90,right:20,bottom:Math.min(260,window.innerHeight*.38),left:20}:48,duration:0})}>Redefinir enquadramento do mapa</button>{props.prototype && <small>Sem dados territoriais auditados</small>}<label htmlFor="territory-selection">Selecionar território</label>
       <select id="territory-selection" value={selectedLabel} onChange={event => {
         const label = event.target.value;
         setSelectedLabel(label);

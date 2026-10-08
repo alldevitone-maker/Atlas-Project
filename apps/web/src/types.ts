@@ -2,6 +2,9 @@ export type DatasetStatus = 'draft' | 'provisional' | 'totalized' | 'official';
 
 export interface DatasetRef {
   revision?: string;
+  measureKind?: string;
+  candidateCatalogSourceUri?: string;
+  candidateCatalogChecksum?: string;
   id: string;
   labelKey: string;
   periodId: string;
@@ -19,6 +22,7 @@ export interface WebRegistry {
   revisions?: DatasetRef[];
   defaultDatasetId: string;
   comparisonPolicyId: string;
+  basemaps?:{id:string;labelKey:string;background:string;fill:string;line:string;highlight:string}[];
   metrics?: {id:string;labelKey:string;expression:import('../../../packages/contracts/src/index').MetricExpression;format:'integer' | 'percent'}[];
   metric: { id: string; labelKey: string; rowField: string; format: 'integer' | 'percent' };
   join: { strategy: string; datasetField: string; prototype: boolean };

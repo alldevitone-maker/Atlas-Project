@@ -47,6 +47,30 @@
       "sourceCoveragePct": 0.0,
       "joinStrategy": "normalized-exact-label",
       "prototype": true
+    },
+    {
+      "datasetId": "elections-presidential-2022-r1-bu",
+      "revision": "bu-b96488de00f0",
+      "status": "provisional",
+      "geometryFeatures": 37,
+      "sourceRows": 355,
+      "matchedLabels": 0,
+      "geometryCoveragePct": 0.0,
+      "sourceCoveragePct": 0.0,
+      "joinStrategy": "normalized-exact-label",
+      "prototype": true
+    },
+    {
+      "datasetId": "elections-presidential-2022-r2-bu",
+      "revision": "bu-250b633bdcf3",
+      "status": "provisional",
+      "geometryFeatures": 37,
+      "sourceRows": 355,
+      "matchedLabels": 0,
+      "geometryCoveragePct": 0.0,
+      "sourceCoveragePct": 0.0,
+      "joinStrategy": "normalized-exact-label",
+      "prototype": true
     }
   ]
 }

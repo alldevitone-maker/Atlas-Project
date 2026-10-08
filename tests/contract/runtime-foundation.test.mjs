@@ -93,3 +93,20 @@ test('loader rejects altered bytes before parsing', async () => {
 test('immutable revision cannot be reused with different bytes',()=>{
  assert.throws(()=>new Registry({datasets:[descriptor,{...descriptor,checksum:'b'.repeat(64)}]}),/dataset-revision-collision/);
 });
+
+test('layer visibility and view reset remain domain independent',()=>{
+ const calls=[];const engine=new MapEngine({addSource(){},addLayer(){},setLayoutProperty:(...args)=>calls.push(args),fitBounds:(...args)=>calls.push(args)});
+ engine.mountSource({id:'s',spec:{}});engine.mountLayer({id:'l',sourceId:'s',spec:{type:'fill'}});
+ engine.setVisibility('l',false);engine.setVisibility('l',true);engine.fitBounds([[0,0],[1,1]],{padding:10});
+ assert.deepEqual(calls[0],['l','visibility','none']);assert.deepEqual(calls[1],['l','visibility','visible']);assert.equal(calls.length,3);
+ assert.throws(()=>engine.setVisibility('absent',true),/layer-not-mounted/);
+});
+
+test('latest resolution honors timezone chronology and selected territory',()=>{
+ const earlier={...descriptor,id:'earlier',asOf:'2000-01-01T00:30:00+01:00'};
+ const later={...descriptor,id:'later',asOf:'1999-12-31T23:45:00Z'};
+ const elsewhere={...descriptor,id:'elsewhere',territoryId:'other',asOf:'2001-01-01T00:00:00Z'};
+ const registry=new Registry({datasets:[earlier,later,elsewhere]});
+ assert.equal(registry.resolveLatestDataset({moduleId:descriptor.moduleId,territoryId:descriptor.territoryId}).id,'later');
+ assert.throws(()=>new Registry({datasets:[{...descriptor,asOf:'not-a-date'}]}),/invalid-timestamp/);
+});

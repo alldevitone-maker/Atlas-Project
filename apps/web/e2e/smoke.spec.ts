@@ -129,12 +129,13 @@ test('theme and territorial selection survive a shared link',async({page})=>{
 test('verified BU retains source semantics and blocks incomparable legacy metric',async({page})=>{
  await page.goto('/?dataset=elections-presidential-2026-r1-bu');
  await expect(page.getByText('108.638')).toBeVisible();
- await expect(page.getByText('Votos nominais nos boletins',{exact:true})).toBeVisible();
+ await expect(page.locator('.summary-grid article').first()).toContainText('Votos nominais nos boletins');
  await page.getByText('Inspecionar seções da fonte').click();
  await page.getByLabel('Seção eleitoral').selectOption({index:1});
  await expect(page.getByText(/Local de votação:/)).toBeVisible();
  if(test.info().project.name.startsWith('mobile')) await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
  await page.getByRole('checkbox',{name:'Comparar municípios'}).check();
+ await page.getByLabel('Comparar com').selectOption('elections-presidential-2022-r1');
  await expect(page.locator('.comparison-panel')).toContainText('Métricas de origem distintas');
 });
 
@@ -166,7 +167,74 @@ test('a non-electoral module renders map, metric and immutable permalink through
  await expect(page.locator('.atlas-map')).toBeVisible();
  await page.getByLabel('Selecionar território').selectOption('Unidade B');
  await expect(page.getByText('Selecionado: Unidade B · Valor: 20')).toBeVisible();
+ const canvas=page.locator('.atlas-map canvas');const box=(await canvas.boundingBox())!;
+ const mobile=test.info().project.name.startsWith('mobile');
+ const position={x:box.width/2,y:box.height/2-(mobile?85:0)};
+ await page.getByLabel('Selecionar território').selectOption('Unidade A');
+ await expect.poll(async()=>{if(mobile)await canvas.tap({position});else await canvas.click({position});return page.locator('.bottom-sheet').innerText();}).toContain('Selecionado: Unidade B');
  await expect(page).toHaveURL(/revision=rev-001/);
  await page.reload();
  await expect(page.getByLabel('Selecionar território')).toHaveValue('Unidade B');
+});
+
+test('light-theme comparison preserves BU labels and passes accessibility scan',async({page})=>{
+ await page.goto('/?dataset=elections-presidential-2026-r1-bu&compare=elections-presidential-2022-r1&theme=light&panel=expanded');
+ await expect(page.locator('.comparison-panel')).toContainText('votos nominais nos boletins');
+ await expect(page.locator('.comparison-panel')).toContainText('Extração provisória');
+ const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
+ expect(axe.violations).toEqual([]);
+});
+
+test('provisional BU comparison remains blocked even when both metrics are nominal',async({page})=>{
+ await page.goto('/?dataset=elections-presidential-2026-r1-bu&compare=elections-presidential-2022-r1-bu&panel=expanded');
+ await expect(page.locator('.comparison-panel')).toContainText('Consolidação insuficiente');
+ await expect(page.locator('.comparison-panel')).toContainText('votos nominais nos boletins');
+ await expect(page.locator('.comparison-panel')).not.toContainText('+6.075');
+});
+
+test('neutral basemap and territorial layer controls preserve shared state',async({page})=>{
+ await page.goto('/');
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await page.getByLabel('Fundo do mapa').selectOption('neutral-light');
+ await page.getByLabel('Exibir malha exploratória').uncheck();
+ await expect(page).toHaveURL(/basemap=neutral-light/);await expect(page).toHaveURL(/layers=none/);
+ await page.reload();
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await expect(page.getByLabel('Fundo do mapa')).toHaveValue('neutral-light');await expect(page.getByLabel('Exibir malha exploratória')).not.toBeChecked();
+ await page.getByLabel('Exibir malha exploratória').check();
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await page.getByRole('button',{name:'Redefinir enquadramento do mapa'}).click();
+ await expect(page).toHaveURL(/layers=territory/);
+});
+
+test('selecting the current dataset exits an older pin for the same id',async({page})=>{
+ await page.route('**/registry.json',async route=>{
+  const response=await route.fetch();const registry=await response.json();
+  const ref=registry.datasets.find((item:any)=>item.id==='elections-presidential-2026-r1');
+  registry.revisions.push({...ref,revision:'historical-test',descriptorUri:'./data/historical-test.dataset.json'});
+  await route.fulfill({json:registry});
+ });
+ await page.route('**/data/historical-test.dataset.json',async route=>{
+  const response=await page.request.get('/data/presidential-2026-r1.dataset.json');const descriptor=await response.json();
+  await route.fulfill({json:{...descriptor,revision:'historical-test',publishedAt:'2000-01-01T00:00:00Z'}});
+ });
+ await page.goto('/?dataset=elections-presidential-2026-r1&revision=historical-test');
+ await expect(page.getByText('108.628')).toBeVisible();await expect(page).toHaveURL(/revision=historical-test/);
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await page.locator('.period-list button.active').click();
+ await expect(page).toHaveURL(/revision=legacy-6f965e3f3c00/);
+});
+
+test('exploratory cartography retains its neutral visual baseline',async({page})=>{
+ await page.goto('/');
+ await page.getByLabel('Selecionar território').selectOption('Centro');
+ await page.getByRole('button',{name:'Redefinir enquadramento do mapa'}).click();
+ await expect(page.locator('.atlas-map canvas')).toHaveScreenshot('neutral-map.png',{animations:'disabled',maxDiffPixelRatio:.015,threshold:.2});
+});
+
+test('altered candidate catalog cannot replace source-backed candidate names',async({page})=>{
+ await page.route('**/data/presidential-2026-candidates.json',route=>route.fulfill({contentType:'application/json',body:'[{"id":"tampered","officialName":"Adulterated catalog","ballotNumber":"x"}]'}));
+ await page.goto('/');
+ await expect(page.getByText(/dataset-checksum-mismatch/)).toBeVisible();
+ await expect(page.getByText('Adulterated catalog')).toHaveCount(0);
 });

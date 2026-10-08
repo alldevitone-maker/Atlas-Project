@@ -8,7 +8,7 @@ import { readSelection, writeSelection } from './lib/url';
 import type { Candidate, DatasetDescriptor, ElectionDataset, WebRegistry } from './types';
 import { evaluateExpression } from '../../../packages/metrics/src/index';
 import './styles.css';
-import { loadElection, descriptorSchema, electionSchema } from './lib/validated-data';
+import { loadElection, descriptorSchema, electionSchema, webRegistrySchema, candidateCatalogSchema } from './lib/validated-data';
 import { extractMunicipalMeasure } from './lib/comparison';
 import { AtlasRuntime } from '../../../packages/runtime/src/index';
 import { Registry } from '../../../packages/registry/src/index';
@@ -25,6 +25,7 @@ async function json<T>(uri: string): Promise<T> {
 
 export default function App() {
   // Pin checks apply to the incoming deep link, never to a subsequent user selection.
+  const [pinEpoch,setPinEpoch] = useState(0);
   const initialPin = useRef({
     dataset: new URLSearchParams(location.search).get('dataset'),
     revision: new URLSearchParams(location.search).get('revision')
@@ -47,23 +48,25 @@ export default function App() {
   const [comparisonError, setComparisonError] = useState<string | null>(null);
   const [comparisonPolicy, setComparisonPolicy] = useState<MunicipalComparisonPolicy | null>(null);
   const [sheetExpanded, setSheetExpanded] = useState(() => new URLSearchParams(location.search).get('panel') === 'expanded');
+  const [selectedBasemap,setSelectedBasemap] = useState(()=>new URLSearchParams(location.search).get('basemap') || 'neutral-dark');
+  const [showTerritory,setShowTerritory] = useState(()=>new URLSearchParams(location.search).get('layers') !== 'none');
   const [selectedMetric,setSelectedMetric] = useState(() => new URLSearchParams(location.search).get('metric') || 'valid-votes');
   const [candidateFilter,setCandidateFilter] = useState(() => new URLSearchParams(location.search).get('candidate') || '');
   const [theme, setTheme] = useState(() => new URLSearchParams(location.search).get('theme') === 'light' ? 'light' : 'dark');
   const initialFeature = useRef(new URLSearchParams(location.search).get('feature'));
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    const params = new URLSearchParams(location.search); params.set('theme', theme); params.set('panel',sheetExpanded ? 'expanded' : 'collapsed'); params.set('metric',selectedMetric);
+    const params = new URLSearchParams(location.search); params.set('theme', theme); params.set('panel',sheetExpanded ? 'expanded' : 'collapsed'); params.set('metric',selectedMetric); params.set('basemap',selectedBasemap);params.set('layers',showTerritory ? 'territory' : 'none');
     if(candidateFilter)params.set('candidate',candidateFilter);else params.delete('candidate');
     history.replaceState(null,'',`${location.pathname}?${params}${location.hash}`);
-  }, [theme, sheetExpanded, selectedMetric, candidateFilter]);
+  }, [theme, sheetExpanded, selectedMetric, candidateFilter, selectedBasemap, showTerritory]);
   const [error, setError] = useState<string | null>(null);
   const [revisionUnavailable, setRevisionUnavailable] = useState(false);
 
   useEffect(() => {
     void (async () => {
       try {
-        const nextRegistry = await json<WebRegistry>('./registry.json');
+        const nextRegistry = webRegistrySchema.parse(await json<unknown>('./registry.json'));
         const descriptors = await Promise.all([...nextRegistry.datasets,...(nextRegistry.revisions ?? [])].map(async ref => ({...descriptorSchema.parse(await json<unknown>(ref.descriptorUri)), uri:ref.dataUri})));
         const nextRuntime = new AtlasRuntime({registry:new Registry({datasets:descriptors})});
         nextRuntime.hydrateFromSearch(location.search);
@@ -73,6 +76,8 @@ export default function App() {
         const policies = await json<MunicipalComparisonPolicy[]>('./comparison-policies.json');
         setComparisonPolicy(policies.find(item => item.id === nextRegistry.comparisonPolicyId) ?? null);
         setRegistry(nextRegistry); setCatalog(nextCatalog); setGeometry(nextGeometry);
+        setSelectedMetric(value=>nextRegistry.metrics?.some(item=>item.id===value) ? value : nextRegistry.metric.id);
+        setSelectedBasemap(value=>nextRegistry.basemaps?.some(item=>item.id===value) ? value : nextRegistry.basemaps?.[0]?.id ?? 'neutral-dark');
         const requested = readSelection(nextRegistry.defaultDatasetId);
         setSelectedDatasetId(nextRegistry.datasets.some(item => item.id === requested) ? requested : nextRegistry.defaultDatasetId);
       } catch (cause) { setError(String(cause)); }
@@ -82,13 +87,13 @@ export default function App() {
   const activeRef = useMemo(() => {
     const pin=initialPin.current;
     return (pin.dataset === selectedDatasetId && pin.revision ? registry?.revisions?.find(item=>item.id===selectedDatasetId && item.revision===pin.revision) : null) ?? registry?.datasets.find(item=>item.id===selectedDatasetId) ?? null;
-  }, [registry,selectedDatasetId]);
+  }, [registry,selectedDatasetId,pinEpoch]);
   const comparisonOptions = useMemo(
     () => registry?.datasets.filter(item => item.id !== selectedDatasetId && item.roundId === activeRef?.roundId && item.periodId !== activeRef?.periodId) ?? [],
     [registry, activeRef, selectedDatasetId]
   );
   const resolvedComparisonId = comparisonOptions.some(item => item.id === comparisonDatasetId)
-    ? comparisonDatasetId : comparisonOptions[0]?.id ?? '';
+    ? comparisonDatasetId : comparisonOptions.find(item=>item.measureKind === activeRef?.measureKind)?.id ?? comparisonOptions[0]?.id ?? '';
   const comparisonRef = registry?.datasets.find(item => item.id === resolvedComparisonId) ?? null;
 
   useEffect(() => {
@@ -100,7 +105,7 @@ export default function App() {
         const nextDescriptor = runtime.registry.getDataset(activeRef.id, activeRef.revision)!;
         runtime.store.set({dataset:nextDescriptor.id, revision:nextDescriptor.revision});
         const nextDataset = electionSchema.parse(await runtime.loadResolved());
-        const nextCandidates = activeRef.candidateCatalogUri ? await json<Candidate[]>(activeRef.candidateCatalogUri) : [];
+        const nextCandidates = activeRef.candidateCatalogUri ? candidateCatalogSchema.parse(await runtime.loader.load({...nextDescriptor,uri:activeRef.candidateCatalogUri,checksum:activeRef.candidateCatalogChecksum!})) : [];
         if (!live) return;
         setDescriptor(nextDescriptor); setDataset(nextDataset); setCandidates(nextCandidates);
         if (initialFeature.current) {
@@ -145,8 +150,11 @@ export default function App() {
   }, []);
 
   const candidateRows = useMemo(() => dataset ? municipalCandidates(dataset,candidates) : [], [dataset,candidates]);
+  const basemap=registry?.basemaps?.find(item=>item.id===selectedBasemap) ?? registry?.basemaps?.[0];
   const metric = registry?.metrics?.find(item=>item.id === selectedMetric) ?? registry?.metrics?.[0];
   const primary = dataset && metric ? evaluateExpression(metric.expression,{...dataset.summary,validVotes:dataset.summary.validVotes ?? dataset.summary.valid,blankVotes:dataset.summary.blankVotes ?? dataset.summary.blank,eligible:dataset.summary.eligible ?? dataset.summary.apt}) : null;
+  useEffect(()=>{if(dataset && candidateFilter && !candidateRows.some(item=>item.id===candidateFilter))setCandidateFilter('');},[dataset,candidateRows,candidateFilter]);
+  useEffect(()=>{if(runtime)runtime.store.set({theme,metric:selectedMetric,candidate:candidateFilter,feature:selection?.label ?? '',basemap:selectedBasemap,layers:showTerritory ? 'territory' : 'none',panel:sheetExpanded ? 'expanded' : 'collapsed',compare:comparisonEnabled ? resolvedComparisonId : ''});},[runtime,theme,selectedMetric,candidateFilter,selection?.label,selectedBasemap,showTerritory,sheetExpanded,comparisonEnabled,resolvedComparisonId]);
   const measures = dataset ? extractMunicipalMeasure(dataset) : null;
   const summaryCount = (key: string) => typeof dataset?.summary[key] === 'number' ? number.format(dataset.summary[key] as number) : '—';
 
@@ -170,15 +178,17 @@ export default function App() {
       <nav className="period-list" aria-label={t('nav.periods')}>
         {registry.datasets.map(item => <button key={item.id} className={item.id === selectedDatasetId ? 'active' : ''} onClick={() => {
           initialPin.current = { dataset: null, revision: null };
+          setPinEpoch(value=>value+1);
           setRevisionUnavailable(false);
           setSelectedDatasetId(item.id);
+          setCandidateFilter('');
           const params = new URLSearchParams(location.search); params.delete('feature'); history.replaceState(null,'',`${location.pathname}?${params}${location.hash}`);
           if (window.innerWidth <= 800) setSidebarOpen(false);
         }}>
           <span>{t(item.labelKey)}</span><small>{item.roundId ? t('period.round',{round:item.roundId}) : ''}</small>
         </button>)}
       </nav>
-      <div className="analysis-controls"><label htmlFor="metric-choice">Selecionar métrica municipal</label><select id="metric-choice" value={metric?.id ?? selectedMetric} onChange={event=>setSelectedMetric(event.target.value)}>{registry.metrics?.map(item=><option key={item.id} value={item.id}>{t(item.labelKey)}</option>)}</select><label htmlFor="candidate-choice">Filtrar candidato</label><select id="candidate-choice" value={candidateFilter} onChange={event=>setCandidateFilter(event.target.value)}><option value="">Todos os candidatos</option>{candidateRows.map(candidate=><option key={candidate.id} value={candidate.id}>{candidate.officialName || `Número de urna ${candidate.ballotNumber} (nome não catalogado)`}</option>)}</select><button onClick={()=>{handleSelect({label:'',value:null});setCandidateFilter('');setSelectedMetric(registry.metric.id);}}>Limpar filtros e seleção</button></div>
+      <div className="analysis-controls"><label htmlFor="basemap-choice">Fundo do mapa</label><select id="basemap-choice" value={basemap?.id ?? selectedBasemap} onChange={event=>setSelectedBasemap(event.target.value)}>{registry.basemaps?.map(item=><option key={item.id} value={item.id}>{t(item.labelKey)}</option>)}</select><label><input type="checkbox" checked={showTerritory} onChange={event=>setShowTerritory(event.target.checked)}/> Exibir malha exploratória</label><label htmlFor="metric-choice">Selecionar métrica municipal</label><select id="metric-choice" value={metric?.id ?? selectedMetric} onChange={event=>setSelectedMetric(event.target.value)}>{registry.metrics?.map(item=><option key={item.id} value={item.id}>{dataset?.validVotesMeaning === 'nominal-bu' && item.id === 'valid-votes' ? 'Votos nominais nos boletins' : t(item.labelKey)}</option>)}</select><label htmlFor="candidate-choice">Filtrar candidato</label><select id="candidate-choice" value={candidateFilter} onChange={event=>setCandidateFilter(event.target.value)}><option value="">Todos os candidatos</option>{candidateRows.map(candidate=><option key={candidate.id} value={candidate.id}>{candidate.officialName || `Número de urna ${candidate.ballotNumber} (nome não catalogado)`}</option>)}</select><button onClick={()=>{handleSelect({label:'',value:null});setCandidateFilter('');setSelectedMetric(registry.metric.id);}}>Limpar filtros e seleção</button></div>
       <div className="comparison-controls">
         <label className="comparison-toggle">
           <input type="checkbox" checked={comparisonEnabled}
@@ -199,7 +209,7 @@ export default function App() {
       {descriptor && <section className="provenance">
         <span className="eyebrow">{t('data.provenance')}</span>
         <a href={descriptor.provenance.sourceUrl} target="_blank" rel="noreferrer">{descriptor.provenance.sourceId}</a>
-        <span>Estado da fonte: {descriptor.sourceStatus ?? 'não declarado'} · derivação: {descriptor.derivedStatus ?? descriptor.status}</span><span>Licença: {descriptor.provenance.license ?? 'não informada na fonte capturada'}</span><a href={descriptor.provenance.methodDoc?.startsWith('https://') ? descriptor.provenance.methodDoc : 'https://github.com/alldevitone-maker/Atlas-Project/blob/main/docs/methodology.md'} target="_blank" rel="noreferrer">Metodologia</a><span>Origem: {descriptor.sourceGrain}</span><span>Unidade: {descriptor.analysisUnit}</span>
+        <span>Estado da fonte: {descriptor.sourceStatus ?? 'não declarado'} · derivação: {descriptor.derivedStatus ?? descriptor.status}</span><span>Licença: {descriptor.provenance.license ?? 'não informada na fonte capturada'}</span><a href={descriptor.provenance.methodDoc?.startsWith('https://') ? descriptor.provenance.methodDoc : 'https://github.com/alldevitone-maker/Atlas-Project/blob/main/docs/methodology.md'} target="_blank" rel="noreferrer">Metodologia</a>{activeRef?.candidateCatalogSourceUri && <a href={activeRef.candidateCatalogSourceUri} target="_blank" rel="noreferrer">Fonte independente do catálogo de candidatos</a>}<span>Origem: {descriptor.sourceGrain}</span><span>Unidade: {descriptor.analysisUnit}</span>
         <span>Cobertura declarada da extração, não cobertura espacial auditada.</span>
         {descriptor.quality.notes.map(note => <span key={note}>{note}</span>)}
         <span>{t('data.revision',{revision:descriptor.revision})}</span>
@@ -208,7 +218,7 @@ export default function App() {
     </aside>
 
     <section className="map-stage">
-      {dataset && <Suspense fallback={<p role="status">Carregando mapa…</p>}><AtlasMap geometry={geometry} geometryLabelField={registry.territory.geometryLabelField} dataset={dataset} datasetField={registry.join.datasetField} metricField={registry.metric.rowField} prototype={registry.join.prototype} metricLabel={t(registry.metric.labelKey)} selectedLabel={selection?.label ?? ''} onSelect={handleSelect} /></Suspense>}
+      {dataset && <Suspense fallback={<p role="status">Carregando mapa…</p>}><AtlasMap geometry={geometry} geometryLabelField={registry.territory.geometryLabelField} dataset={dataset} datasetField={registry.join.datasetField} metricField={registry.metric.rowField} prototype={registry.join.prototype} metricLabel={t(registry.metric.labelKey)} showTerritory={showTerritory} basemap={basemap} selectedLabel={selection?.label ?? ''} onSelect={handleSelect} /></Suspense>}
       {registry.join.prototype && <div className="method-badge">{t('method.prototype')} Malha exploratória, sem coloração eleitoral: associação espacial não auditada.</div>}
     </section>
 
@@ -218,6 +228,7 @@ export default function App() {
         A revisão fixa solicitada não está disponível neste build. Exibimos apenas a revisão carregada.
         <button onClick={() => {
           initialPin.current = { dataset: null, revision: null };
+          setPinEpoch(value=>value+1);
           setRevisionUnavailable(false);
         }}>Usar revisão disponível</button>
       </p>}
@@ -225,7 +236,7 @@ export default function App() {
       {comparisonEnabled && !comparisonRef && <p role="status" className="comparison-blocked-message">Não há outro período do mesmo turno disponível para a comparação.</p>}
       {comparisonEnabled && comparisonRef && !comparisonData && !comparisonError && <p>Carregando comparação…</p>}
       {comparisonEnabled && comparisonRef && !revisionUnavailable && comparisonData && comparisonDescriptor && dataset && descriptor && activeRef &&
-        <ComparisonPanel policy={comparisonPolicy}
+        <ComparisonPanel territoryLabel={t(registry.territory.labelKey)} policy={comparisonPolicy}
           baseline={{descriptor: comparisonDescriptor, data: comparisonData, label: t(comparisonRef!.labelKey) + ' · ' + comparisonRef!.roundId + 'º turno'}}
           current={{descriptor, data: dataset, label: t(activeRef.labelKey) + ' · ' + activeRef.roundId + 'º turno'}} />}
       <div className="summary-grid">
@@ -234,7 +245,7 @@ export default function App() {
         <article><span>{t('metric.abstention')}</span><strong>{measures ? percent.format(measures.abstentionRate / 100) : '—'}</strong></article>
         <article><span>{t('selection.title')}</span><strong>{selection?.label ?? t('selection.none')}</strong><small>{selection?.value == null ? '' : number.format(selection.value)}</small></article>
       </div>
-      <p className="semantics">Brancos: {summaryCount('blankVotes')} · Nulos: {summaryCount('nullVotes')} · Aptos: {summaryCount('eligible')} · Comparecimento: {summaryCount('turnout')}. Percentuais dos candidatos usam votos válidos como denominador.</p>
+      <p className="semantics">Brancos: {summaryCount('blankVotes')} · Nulos: {summaryCount('nullVotes')} · Aptos: {summaryCount('eligible')} · Comparecimento: {summaryCount('turnout')}. Percentuais dos candidatos usam {dataset?.validVotesMeaning === 'nominal-bu' ? 'votos nominais nos boletins' : 'votos válidos'} como denominador.</p>
       {candidateRows.length > 0 && <div className="candidate-list">
         {candidateRows.filter(candidate=>!candidateFilter || candidate.id===candidateFilter).map(candidate => <div className="candidate-row" key={candidate.id}>
           <div><strong>{candidate.officialName || `Número de urna ${candidate.ballotNumber} (nome não catalogado)`}</strong><span>{candidate.ballotNumber}</span></div>

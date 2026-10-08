@@ -18,3 +18,9 @@ test('municipal candidate adapter preserves ballot identifiers when catalog is a
  assert.equal(results[0].ballotNumber,'a');assert.equal(results[0].officialName,'');assert.equal(results[0].share,.75);
  assert.equal(municipalCandidates({rows:[{candidateVotes:{a:0}}],summary:{validVotes:0}},[])[0].share,null);
 });
+
+test('partial candidate catalog never hides recorded votes',async()=>{
+ const {municipalCandidates}=await import('../../dist/packages/domain-elections/src/index.js');
+ const results=municipalCandidates({rows:[{candidateVotes:{a:3,b:1}}],summary:{validVotes:4}},[{id:'catalog-a',officialName:'Fixture',ballotNumber:'a'}]);
+ assert.equal(results.length,2);assert.equal(results[1].ballotNumber,'b');assert.equal(results[1].officialName,'');assert.equal(results[1].votes,1);
+});

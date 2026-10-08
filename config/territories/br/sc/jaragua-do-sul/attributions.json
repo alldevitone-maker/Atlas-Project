@@ -22,5 +22,13 @@
     "license": null,
     "licenseUrl": null,
     "required": true
+  },
+  {
+    "id": "legacy-preview-geometry",
+    "label": "Malha derivada do legado, sem validação espacial ou licença confirmada",
+    "url": "https://github.com/alldevitone-maker/Atlas-Project/blob/main/data/territories/br/sc/jaragua-do-sul/geography/neighborhoods.preview.geojson",
+    "license": null,
+    "licenseUrl": null,
+    "required": true
   }
 ]

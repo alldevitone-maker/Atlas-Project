@@ -14,7 +14,8 @@ export class Registry {
   } = {}) {
     for (const item of input.modules ?? []) this.modules.set(item.id, item);
     for (const item of input.datasets ?? []) {
-      const key = `${item.id}@${item.revision}`;
+      if (!Number.isFinite(Date.parse(item.asOf)) || !Number.isFinite(Date.parse(item.publishedAt))) throw new Error('dataset-invalid-timestamp');
+      const key = JSON.stringify([item.id,item.revision]);
       const previous = this.datasets.get(key);
       if (previous && previous.checksum !== item.checksum) throw new Error(`dataset-revision-collision:${key}`);
       if (!previous) this.datasets.set(key, item);
@@ -25,13 +26,13 @@ export class Registry {
 
   getModule(id: string): AtlasModule | undefined { return this.modules.get(id); }
   getDataset(id: string, revision?: string): DatasetDescriptor | undefined {
-    if (revision) return this.datasets.get(`${id}@${revision}`);
+    if (revision) return this.datasets.get(JSON.stringify([id,revision]));
     return this.listRevisions(id)[0];
   }
 
   listRevisions(id: string): DatasetDescriptor[] {
     return [...this.datasets.values()].filter(item => item.id === id)
-      .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.revision.localeCompare(a.revision));
+      .sort((a, b) => Date.parse(b.publishedAt)-Date.parse(a.publishedAt) || b.revision.localeCompare(a.revision));
   }
   getMetric(id: string): MetricDefinition | undefined { return this.metrics.get(id); }
   getPolicy(id: string): ComparisonPolicy | undefined { return this.policies.get(id); }
@@ -48,7 +49,7 @@ export class Registry {
       (query.periodId == null || dataset.periodId === query.periodId) &&
       (query.roundId === undefined || dataset.roundId === query.roundId)
     );
-    candidates.sort((a, b) => b.asOf.localeCompare(a.asOf) || b.publishedAt.localeCompare(a.publishedAt));
+    candidates.sort((a, b) => Date.parse(b.asOf)-Date.parse(a.asOf) || Date.parse(b.publishedAt)-Date.parse(a.publishedAt));
     return candidates[0];
   }
 }

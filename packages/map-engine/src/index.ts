@@ -6,6 +6,7 @@ export interface MapPort {
   addLayer(layer: Record<string, unknown>, beforeId?: string): void;
   removeLayer?(id: string): void;
   setFilter?(layerId: string, filter: unknown): void;
+  setLayoutProperty?(layerId:string,property:string,value:unknown):void;
   setPaintProperty?(layerId: string, property: string, value: unknown): void;
   setFeatureState?(target: { source: string; id: string | number }, state: Record<string, unknown>): void;
   fitBounds?(bounds: [[number, number], [number, number]], options?: Record<string, unknown>): void;
@@ -46,6 +47,15 @@ export class MapEngine {
   setFilter(layerId: string, filter: unknown): void {
     if (!this.layerIds.has(layerId)) throw new Error(`layer-not-mounted:${layerId}`);
     this.map.setFilter?.(layerId, filter);
+  }
+
+  setVisibility(layerId:string,visible:boolean):void {
+    if(!this.layerIds.has(layerId))throw new Error(`layer-not-mounted:${layerId}`);
+    this.map.setLayoutProperty?.(layerId,'visibility',visible ? 'visible' : 'none');
+  }
+
+  fitBounds(bounds:[[number,number],[number,number]],options?:Record<string,unknown>):void {
+    this.map.fitBounds?.(bounds,options);
   }
 
   setPaint(layerId: string, property: string, value: unknown): void {

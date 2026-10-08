@@ -10,11 +10,14 @@
       "Integrate core runtime, metrics, map, interaction, router and i18n with web",
       "Add municipal filters, section inspector, explicit denominators and accessible themes",
       "Add descriptor/runtime integrity, crosswalk evidence, AST guard and release budgets",
-      "Gate Pages on foundation and Chromium/WebKit desktop-mobile tests"
+      "Gate Pages on foundation and Chromium/WebKit desktop-mobile tests",
+      "Capture both 2022 rounds and verify catalogue checksums separately from legacy votes",
+      "Add AtlasStore, map layer/basemap controls, pointer/tap and visual regression",
+      "Preserve pinned revisions when selecting current dataset and label provisional nominal comparisons"
     ],
     "limitations": [
       "No audited neighborhood results or final official-result seal",
-      "2022 independent raw capture and geospatial validation remain pending"
+      "Geospatial validation, permanent full-state archives, field performance and rollback drill remain pending"
     ]
   },
   {

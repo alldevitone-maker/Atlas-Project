@@ -23,7 +23,23 @@ O recorte CSV de presidência municipal e seu manifesto são preservados em `dat
 Reprodução a partir do ZIP integral:
 
 ```sh
-python pipelines/elections/ingest_verified_bu.py --archive /caminho/bweb_1t_SC_051020261403.zip --snapshot data/snapshots/tse/2026-sc-r1.json --output /tmp/atlas-derived --capture /tmp/atlas-source.csv
+python pipelines/elections/ingest_verified_bu.py --archive /caminho/bweb_1t_SC_051020261403.zip --snapshot data/snapshots/tse/2026-sc-r1.json --output /tmp/atlas-derived --capture /tmp/atlas-source.csv.gz
 ```
 
 O pipeline confere os dois hashes antes de derivar, e rejeita alteração de conteúdo em um caminho de revisão já existente. O mapa exploratório permanece neutro: não existe crosswalk espacial aprovado.
+
+## Capturas de 2022
+
+O [workflow de captura 37846922081](https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37846922081) baixou os arquivos diretamente das URLs TSE registradas nos manifests. O artefato 11579274186 e os snapshots documentam a captura. SHA-256 e SHA-512 foram recalculados na extração e comparados ao snapshot. **Não foi confirmado digest publicado independentemente pelo TSE para esses arquivos de 2022**; a proveniência registra `captured-no-published-digest`.
+
+| Turno | Revisão | Seções | Aptos | Comparecimento | Nominais | Brancos | Nulos |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 1 | bu-b96488de00f0 | 355 | 122.958 | 105.810 | 102.563 | 1.426 | 1.821 |
+| 2 | bu-250b633bdcf3 | 355 | 122.929 | 107.048 | 104.007 | 1.164 | 1.877 |
+
+Os totais municipais coincidem com o legado. Isso não valida as distribuições legadas por bairro. Os catálogos de 11 e 2 candidatos são extraídos dos boletins, vinculados à eleição/turno correspondente e possuem checksum próprio; associar o catálogo ao legado não muda a proveniência dos votos. Ambos os datasets BU são provisórios, com semântica nominal e comparações bloqueadas até evidência compatível.
+
+- ZIP turno 1: SHA-256 `4f406b87fb763008c141e68d87e8bad74e8d8175ca5c9080953d2e495e1129ab`.
+- ZIP turno 2: SHA-256 `cf67057ad095817a1c4bb30ef1cb9349bd0843a5f6bfd29a26aa21ee7c719c16`.
+
+Recortes reproduzíveis: `data/raw/tse/2022-sc-r1-81752-president.csv.gz` e `2022-sc-r2-81752-president.csv.gz`, com manifests adjacentes. A reprodução usa o mesmo comando acima, substituindo arquivo e snapshot pelo turno de 2022. Os ZIPs integrais permanecem no artefato temporário; os recortes municipais e seus hashes são preservados no Git.

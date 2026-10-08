@@ -23,7 +23,9 @@
       "roundId": "1",
       "descriptorUri": "./data/presidential-2022-r1.dataset.json",
       "dataUri": "./data/presidential-2022-r1.json",
-      "candidateCatalogUri": null
+      "candidateCatalogUri": "./data/presidential-2022-r1-bu-b96488de00f0.candidates.json",
+      "candidateCatalogSourceUri": "./data/presidential-2022-r1-bu-b96488de00f0.dataset.json",
+      "candidateCatalogChecksum": "023823a5df05fe3c799566984b0a809a7b133eaa0cdd152cb0d28bf5900ed743"
     },
     {
       "id": "elections-presidential-2022-r2",
@@ -32,7 +34,9 @@
       "roundId": "2",
       "descriptorUri": "./data/presidential-2022-r2.dataset.json",
       "dataUri": "./data/presidential-2022-r2.json",
-      "candidateCatalogUri": null
+      "candidateCatalogUri": "./data/presidential-2022-r2-bu-250b633bdcf3.candidates.json",
+      "candidateCatalogSourceUri": "./data/presidential-2022-r2-bu-250b633bdcf3.dataset.json",
+      "candidateCatalogChecksum": "2343353de8e4d831515ecb072937a6f6e14aedde782757b720a42a26a79125ca"
     },
     {
       "id": "elections-presidential-2026-r1",
@@ -41,7 +45,8 @@
       "roundId": "1",
       "descriptorUri": "./data/presidential-2026-r1.dataset.json",
       "dataUri": "./data/presidential-2026-r1.json",
-      "candidateCatalogUri": "./data/presidential-2026-candidates.json"
+      "candidateCatalogUri": "./data/presidential-2026-candidates.json",
+      "candidateCatalogChecksum": "29ece5795e11e7aed082a09a5f24833cbb951acfde4c62b3a032d8a4abf7ce3a"
     },
     {
       "id": "elections-presidential-2026-r1-bu",
@@ -50,7 +55,31 @@
       "roundId": "1",
       "descriptorUri": "./data/presidential-2026-r1-bu-7b347d87beb7.dataset.json",
       "dataUri": "./data/presidential-2026-r1-bu-7b347d87beb7.json",
-      "candidateCatalogUri": "./data/presidential-2026-r1-bu-7b347d87beb7.candidates.json"
+      "candidateCatalogUri": "./data/presidential-2026-r1-bu-7b347d87beb7.candidates.json",
+      "measureKind": "nominal-bu",
+      "candidateCatalogChecksum": "a150f3966f21dd70b763090dff84c86dfccf61d732dbc58ec9862eedbf80fe8a"
+    },
+    {
+      "id": "elections-presidential-2022-r1-bu",
+      "labelKey": "period.2022.bu",
+      "periodId": "2022",
+      "roundId": "1",
+      "descriptorUri": "./data/presidential-2022-r1-bu-b96488de00f0.dataset.json",
+      "dataUri": "./data/presidential-2022-r1-bu-b96488de00f0.json",
+      "candidateCatalogUri": "./data/presidential-2022-r1-bu-b96488de00f0.candidates.json",
+      "measureKind": "nominal-bu",
+      "candidateCatalogChecksum": "023823a5df05fe3c799566984b0a809a7b133eaa0cdd152cb0d28bf5900ed743"
+    },
+    {
+      "id": "elections-presidential-2022-r2-bu",
+      "labelKey": "period.2022.bu",
+      "periodId": "2022",
+      "roundId": "2",
+      "descriptorUri": "./data/presidential-2022-r2-bu-250b633bdcf3.dataset.json",
+      "dataUri": "./data/presidential-2022-r2-bu-250b633bdcf3.json",
+      "candidateCatalogUri": "./data/presidential-2022-r2-bu-250b633bdcf3.candidates.json",
+      "measureKind": "nominal-bu",
+      "candidateCatalogChecksum": "2343353de8e4d831515ecb072937a6f6e14aedde782757b720a42a26a79125ca"
     }
   ],
   "defaultDatasetId": "elections-presidential-2026-r1",
@@ -74,8 +103,10 @@
       "roundId": "1",
       "descriptorUri": "./data/revisions/elections-presidential-2022-r1-legacy-1b7f4f116ed7.dataset.json",
       "dataUri": "./data/revisions/elections-presidential-2022-r1-legacy-1b7f4f116ed7.json",
-      "candidateCatalogUri": null,
-      "revision": "legacy-1b7f4f116ed7"
+      "candidateCatalogUri": "./data/presidential-2022-r1-bu-b96488de00f0.candidates.json",
+      "revision": "legacy-1b7f4f116ed7",
+      "candidateCatalogSourceUri": "./data/presidential-2022-r1-bu-b96488de00f0.dataset.json",
+      "candidateCatalogChecksum": "023823a5df05fe3c799566984b0a809a7b133eaa0cdd152cb0d28bf5900ed743"
     },
     {
       "id": "elections-presidential-2022-r2",
@@ -84,8 +115,10 @@
       "roundId": "2",
       "descriptorUri": "./data/revisions/elections-presidential-2022-r2-legacy-e45a9bef90a5.dataset.json",
       "dataUri": "./data/revisions/elections-presidential-2022-r2-legacy-e45a9bef90a5.json",
-      "candidateCatalogUri": null,
-      "revision": "legacy-e45a9bef90a5"
+      "candidateCatalogUri": "./data/presidential-2022-r2-bu-250b633bdcf3.candidates.json",
+      "revision": "legacy-e45a9bef90a5",
+      "candidateCatalogSourceUri": "./data/presidential-2022-r2-bu-250b633bdcf3.dataset.json",
+      "candidateCatalogChecksum": "2343353de8e4d831515ecb072937a6f6e14aedde782757b720a42a26a79125ca"
     },
     {
       "id": "elections-presidential-2026-r1",
@@ -95,7 +128,8 @@
       "descriptorUri": "./data/revisions/elections-presidential-2026-r1-legacy-6f965e3f3c00.dataset.json",
       "dataUri": "./data/revisions/elections-presidential-2026-r1-legacy-6f965e3f3c00.json",
       "candidateCatalogUri": "./data/presidential-2026-candidates.json",
-      "revision": "legacy-6f965e3f3c00"
+      "revision": "legacy-6f965e3f3c00",
+      "candidateCatalogChecksum": "29ece5795e11e7aed082a09a5f24833cbb951acfde4c62b3a032d8a4abf7ce3a"
     },
     {
       "id": "elections-presidential-2026-r1-bu",
@@ -105,7 +139,33 @@
       "descriptorUri": "./data/revisions/elections-presidential-2026-r1-bu-bu-7b347d87beb7.dataset.json",
       "dataUri": "./data/revisions/elections-presidential-2026-r1-bu-bu-7b347d87beb7.json",
       "candidateCatalogUri": "./data/presidential-2026-r1-bu-7b347d87beb7.candidates.json",
-      "revision": "bu-7b347d87beb7"
+      "revision": "bu-7b347d87beb7",
+      "measureKind": "nominal-bu",
+      "candidateCatalogChecksum": "a150f3966f21dd70b763090dff84c86dfccf61d732dbc58ec9862eedbf80fe8a"
+    },
+    {
+      "id": "elections-presidential-2022-r1-bu",
+      "labelKey": "period.2022.bu",
+      "periodId": "2022",
+      "roundId": "1",
+      "descriptorUri": "./data/revisions/presidential-2022-r1-bu-b96488de00f0.dataset.json",
+      "dataUri": "./data/revisions/presidential-2022-r1-bu-b96488de00f0.json",
+      "candidateCatalogUri": "./data/presidential-2022-r1-bu-b96488de00f0.candidates.json",
+      "measureKind": "nominal-bu",
+      "revision": "bu-b96488de00f0",
+      "candidateCatalogChecksum": "023823a5df05fe3c799566984b0a809a7b133eaa0cdd152cb0d28bf5900ed743"
+    },
+    {
+      "id": "elections-presidential-2022-r2-bu",
+      "labelKey": "period.2022.bu",
+      "periodId": "2022",
+      "roundId": "2",
+      "descriptorUri": "./data/revisions/presidential-2022-r2-bu-250b633bdcf3.dataset.json",
+      "dataUri": "./data/revisions/presidential-2022-r2-bu-250b633bdcf3.json",
+      "candidateCatalogUri": "./data/presidential-2022-r2-bu-250b633bdcf3.candidates.json",
+      "measureKind": "nominal-bu",
+      "revision": "bu-250b633bdcf3",
+      "candidateCatalogChecksum": "2343353de8e4d831515ecb072937a6f6e14aedde782757b720a42a26a79125ca"
     }
   ],
   "metrics": [
@@ -153,6 +213,24 @@
         "field": "eligible"
       },
       "format": "integer"
+    }
+  ],
+  "basemaps": [
+    {
+      "id": "neutral-dark",
+      "labelKey": "basemap.neutralDark",
+      "background": "#081018",
+      "fill": "#26313a",
+      "line": "#adbdcc",
+      "highlight": "#ffffff"
+    },
+    {
+      "id": "neutral-light",
+      "labelKey": "basemap.neutralLight",
+      "background": "#f5f8fc",
+      "fill": "#cad9e6",
+      "line": "#37566e",
+      "highlight": "#18528a"
     }
   ]
 }
