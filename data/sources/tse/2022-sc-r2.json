@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "source-snapshot-v1",
+  "id": "tse-bu-2022-sc-r2",
+  "authority": "Tribunal Superior Eleitoral (TSE)",
+  "resources": {
+    "dataUrl": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2022/buweb/bweb_2t_SC_311020221535.zip"
+  },
+  "note": "Capture from source URL preserved in baseline. No published digest validated; capture computes reproducible SHA-256/SHA-512 without claiming independent official checksum."
+}
