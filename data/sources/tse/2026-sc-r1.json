@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "source-snapshot-v1",
+  "id": "tse-bu-2026-sc-r1",
+  "authority": "Tribunal Superior Eleitoral (TSE/AGEL)",
+  "datasetPage": "https://dadosabertos.tse.jus.br/dataset/resultados-2026-boletim-de-urna",
+  "license": "Creative Commons Atribuição",
+  "scope": {
+    "country": "BR",
+    "state": "SC",
+    "round": "1"
+  },
+  "publication": {
+    "label": "SC - Boletim de Urna - Primeiro turno - 05.10.2026",
+    "sourcePublicationState": "published-by-tse",
+    "metadataObservedAt": "2026-10-07"
+  },
+  "resources": {
+    "dataUrl": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_SC_051020261403.zip",
+    "hashUrl": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_SC_051020261403.zip.sha512"
+  },
+  "retention": {
+    "commitRawToGit": false,
+    "strategy": "verified-snapshot-artifact",
+    "requiredDigests": [
+      "sha512",
+      "sha256"
+    ]
+  }
+}
