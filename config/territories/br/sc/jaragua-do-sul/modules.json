@@ -1,0 +1,11 @@
+[
+  {
+    "id": "elections",
+    "labelKey": "modules.elections",
+    "status": "active",
+    "domainPackage": "@atlas/domain-elections",
+    "children": [
+      "presidential"
+    ]
+  }
+]

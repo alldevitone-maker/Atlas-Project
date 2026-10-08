@@ -1,0 +1,28 @@
+{
+  "type": "prototype-crosswalk-report",
+  "strategy": "normalized-exact-label",
+  "matched": 29,
+  "geometryFeatures": 37,
+  "sourceRows": 35,
+  "geometryCoveragePct": 78.3784,
+  "sourceCoveragePct": 82.8571,
+  "unmatchedGeometry": [
+    "Centenário",
+    "Vila Baependi",
+    "Amizade",
+    "Três Rios do Sul",
+    "Parque Malwee",
+    "Ribeirão do Cavalo",
+    "do Molha",
+    "Águas Claras"
+  ],
+  "unmatchedSource": [
+    "GARIBALDI",
+    "RIBEIRÃO GRANDE DO NORTE",
+    "RIO DA LUZ II",
+    "RIO MOLHA",
+    "SANTA LUZIA",
+    "VILA CHARTRES"
+  ],
+  "warning": "Prototype slice only. Do not publish as authoritative neighborhood crosswalk."
+}

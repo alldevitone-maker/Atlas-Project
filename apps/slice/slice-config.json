@@ -1,0 +1,56 @@
+{
+  "app": {
+    "title": "Atlas · Slice vertical",
+    "subtitle": "Contrato → dataset → mapa → interação → KPI"
+  },
+  "module": {
+    "label": "Eleições presidenciais",
+    "periodLabel": "2022 · 1º turno"
+  },
+  "dataset": {
+    "uri": "./data/dataset.json",
+    "status": "official",
+    "statusLabel": "oficial",
+    "sourceLabel": "TSE · artefato legado reconciliado",
+    "revision": "legacy-1b7f4f116ed7"
+  },
+  "geometry": {
+    "uri": "./data/geometry.geojson",
+    "labelField": "name"
+  },
+  "join": {
+    "geometryField": "name",
+    "datasetField": "sourceUnitId",
+    "strategy": "normalized-exact-label",
+    "prototype": true
+  },
+  "metric": {
+    "id": "valid-votes",
+    "label": "Votos válidos",
+    "featureField": "sliceValue",
+    "rowField": "validVotes",
+    "format": "integer",
+    "palette": {
+      "low": "#1b2d3d",
+      "mid": "#335e91",
+      "high": "#8eb7ff",
+      "noData": "#26313a"
+    }
+  },
+  "kpis": [
+    {
+      "id": "municipal-valid",
+      "label": "Votos válidos · município",
+      "path": "summary.valid",
+      "format": "integer"
+    }
+  ],
+  "quality": {
+    "geometryFeatures": 37,
+    "sourceRows": 35,
+    "matched": 29,
+    "geometryCoveragePct": 78.3784,
+    "sourceCoveragePct": 82.8571,
+    "note": "Slice de arquitetura: crosswalk nominal exato e provisório. Não é a metodologia territorial final."
+  }
+}

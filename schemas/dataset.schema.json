@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas.jaragua.dev/schemas/dataset.schema.json",
+  "title": "Dataset",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "supersedes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "moduleId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "domainId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "periodId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "roundId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "provisional",
+        "totalized",
+        "official"
+      ]
+    },
+    "asOf": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceGrain": {
+      "type": "string",
+      "minLength": 1
+    },
+    "analysisUnit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "territoryId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "territoryVintage": {
+      "type": "string",
+      "minLength": 1
+    },
+    "crosswalkId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "format": {
+      "enum": [
+        "json",
+        "geojson",
+        "flatgeobuf",
+        "pmtiles",
+        "geoparquet"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schemaRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidateCatalogUri": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "comparisonPolicyId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "collectedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "license": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "methodDoc": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "sourceId",
+        "sourceUrl",
+        "collectedAt"
+      ]
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "coveragePct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "reconciled": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "coveragePct",
+        "reconciled",
+        "notes"
+      ]
+    },
+    "checksum": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "id",
+    "revision",
+    "supersedes",
+    "moduleId",
+    "periodId",
+    "status",
+    "asOf",
+    "publishedAt",
+    "sourceGrain",
+    "analysisUnit",
+    "territoryId",
+    "territoryVintage",
+    "format",
+    "uri",
+    "schemaRef",
+    "provenance",
+    "quality",
+    "checksum"
+  ]
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "same-source-grain-v1",
+    "requiresSameTerritoryVintage": true,
+    "requiresSameAnalysisUnit": true,
+    "allowAbsoluteDelta": false,
+    "allowRelativeDelta": true,
+    "onIncompatible": "reject",
+    "messageKey": "comparison.sameSourceRequired"
+  },
+  {
+    "id": "same-neighborhood-vintage-v1",
+    "requiresSameTerritoryVintage": true,
+    "requiresSameAnalysisUnit": true,
+    "allowAbsoluteDelta": false,
+    "allowRelativeDelta": true,
+    "onIncompatible": "warn",
+    "messageKey": "comparison.neighborhoodVintageWarning"
+  }
+]

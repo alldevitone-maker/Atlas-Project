@@ -1,0 +1,18 @@
+{
+  "id": "territory-synthetic",
+  "label": "Synthetic Territory",
+  "country": "BR",
+  "state": "SC",
+  "officialCode": "0000000",
+  "units": [
+    {
+      "id": "neighborhoods",
+      "label": "Synthetic Units",
+      "vintage": "v1",
+      "sourceId": "source-synthetic",
+      "licenseId": null,
+      "uri": "./synthetic.geojson",
+      "geometryType": "Polygon"
+    }
+  ]
+}

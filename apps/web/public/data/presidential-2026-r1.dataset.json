@@ -1,0 +1,38 @@
+{
+  "id": "elections-presidential-2026-r1",
+  "revision": "legacy-6f965e3f3c00",
+  "supersedes": null,
+  "moduleId": "elections",
+  "domainId": "presidential",
+  "periodId": "2026",
+  "roundId": "1",
+  "status": "totalized",
+  "asOf": "2026-10-04T23:59:59-03:00",
+  "publishedAt": "2026-10-07T09:06:25Z",
+  "sourceGrain": "polling-place-neighborhood-label",
+  "analysisUnit": "polling-place-neighborhood-label",
+  "territoryId": "br-sc-jaragua-do-sul",
+  "territoryVintage": "legacy-locality-labels-v1",
+  "crosswalkId": null,
+  "format": "json",
+  "uri": "./presidential-2026-r1.json",
+  "schemaRef": "election-results-v1",
+  "candidateCatalogUri": "./presidential-2026-candidates.json",
+  "comparisonPolicyId": "same-source-grain-v1",
+  "provenance": {
+    "sourceId": "legacy-2026-reconciled-report",
+    "sourceUrl": "https://github.com/alldevitone-maker/api-lab-faculdade",
+    "collectedAt": "2026-10-07T09:06:25Z",
+    "license": null,
+    "methodDoc": "../../../docs/methodology.md"
+  },
+  "quality": {
+    "coveragePct": 100,
+    "reconciled": true,
+    "notes": [
+      "Migrated from the validated legacy deploy artifact.",
+      "Marked totalized rather than official until raw TSE 2026 source and lifecycle are independently archived and verified."
+    ]
+  },
+  "checksum": "6f965e3f3c00ade51ceeb50dd5efc17315d852c9ae7a7d6de67d4eea90853c3e"
+}

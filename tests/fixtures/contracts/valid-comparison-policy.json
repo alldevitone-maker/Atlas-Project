@@ -1,0 +1,9 @@
+{
+  "id": "same-unit-v1",
+  "requiresSameTerritoryVintage": true,
+  "requiresSameAnalysisUnit": true,
+  "allowAbsoluteDelta": true,
+  "allowRelativeDelta": true,
+  "onIncompatible": "reject",
+  "messageKey": "comparison.incompatible"
+}

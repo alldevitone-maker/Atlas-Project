@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas.jaragua.dev/schemas/candidate.schema.json",
+  "title": "Candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "officialName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ballotNumber": {
+      "type": [
+        "string",
+        "integer"
+      ]
+    },
+    "partyId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "display": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shortLabelKey": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fullLabelKey": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "shortLabelKey",
+        "fullLabelKey"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "officialName",
+    "ballotNumber",
+    "display"
+  ]
+}

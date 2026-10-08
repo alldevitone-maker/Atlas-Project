@@ -1,0 +1,9 @@
+{
+  "id": "domain-synthetic",
+  "moduleId": "module-synthetic",
+  "labelKey": "domains.synthetic",
+  "status": "active",
+  "datasetIds": [
+    "dataset-synthetic"
+  ]
+}

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "dark-vector",
+    "type": "style",
+    "labelKey": "basemaps.darkVector",
+    "uri": "inline://dark-vector",
+    "attributionIds": [
+      "ibge-neighborhoods-2022"
+    ],
+    "minZoom": 8,
+    "maxZoom": 16
+  }
+]

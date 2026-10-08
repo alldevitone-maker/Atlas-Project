@@ -1,0 +1,36 @@
+{
+  "id": "dataset-synthetic",
+  "supersedes": null,
+  "moduleId": "module-synthetic",
+  "domainId": null,
+  "periodId": "period-a",
+  "roundId": null,
+  "status": "official",
+  "asOf": "2026-10-07T00:00:00Z",
+  "publishedAt": "2026-10-07T00:00:00Z",
+  "sourceGrain": "unit",
+  "analysisUnit": "unit",
+  "territoryId": "territory-synthetic",
+  "territoryVintage": "v1",
+  "crosswalkId": null,
+  "format": "json",
+  "uri": "./synthetic-data.json",
+  "schemaRef": "synthetic-values-v1",
+  "candidateCatalogUri": null,
+  "comparisonPolicyId": "same-unit-v1",
+  "provenance": {
+    "sourceId": "source-synthetic",
+    "sourceUrl": "https://example.invalid/source",
+    "collectedAt": "2026-10-07T00:00:00Z",
+    "license": null,
+    "methodDoc": null
+  },
+  "quality": {
+    "coveragePct": 100,
+    "reconciled": true,
+    "notes": [
+      "Synthetic contract fixture"
+    ]
+  },
+  "checksum": "0000000000000000000000000000000000000000000000000000000000000000"
+}

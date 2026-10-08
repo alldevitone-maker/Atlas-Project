@@ -1,0 +1,27 @@
+{
+  "id": "br-sc-jaragua-do-sul",
+  "label": "Jaraguá do Sul",
+  "country": "BR",
+  "state": "SC",
+  "officialCode": "4208906",
+  "units": [
+    {
+      "id": "neighborhoods",
+      "label": "Bairros",
+      "vintage": "bootstrap-preview-derived",
+      "sourceId": "legacy-baseline-derived-preview",
+      "licenseId": null,
+      "uri": "../../../../../../data/territories/br/sc/jaragua-do-sul/geography/neighborhoods.preview.geojson",
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "id": "municipality",
+      "label": "Limite municipal",
+      "vintage": "pending-official-source",
+      "sourceId": "pending",
+      "licenseId": null,
+      "uri": null,
+      "geometryType": "MultiPolygon"
+    }
+  ]
+}

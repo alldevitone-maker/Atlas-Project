@@ -1,0 +1,11 @@
+{
+  "id": "basemap-synthetic",
+  "type": "style",
+  "labelKey": "basemaps.synthetic",
+  "uri": "./style.json",
+  "attributionIds": [
+    "source-synthetic"
+  ],
+  "minZoom": 0,
+  "maxZoom": 16
+}

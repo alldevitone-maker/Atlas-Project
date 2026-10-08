@@ -1,0 +1,122 @@
+[
+  {
+    "id": "ballot-22",
+    "officialName": "Flávio Bolsonaro",
+    "ballotNumber": 22,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-13",
+    "officialName": "Lula",
+    "ballotNumber": 13,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-14",
+    "officialName": "Renan Santos",
+    "ballotNumber": 14,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-70",
+    "officialName": "Escritor Augusto Cury",
+    "ballotNumber": 70,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-55",
+    "officialName": "Ronaldo Caiado",
+    "ballotNumber": 55,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-30",
+    "officialName": "Zema",
+    "ballotNumber": 30,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-80",
+    "officialName": "Samara",
+    "ballotNumber": 80,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-16",
+    "officialName": "Hertz Dias",
+    "ballotNumber": 16,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-21",
+    "officialName": "Edmilson Costa",
+    "ballotNumber": 21,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-27",
+    "officialName": "Clariana Barão",
+    "ballotNumber": 27,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-29",
+    "officialName": "Rui Costa Pimenta",
+    "ballotNumber": 29,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  },
+  {
+    "id": "ballot-35",
+    "officialName": "Veterinário Wilson Grassi",
+    "ballotNumber": 35,
+    "partyId": null,
+    "display": {
+      "shortLabelKey": null,
+      "fullLabelKey": null
+    }
+  }
+]

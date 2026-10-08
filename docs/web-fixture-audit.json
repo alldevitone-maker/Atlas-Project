@@ -1,0 +1,40 @@
+{
+  "datasets": [
+    {
+      "datasetId": "elections-presidential-2022-r1",
+      "revision": "legacy-1b7f4f116ed7",
+      "status": "official",
+      "geometryFeatures": 37,
+      "sourceRows": 35,
+      "matchedLabels": 29,
+      "geometryCoveragePct": 78.3784,
+      "sourceCoveragePct": 82.8571,
+      "joinStrategy": "normalized-exact-label",
+      "prototype": true
+    },
+    {
+      "datasetId": "elections-presidential-2022-r2",
+      "revision": "legacy-e45a9bef90a5",
+      "status": "official",
+      "geometryFeatures": 37,
+      "sourceRows": 35,
+      "matchedLabels": 29,
+      "geometryCoveragePct": 78.3784,
+      "sourceCoveragePct": 82.8571,
+      "joinStrategy": "normalized-exact-label",
+      "prototype": true
+    },
+    {
+      "datasetId": "elections-presidential-2026-r1",
+      "revision": "legacy-6f965e3f3c00",
+      "status": "totalized",
+      "geometryFeatures": 37,
+      "sourceRows": 37,
+      "matchedLabels": 31,
+      "geometryCoveragePct": 83.7838,
+      "sourceCoveragePct": 83.7838,
+      "joinStrategy": "normalized-exact-label",
+      "prototype": true
+    }
+  ]
+}

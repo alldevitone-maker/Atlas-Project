@@ -1,0 +1,24 @@
+{
+  "id": "crosswalk-synthetic",
+  "version": "1.0.0",
+  "sourceUnit": "source",
+  "targetUnit": "target",
+  "territoryVintage": "v1",
+  "generatedAt": "2026-10-07T00:00:00Z",
+  "checksum": "0000000000000000000000000000000000000000000000000000000000000000",
+  "coverage": {
+    "matched": 1,
+    "total": 1,
+    "pct": 100
+  },
+  "associations": [
+    {
+      "sourceId": "s1",
+      "targetId": "t1",
+      "method": "official-field",
+      "confidence": 1,
+      "reviewed": true,
+      "weight": null
+    }
+  ]
+}

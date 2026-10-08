@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ibge-neighborhoods-2022",
+    "label": "IBGE · Censo 2022",
+    "url": "https://www.ibge.gov.br/",
+    "license": null,
+    "licenseUrl": null,
+    "required": true
+  },
+  {
+    "id": "ibge-municipality-2024",
+    "label": "IBGE · Malha Municipal 2024",
+    "url": "https://www.ibge.gov.br/",
+    "license": null,
+    "licenseUrl": null,
+    "required": true
+  },
+  {
+    "id": "tse-2022-bu",
+    "label": "TSE · Boletim de Urna 2022",
+    "url": "https://dadosabertos.tse.jus.br/dataset/resultados-2022-boletim-de-urna",
+    "license": null,
+    "licenseUrl": null,
+    "required": true
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "id": "source-synthetic",
+  "label": "Synthetic Source",
+  "url": "https://example.invalid/source",
+  "license": null,
+  "licenseUrl": null,
+  "required": true
+}
