@@ -58,6 +58,8 @@ jobs:
 
   deploy:
     needs: build
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -72,3 +74,31 @@ jobs:
       - name: Publish site
         id: deployment
         uses: actions/deploy-pages@v4
+
+  published-smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --prefix apps/web --no-audit --no-fund
+      - name: Install published-site browser
+        working-directory: apps/web
+        run: npx playwright install chromium --with-deps
+      - name: Verify live desktop and mobile
+        working-directory: apps/web
+        env:
+          ATLAS_PUBLISHED_URL: ${{ needs.deploy.outputs.page_url }}
+        run: npx playwright test --config playwright.published.config.ts
+      - name: Preserve live verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlas-published-smoke
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+          retention-days: 30

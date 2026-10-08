@@ -15,7 +15,7 @@ Esta entrega implementa as pendências técnicas reproduzíveis da auditoria. N�
 | Estado | AtlasStore integra o estado. Dataset, revisão, comparação, métrica, candidato, seleção territorial, tema, painel, fundo neutro e camada preservados em URL. Teste verifica mudança da revisão antiga para a atual do mesmo dataset. |
 | Mapa | Fundo neutro claro/escuro, visibilidade da malha, reset da vista, zoom, seleção com mouse/toque/teclado e baselines visuais desktop/mobile. Controles alterados durante o carregamento são aplicados ao mapa. |
 | Acessibilidade | Temas claro/escuro; contraste do tema claro corrigido com axe; seleção por teclado, menu inert e ausência de WebGL mantidos. |
-| Publicação | CSP compatível com workers, lint AST com allowlist documentada e budgets automatizados; Pages passa a depender da fundação, contratos, payloads, Vitest e E2E. WebKit desktop/iPhone adicionado ao gate. |
+| Publicação | CSP compatível com workers, lint AST com allowlist documentada e budgets automatizados; Pages passa a depender da fundação, contratos, payloads, Vitest e E2E. WebKit desktop/iPhone adicionado ao gate. Smoke pós-deploy testa a URL publicada em desktop/mobile e preserva screenshots/traces como artefato. |
 
 Validação local: build de produção; fundação, contratos com 10 válidos e 4 inválidos; 21 testes core, 20 testes Vitest e 40 E2E Chromium desktop/mobile. Contagens e links finais dos Actions constarão da evidência de publicação abaixo. WebKit não executa neste ambiente por bibliotecas de sistema ausentes; é obrigatório no Actions antes de publicar e passou no primeiro deploy desta implementação.
 

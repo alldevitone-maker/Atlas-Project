@@ -1,5 +1,5 @@
 529ddf1070cbd50a31578cf64c5259a78dce9cba8aadbeadf47c69ddcd5bce9d  .github/workflows/ci.yml
-f88d4cd40f4f836210de4efb9b277c69cb7dc3599c8b42db6b731801e1db0626  .github/workflows/pages-deploy.yml
+da49a87ab7f73190c186ebb3462b928ad54f72da22a5e16f1baf223a3d6919cf  .github/workflows/pages-deploy.yml
 b11ae6789bc9adc4fb4a002a16c5c9ef85c860e7441b79244ed212ac86991bab  .github/workflows/tse-snapshot.yml
 9c98c7f3c32d319cd382c865f21c98aac13dff4ead7db2f073f4523133feb56e  .github/workflows/web-build.yml
 e42449a892cd94de9256ce3dcdfed879d5a6954a472e98e16e798c7aa1db9ff8  .github/workflows/web-e2e.yml
@@ -14,6 +14,7 @@ b125decd3de2cf6bd16e29d4914d8ffeb01a33e55634306b8900b9df289c939f  apps/slice/dat
 a98ae9581aefdd3cf90805b211d622dfa79845fd93e14e8580cde4fa4efff2e9  apps/slice/slice-config.json
 c89146fc1cf3d52b82af43e7415c2ff9197304bcfcb80a1f5189d8f618d9575b  apps/slice/styles.css
 a1c1b1f4e3736c66604469e2cbb014d51e490de44c1567944515d68a0c10433c  apps/web/README.md
+23b6408d11435416a0b4648e5cbd55e1b39f56e5ff64618d7579aa3cfb9fb872  apps/web/e2e-published/published.spec.ts
 c05791904780c98a67b4bcb49a0af5df23ebe86a1cc6dff0a53d72e99449467b  apps/web/e2e/safari.spec.ts
 28d44d895dffcf7861d435c916d9ff093cac71352c264340b9f3ce494963cf1a  apps/web/e2e/smoke.spec.ts
 a75ac838f407ed7725e2e797a09af4688d94661d91314d4fdf44d9354998c111  apps/web/e2e/smoke.spec.ts-snapshots/neutral-map-desktop-chromium-linux.png
@@ -22,6 +23,7 @@ a75ac838f407ed7725e2e797a09af4688d94661d91314d4fdf44d9354998c111  apps/web/e2e/s
 5dcab5ab190ed69b8bedaa9561fd864c4acfdaf4d83cab5184b2929456de3690  apps/web/package-lock.json
 4babb39872500ea7832bda04c2b05370edc32123f90f7c5b6b4ee1ab1abbb98e  apps/web/package.json
 762a78792f474b0090cfa912d58975e4c1c0d3a223b5c499564490a9f3d14ccf  apps/web/playwright.config.ts
+3c3542d97efb08de3d5e13f2628140a5f3f4baf592db6ca60d6dd51b380cc4a4  apps/web/playwright.published.config.ts
 5202592231348709033861b3459a202dec3a634025320f3c726b8e913a396d38  apps/web/public/comparison-policies.json
 023823a5df05fe3c799566984b0a809a7b133eaa0cdd152cb0d28bf5900ed743  apps/web/public/data/presidential-2022-r1-bu-b96488de00f0.candidates.json
 e79a36117367cda68777f46154e2cd210ce63f4bce8f963105d799d28f7c0f79  apps/web/public/data/presidential-2022-r1-bu-b96488de00f0.dataset.json
@@ -158,7 +160,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  docs/evidence/
 f681484be696c298d2f9a458e006f7773bf73e0c2c21696904be901548f48e51  docs/evidence/audit-published-2026-10-08.jpg
 ec650ab2d1b8050e61e2a1c129433b62065ba90c32675b9f77e2f7396e907654  docs/evidence/geojaragua.md
 d75b60c2a64d62552e4039081101b8c00d3f2ebf09673175924dfa3ebc6cc38c  docs/f4-verified-snapshot-2026.md
-0a4ca3bf1ad952bbcd5b8c47b3d4ce647c58d059049bd37ae6f087650bd267bd  docs/implementation-roadmap-2026-10-08.md
+3eea1d08c17364082bdb349c58ec19c70ec4f28696b718ebc21840679fb43546  docs/implementation-roadmap-2026-10-08.md
 587931300771e072ad62ac201cbc8ee18f6dfbe1ef180d7155c31893d37b9af2  docs/methodology.md
 50e3f4fe82dc0b5acc841d4157c58ce2e7cead683a02f2902ec2e2462437b351  docs/reference/roadmap-v3-full.md
 1c5ba18637b4c65b7c0eafc49fcb7f2d47d422b58458c87d05ed00146227d554  docs/reference/roadmap-v3.1-review-delta.md
