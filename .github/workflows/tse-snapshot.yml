@@ -8,6 +8,11 @@ on:
         required: true
         default: data/sources/tse/2026-sc-r1.json
         type: string
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/sources/tse/requests/**'
 
 permissions:
   contents: read
@@ -20,8 +25,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Resolve source manifest
+        id: source
+        shell: bash
+        run: |
+          MANIFEST_PATH="${{ inputs.manifest_path }}"
+          if [ -z "$MANIFEST_PATH" ]; then
+            MANIFEST_PATH="data/sources/tse/2026-sc-r1.json"
+          fi
+          echo "manifest_path=$MANIFEST_PATH" >> "$GITHUB_OUTPUT"
       - name: Download and verify official source
-        run: python scripts/fetch_tse_snapshot.py "${{ inputs.manifest_path }}" --out-dir raw-snapshot
+        run: python scripts/fetch_tse_snapshot.py "${{ steps.source.outputs.manifest_path }}" --out-dir raw-snapshot
       - name: Upload verified raw snapshot
         uses: actions/upload-artifact@v4
         with:
