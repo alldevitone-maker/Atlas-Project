@@ -20,6 +20,7 @@ test('municipal comparison is available without representing neighborhood votes 
   await expect(page.locator('.comparison-panel')).toContainText('6.065');
   await expect(page.locator('.comparison-panel')).toContainText(/não representa residência dos eleitores/i);
   await expect(page).toHaveURL(/compare=/);
+  expect(await page.locator('#atlas-sidebar').evaluate(node=>node.scrollWidth)).toBe(await page.locator('#atlas-sidebar').evaluate(node=>node.clientWidth));
 });
 
 test('changing period does not falsely flag an old immutable revision', async ({ page }) => {

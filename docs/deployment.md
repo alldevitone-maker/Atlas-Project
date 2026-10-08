@@ -1,34 +1,21 @@
-> Estado atual (2026-10-08): GitHub Pages está habilitado e publicado. Consulte [a implementação validada](implementation-roadmap-2026-10-08.md). O conteúdo anterior abaixo permanece como histórico e não descreve os gates atuais.
+# Publicação do Atlas — estado atual
 
-# Publicação do Atlas
+GitHub Pages está habilitado com origem GitHub Actions. URL: https://alldevitone-maker.github.io/Atlas-Project/.
 
-O build do frontend é gerado a partir de `apps/web` com Vite, e a página é enviada ao GitHub Pages pelo workflow [pages-deploy.yml](../.github/workflows/pages-deploy.yml).
+O workflow [pages-deploy.yml](../.github/workflows/pages-deploy.yml) executa, em ordem:
 
-## Ativação administrativa necessária
+1. Fundação: TypeScript, contratos, lint AST, checksums dos datasets e testes core.
+2. Build React/Vite, budget dos assets e Vitest.
+3. E2E Chromium e WebKit, desktop/mobile, com axe e baselines visuais.
+4. Upload do artefato e deploy Pages.
+5. Smoke da URL retornada pelo deploy, em desktop/mobile, com screenshots e traces preservados por 30 dias.
 
-**Settings → Pages → Build and deployment → Source: GitHub Actions**
+Falha antes do upload impede publicar. Falha no smoke após publicação torna o workflow vermelho; não aciona rollback automático. O gate exige a URL real e não substitui o teste público por preview local.
 
-https://github.com/alldevitone-maker/Atlas-Project/settings/pages
+## Revisões e recuperação
 
-O conector GitHub desta sessão pode escrever no repositório, mas não dispõe de permissões para alterar as configurações administrativas do GitHub Pages. O workflow de deploy poderá falhar no passo `configure-pages` enquanto a origem não for habilitada pela conta proprietária. Não usar token pessoal em arquivos públicos.
+Payloads têm revisão imutável, checksum e cópias em `apps/web/public/data/revisions/`. URL fixa `revision` e `compareRevision`; revisões desconhecidas são sinalizadas e a comparação não troca silenciosamente a referência. Fontes BU e votos legados com semântica distinta têm ids próprios; uma captura não promove votos legados a oficiais.
 
-## URL planejada (não é atestação de deploy)
+Para recuperar a aplicação, use um commit conhecido e reexecute o workflow sobre o código desse commit, verificando todos os gates e o smoke. Retenha os artefatos e fontes antes de sua expiração. **Não foi exercitado rollback real no site nesta entrega.**
 
-https://alldevitone-maker.github.io/Atlas-Project/
-
-Esta URL só deve ser divulgada como funcional após `deploy` = SUCCESS e inspeção HTTP/navegador.
-
-## Garantias desta fase
-
-- Município, período e turno decorrem de registry versionado.
-- Comparação entre 2022 e 2026 autorizada somente no agregado municipal pelo contrato `municipality-aggregate-v1` e para o mesmo turno.
-- Não há comparações cruzadas por bairro sem crosswalk auditado.
-- Fontes derivadas do legado mantêm seus rótulos de revisão, estágio e proveniência.
-- A versão pinada por URL não deve ser silenciosamente trocada.
-- O frontend passa por build TypeScript, testes Vitest, envio de artefato e deploy Pages.
-
-## Operações após habilitar Pages
-
-1. Reexecutar o workflow `Publish Atlas to GitHub Pages` via Actions → Run workflow (ou enviar novo commit em `apps/web`).
-2. Conferir `build` e `deploy` em estado `success`.
-3. Abrir o endereço publicado e testar Android/desktop, seleção de período, comparação e URL com revisão fixa.
+[Resultado e evidências atuais](build-status.md) · [Limites metodológicos e roadmap](implementation-roadmap-2026-10-08.md) · [Histórico anterior](history/pre-implementation-deployment.md).

@@ -24,6 +24,7 @@ test('published BU keeps provisional semantics and source section inspector',asy
  if(test.info().project.name.includes('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
  await page.getByRole('checkbox',{name:'Comparar municípios'}).check();
  await expect(page.locator('.comparison-panel')).toContainText('Extração provisória');
+ expect(await page.locator('#atlas-sidebar').evaluate(node=>node.scrollWidth)).toBe(await page.locator('#atlas-sidebar').evaluate(node=>node.clientWidth));
 });
 
 test('published captured 2022 data and catalog load with matching hashes',async({page})=>{
