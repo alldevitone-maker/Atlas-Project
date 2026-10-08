@@ -1,0 +1,84 @@
+{
+  "snapshotId": "api-lab-pages-run-37598037149",
+  "sourceRepository": "alldevitone-maker/api-lab-faculdade",
+  "sourceCommit": "da595c03d2ecb28645c23b5948d8a1c362810e94",
+  "sourceWorkflowRun": 37598037149,
+  "capturedAt": "2026-10-07T09:06:25Z",
+  "files": [
+    {
+      "path": "app.js",
+      "sha256": "f17cba82a42ee4f3789475d2ce5b87597e7eb25bd232ebc40458bbfead706f15",
+      "bytes": 27557
+    },
+    {
+      "path": "data/bairros.geojson",
+      "sha256": "495dcb07c259c59255cccadbca33497fd6dfa323ea942568d0b84ca6505e24e0",
+      "bytes": 1283054
+    },
+    {
+      "path": "data/election-2022-local.json",
+      "sha256": "710a16737a6b68e337de9382ee1985885d89d7763473d22a7a0c31be1322a87d",
+      "bytes": 42626
+    },
+    {
+      "path": "data/elections.js",
+      "sha256": "a517b1c7d2e2dc377e83d92484bd23d12f6ef611381668186105a3afba65412e",
+      "bytes": 6396
+    },
+    {
+      "path": "data/geodata-meta.json",
+      "sha256": "072a389a819baf998838548534b81573cb5a7613b9afb116fd052bce74338bd7",
+      "bytes": 707
+    },
+    {
+      "path": "data/municipio.geojson",
+      "sha256": "ba1a994f7dcb4a8ba573a6164084848acc513543d60270f77a215369fe2ef5fb",
+      "bytes": 234644
+    },
+    {
+      "path": "index.html",
+      "sha256": "03d38bdd595aab28bf6396c8dc1acb11780e7b3371bbc684ec19a17ed788a8ec",
+      "bytes": 7171
+    },
+    {
+      "path": "styles.css",
+      "sha256": "bf01f57365afa65d988d2c4f27d0c56daab39c173ecfc08af0724a6ef55d4284",
+      "bytes": 15741
+    },
+    {
+      "path": "vendor/maplibre-gl-dev.mjs",
+      "sha256": "60539f46344913a2be0c1c2988a602e61f0b86b2b711cb35755dcdc48b3eaf8f",
+      "bytes": 1272299
+    },
+    {
+      "path": "vendor/maplibre-gl-shared-dev.mjs",
+      "sha256": "ac9ac8b66038d34006fcd651bef0feaca401f7b213c491aa00a963e1cccedce2",
+      "bytes": 1214440
+    },
+    {
+      "path": "vendor/maplibre-gl-shared.mjs",
+      "sha256": "df3d0b4ba965ebafd2deae3c568500308be2982d87dadd771ba82dc5a49a4631",
+      "bytes": 516951
+    },
+    {
+      "path": "vendor/maplibre-gl-worker-dev.mjs",
+      "sha256": "9842b676308fbfad9b3d649a719ca2ee0ca88631240494c6bac916de1f7a8da4",
+      "bytes": 38209
+    },
+    {
+      "path": "vendor/maplibre-gl-worker.mjs",
+      "sha256": "1ecca7178f0a496b7980dc7a3c6a8c3575eda673cf3e9fa3324dcce7ef3890c2",
+      "bytes": 19130
+    },
+    {
+      "path": "vendor/maplibre-gl.css",
+      "sha256": "8456072adc2cbf04f7b845bc83b90cec571b293bd37816970e6566f34946ab8b",
+      "bytes": 83305
+    },
+    {
+      "path": "vendor/maplibre-gl.mjs",
+      "sha256": "8e0545d1042293cb8c1e09949f36ba83237f69b4fbc080958cf38829615bcf69",
+      "bytes": 597295
+    }
+  ]
+}

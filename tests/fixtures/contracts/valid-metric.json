@@ -1,0 +1,17 @@
+{
+  "id": "metric-synthetic-value",
+  "labelKey": "metrics.syntheticValue",
+  "expression": {
+    "op": "field",
+    "field": "value"
+  },
+  "format": "integer",
+  "comparisonPolicyId": "same-unit-v1",
+  "minReliableObservations": null,
+  "palette": {
+    "type": "sequential",
+    "ref": "neutral",
+    "center": null
+  },
+  "classification": "continuous"
+}

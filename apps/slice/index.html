@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Atlas · Slice vertical</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.13.0/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <button id="sidebar-toggle" class="icon" aria-label="Alternar menu">☰</button>
+      <div class="top-title"><strong id="app-title">Atlas</strong><span id="app-subtitle"></span></div>
+      <div class="status" id="dataset-status"></div>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-head">Módulo ativo</div>
+      <button class="module active" id="module-button"></button>
+      <div class="period" id="period-label"></div>
+      <div class="quality" id="quality-copy"></div>
+    </aside>
+
+    <main class="map-wrap">
+      <div id="map" class="map"></div>
+      <div id="hover-card" class="hover-card" hidden></div>
+    </main>
+
+    <section id="bottom-panel" class="bottom-panel" aria-live="polite">
+      <button id="sheet-handle" class="sheet-handle" aria-label="Expandir ou recolher painel"></button>
+      <div class="selection">
+        <span class="eyebrow">SELEÇÃO</span>
+        <strong id="selection-name">Toque ou clique em uma área</strong>
+        <span id="selection-value">—</span>
+      </div>
+      <div class="kpis" id="kpis"></div>
+    </section>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

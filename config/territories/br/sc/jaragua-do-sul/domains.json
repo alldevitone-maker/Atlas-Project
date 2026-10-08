@@ -1,0 +1,9 @@
+[
+  {
+    "id": "presidential",
+    "moduleId": "elections",
+    "labelKey": "domains.presidential",
+    "status": "active",
+    "datasetIds": []
+  }
+]

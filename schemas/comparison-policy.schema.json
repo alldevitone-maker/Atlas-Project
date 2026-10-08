@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas.jaragua.dev/schemas/comparisonpolicy.schema.json",
+  "title": "ComparisonPolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "requiresSameTerritoryVintage": {
+      "type": "boolean"
+    },
+    "requiresSameAnalysisUnit": {
+      "type": "boolean"
+    },
+    "allowAbsoluteDelta": {
+      "type": "boolean"
+    },
+    "allowRelativeDelta": {
+      "type": "boolean"
+    },
+    "onIncompatible": {
+      "enum": [
+        "reject",
+        "warn",
+        "aggregate-common-unit"
+      ]
+    },
+    "messageKey": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "id",
+    "requiresSameTerritoryVintage",
+    "requiresSameAnalysisUnit",
+    "allowAbsoluteDelta",
+    "allowRelativeDelta",
+    "onIncompatible",
+    "messageKey"
+  ]
+}

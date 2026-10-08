@@ -1,0 +1,37 @@
+{
+  "id": "elections-presidential-2022-r2",
+  "revision": "legacy-e45a9bef90a5",
+  "supersedes": null,
+  "moduleId": "elections",
+  "domainId": "presidential",
+  "periodId": "2022",
+  "roundId": "2",
+  "status": "official",
+  "asOf": "2022-10-30T23:59:59Z",
+  "publishedAt": "2026-10-07T09:06:25Z",
+  "sourceGrain": "polling-place-neighborhood-label",
+  "analysisUnit": "polling-place-neighborhood-label",
+  "territoryId": "br-sc-jaragua-do-sul",
+  "territoryVintage": "tse-2022-labels-v1",
+  "crosswalkId": null,
+  "format": "json",
+  "uri": "./presidential-2022-r2.json",
+  "schemaRef": "election-results-v1",
+  "candidateCatalogUri": null,
+  "comparisonPolicyId": "same-source-grain-v1",
+  "provenance": {
+    "sourceId": "tse-2022-bu",
+    "sourceUrl": "https://dadosabertos.tse.jus.br/dataset/resultados-2022-boletim-de-urna",
+    "collectedAt": "2026-10-07T09:05:34.227523+00:00",
+    "license": null,
+    "methodDoc": "../../../docs/methodology.md"
+  },
+  "quality": {
+    "coveragePct": 100.0,
+    "reconciled": true,
+    "notes": [
+      "Migrated from validated legacy deploy artifact; raw TSE source archive still to be captured independently."
+    ]
+  },
+  "checksum": "e45a9bef90a501945533663d2d2ab7c5a4756e268e558fc959eb20edab431be5"
+}

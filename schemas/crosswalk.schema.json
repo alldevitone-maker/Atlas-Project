@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas.jaragua.dev/schemas/crosswalk.schema.json",
+  "title": "Crosswalk",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceUnit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "targetUnit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "territoryVintage": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "checksum": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "matched": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "matched",
+        "total",
+        "pct"
+      ]
+    },
+    "associations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "sourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "targetId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "method": {
+            "enum": [
+              "official-field",
+              "geocode",
+              "spatial-join",
+              "reviewed-alias",
+              "manual-review"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "reviewed": {
+            "type": "boolean"
+          },
+          "weight": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "sourceId",
+          "targetId",
+          "method",
+          "confidence",
+          "reviewed"
+        ]
+      }
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "sourceUnit",
+    "targetUnit",
+    "territoryVintage",
+    "generatedAt",
+    "checksum",
+    "coverage",
+    "associations"
+  ]
+}

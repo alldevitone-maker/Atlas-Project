@@ -1,0 +1,28 @@
+{
+  "name": "projeto-atlas-jaragua-do-sul",
+  "private": true,
+  "version": "0.2.1",
+  "type": "module",
+  "description": "Atlas municipal modular de Jaraguá do Sul — foundation build",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build:core": "tsc -p tsconfig.json",
+    "contracts": "python scripts/validate_contracts.py",
+    "no-hardcode": "python scripts/no_hardcode.py",
+    "pipeline:2022": "python pipelines/elections/migrate_legacy_2022.py",
+    "test:core": "npm run build:core && node --test tests/contract/*.test.mjs",
+    "verify": "npm run verify:foundation",
+    "pipeline:2026": "node pipelines/elections/migrate_legacy_2026.mjs",
+    "datasets": "python scripts/validate_generated_datasets.py",
+    "web:scaffold": "python scripts/check_web_scaffold.py",
+    "verify:foundation": "npm run typecheck && npm run contracts && npm run no-hardcode && npm run datasets && npm run web:scaffold && npm run test:core",
+    "verify:legacy-local": "npm run pipeline:2022 && npm run pipeline:2026 && npm run verify:foundation"
+  },
+  "engines": {
+    "node": ">=22",
+    "python": ">=3.11"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}

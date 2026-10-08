@@ -1,0 +1,10 @@
+{
+  "id": "candidate-synthetic",
+  "officialName": "Synthetic Candidate",
+  "ballotNumber": "00",
+  "partyId": null,
+  "display": {
+    "shortLabelKey": null,
+    "fullLabelKey": null
+  }
+}

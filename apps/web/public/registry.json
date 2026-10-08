@@ -1,0 +1,59 @@
+{
+  "app": {
+    "titleKey": "app.title",
+    "subtitleKey": "app.subtitle",
+    "locale": "pt-BR"
+  },
+  "territory": {
+    "id": "br-sc-jaragua-do-sul",
+    "labelKey": "territory.label",
+    "geometryUri": "./data/territory.geojson",
+    "geometryLabelField": "name"
+  },
+  "module": {
+    "id": "elections",
+    "labelKey": "module.label",
+    "domainId": "presidential"
+  },
+  "datasets": [
+    {
+      "id": "elections-presidential-2022-r1",
+      "labelKey": "period.2022",
+      "periodId": "2022",
+      "roundId": "1",
+      "descriptorUri": "./data/presidential-2022-r1.dataset.json",
+      "dataUri": "./data/presidential-2022-r1.json",
+      "candidateCatalogUri": null
+    },
+    {
+      "id": "elections-presidential-2022-r2",
+      "labelKey": "period.2022",
+      "periodId": "2022",
+      "roundId": "2",
+      "descriptorUri": "./data/presidential-2022-r2.dataset.json",
+      "dataUri": "./data/presidential-2022-r2.json",
+      "candidateCatalogUri": null
+    },
+    {
+      "id": "elections-presidential-2026-r1",
+      "labelKey": "period.2026",
+      "periodId": "2026",
+      "roundId": "1",
+      "descriptorUri": "./data/presidential-2026-r1.dataset.json",
+      "dataUri": "./data/presidential-2026-r1.json",
+      "candidateCatalogUri": "./data/presidential-2026-candidates.json"
+    }
+  ],
+  "defaultDatasetId": "elections-presidential-2026-r1",
+  "metric": {
+    "id": "valid-votes",
+    "labelKey": "metric.validVotes",
+    "rowField": "validVotes",
+    "format": "integer"
+  },
+  "join": {
+    "strategy": "normalized-exact-label",
+    "datasetField": "sourceUnitId",
+    "prototype": true
+  }
+}

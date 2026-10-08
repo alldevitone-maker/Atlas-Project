@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atlas.jaragua.dev/schemas/basemap.schema.json",
+  "title": "Basemap",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "type": {
+      "enum": [
+        "style",
+        "xyz",
+        "raster",
+        "pmtiles"
+      ]
+    },
+    "labelKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attributionIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[a-z0-9][a-z0-9._-]*$"
+      }
+    },
+    "minZoom": {
+      "type": "number"
+    },
+    "maxZoom": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "labelKey",
+    "uri",
+    "attributionIds",
+    "minZoom",
+    "maxZoom"
+  ]
+}

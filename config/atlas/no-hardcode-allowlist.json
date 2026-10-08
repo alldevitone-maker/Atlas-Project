@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "exceptions": [
+    {
+      "pattern": "WCAG 2.2",
+      "path": "docs/**",
+      "reason": "standards reference in documentation only"
+    }
+  ]
+}
