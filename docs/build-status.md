@@ -1,4 +1,18 @@
-# Build status · v3.2 / build 0.2.0
+# Situação atual do Projeto Atlas · 08/10/2026
+
+- **Branch:** `main`, repositório `alldevitone-maker/Atlas-Project`.
+- **Roadmap completo v3.2:** `docs/reference/roadmap-v3.2-execution.md`, publicado no commit `468006e`.
+- **Versão declarada no package.json:** `0.2.1`.
+- **CI foundation:** PASS no commit `1eb0fb7`, run https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37755534281
+- **Web build:** PASS no commit `1eb0fb7`, run https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37755534091
+- **Artefato gerado:** `atlas-web-dist` (build do Vite, não implantação pública); checar a retenção do Actions.
+- **GitHub Pages:** não habilitado nesta auditoria (`has_pages=false`). Não há URL do novo site atestada.
+- **A validar:** navegador e E2E, revisão fixa por permalink, crosswalk de bairro auditado, pipeline TSE 2026 reconciliado com a fonte oficial, lockfile do frontend.
+- **Aviso:** o join `normalized-exact-label` é **protótipo**, não representa residência do eleitor nem prova resultados oficiais por bairro.
+
+---
+
+# Build status · histórico da fundação 0.2.0
 
 **Estado geral:** GREEN para core/contratos/pipelines/scaffold.  
 **Data:** 07/10/2026

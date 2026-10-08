@@ -9,7 +9,7 @@ Fundação do novo Atlas municipal independente do `api-lab-faculdade`.
 - [Histórico v3](docs/reference/roadmap-v3-full.md) e [revisão v3.1](docs/reference/roadmap-v3.1-review-delta.md)
 - [Build status (último inventário)](docs/build-status.md)
 
-**Auditoria de 08/10/2026:** o monorepo está no GitHub e o CI da fundação passou no commit de publicação do roadmap. O frontend React ainda depende de aprovação do novo [web-build CI](.github/workflows/web-build.yml). GitHub Pages não estava habilitado na auditoria: publicar código ou artefato não equivale a URL do produto em produção.
+**Auditoria de 08/10/2026:** o monorepo está no GitHub e o CI da fundação passou no commit de publicação do roadmap. O frontend React/Vite passou no [web-build CI em 08/10/2026](https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37755534091) e gerou o artefato `atlas-web-dist`. GitHub Pages não estava habilitado na auditoria: publicar código ou artefato não equivale a URL do produto em produção.
 
 ## Estado
 
