@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "source-snapshot-request-v1",
+  "sourceManifest": "data/sources/tse/2026-results-detail-munzona.json",
+  "reason": "Reconcile Jaraguá do Sul turnout, abstention, valid, blank and null totals against official TSE totalization.",
+  "requestedAt": "2026-10-07",
+  "retentionDays": 90
+}
