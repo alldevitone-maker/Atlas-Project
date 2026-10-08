@@ -1,3 +1,18 @@
+# Validação adicional do Atlas · 08/10/2026 (última execução)
+
+**Commit validado:** `95b50336df3e3c1ec5190258713e74d5cc4b532a`
+
+- Fundação (TypeScript, contratos, no-hardcode, datasets): **PASS** · https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37834880859
+- Web build React/Vite + Vitest: **PASS** · https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37834880690
+- Playwright Chromium, desktop e mobile: **8/8 PASS** · https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37834880763
+- GitHub Pages deploy: **NÃO PUBLICADO** · https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37834880903
+- `has_pages=false` na verificação do repositório. A ativação Pages → Source: GitHub Actions requer ação administrativa no GitHub antes de reexecutar o deploy.
+- URL de destino prevista: https://alldevitone-maker.github.io/Atlas-Project/ (**ainda não validada como disponível**).
+- Correções adicionais: URLs com revisões fixas respeitam o permalink original; navegação entre períodos não acusa falsamente uma revisão antiga.
+- Não implica auditoria final da metodologia por bairro, acessibilidade WCAG ou experiência em aparelhos reais.
+
+---
+
 # F6 e publicação · verificação de 08/10/2026
 
 **Versão da documentação:** roadmap v3.2.

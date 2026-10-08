@@ -2,6 +2,14 @@
 
 Fundação do novo Atlas municipal independente do `api-lab-faculdade`.
 
+## Estado de execução em 08/10/2026
+
+**Código e testes:** CI da fundação, web build e 8 testes browser desktop/mobile aprovados no commit `95b5033`.
+**Publicação:** GitHub Pages ainda não está habilitado. Para iniciar o deploy público, o proprietário deve selecionar **Settings → Pages → Source → GitHub Actions**.
+- [Configurar Pages](https://github.com/alldevitone-maker/Atlas-Project/settings/pages)
+- [Workflow automático de publicação](.github/workflows/pages-deploy.yml)
+- [Relatório do build](docs/build-status.md)
+
 ## Documentação principal
 
 - [Roadmap v3.2 completo: execução, fontes, contratos e gates](docs/reference/roadmap-v3.2-execution.md)
