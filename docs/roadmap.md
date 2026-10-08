@@ -1,5 +1,7 @@
 # Roadmap v3.2 · Projeto Atlas Jaraguá do Sul
 
+> **Documento canônico integral:** [Roadmap v3.2 — retomada, auditoria e plano de execução](./reference/roadmap-v3.2-execution.md). Este arquivo é um índice/resumo. As versões históricas estão em [v3](./reference/roadmap-v3-full.md) e [v3.1](./reference/roadmap-v3.1-review-delta.md). Atualizado em 08/10/2026.
+
 ## Decisões aprovadas
 
 1. O projeto nasce fora do repositório acadêmico.
