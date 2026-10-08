@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Download an official source snapshot and verify its published SHA-512 digest.
+"""Capture an official source snapshot with immutable digests.
 
-The raw source is intentionally not committed to Git. The script emits an
-immutable snapshot manifest with SHA-512 and SHA-256 digests so the pipeline can
-prove which source bytes produced a derived dataset.
+When the authority publishes a SHA-512 sidecar, the script verifies it.
+When no published digest exists, the source is still captured reproducibly,
+but the manifest records that distinction instead of claiming verification.
 """
 
 from __future__ import annotations
@@ -25,9 +25,9 @@ HEX512 = re.compile(r"(?i)\b[0-9a-f]{128}\b")
 def download(url: str, destination: Path) -> None:
     request = urllib.request.Request(
         url,
-        headers={"User-Agent": "Projeto-Atlas/0.2 source-snapshot"},
+        headers={"User-Agent": "Projeto-Atlas/0.3 source-snapshot"},
     )
-    with urllib.request.urlopen(request, timeout=180) as response, destination.open("wb") as out:
+    with urllib.request.urlopen(request, timeout=300) as response, destination.open("wb") as out:
         shutil.copyfileobj(response, out)
 
 
@@ -43,7 +43,9 @@ def published_sha512(path: Path) -> str:
     text = path.read_bytes().decode("utf-8", errors="replace")
     match = HEX512.search(text)
     if not match:
-        raise RuntimeError("Published SHA-512 resource does not contain a 128-character hexadecimal digest.")
+        raise RuntimeError(
+            "Published SHA-512 resource does not contain a 128-character hexadecimal digest."
+        )
     return match.group(0).lower()
 
 
@@ -55,37 +57,48 @@ def main() -> int:
 
     source = json.loads(args.manifest.read_text(encoding="utf-8"))
     resources = source.get("resources")
-    if not isinstance(resources, dict):
-        raise SystemExit("Manifest must contain a resources object with dataUrl and hashUrl.")
+    if not isinstance(resources, dict) or not resources.get("dataUrl"):
+        raise SystemExit("Manifest must contain resources.dataUrl.")
 
     data_url = resources["dataUrl"]
-    hash_url = resources["hashUrl"]
+    hash_url = resources.get("hashUrl")
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     data_name = Path(urlparse(data_url).path).name or "source.zip"
     data_path = args.out_dir / data_name
-    hash_path = args.out_dir / (data_name + ".sha512")
 
     download(data_url, data_path)
-    download(hash_url, hash_path)
-
-    expected = published_sha512(hash_path)
     actual512 = digest(data_path, "sha512")
-    if actual512 != expected:
-        raise SystemExit(f"SHA-512 mismatch: expected {expected}, got {actual512}")
+    actual256 = digest(data_path, "sha256")
+
+    integrity = "captured-no-published-digest"
+    published_digest_verified = False
+    expected512 = None
+
+    if hash_url:
+        hash_path = args.out_dir / (data_name + ".sha512")
+        download(hash_url, hash_path)
+        expected512 = published_sha512(hash_path)
+        if actual512 != expected512:
+            raise SystemExit(f"SHA-512 mismatch: expected {expected512}, got {actual512}")
+        integrity = "verified-published-sha512"
+        published_digest_verified = True
 
     snapshot = {
-        "schemaVersion": "verified-source-snapshot-v1",
+        "schemaVersion": "source-snapshot-v2",
         "sourceManifest": str(args.manifest),
         "sourceId": source.get("id"),
+        "authority": source.get("authority"),
         "retrievedAt": datetime.now(timezone.utc).isoformat(),
         "dataUrl": data_url,
         "hashUrl": hash_url,
         "fileName": data_name,
         "sizeBytes": data_path.stat().st_size,
         "sha512": actual512,
-        "sha256": digest(data_path, "sha256"),
-        "integrity": "verified",
+        "sha256": actual256,
+        "publishedSha512": expected512,
+        "publishedDigestVerified": published_digest_verified,
+        "integrity": integrity,
     }
     (args.out_dir / "snapshot-manifest.json").write_text(
         json.dumps(snapshot, indent=2, ensure_ascii=False) + "\n",
