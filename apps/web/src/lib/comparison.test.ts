@@ -12,7 +12,7 @@ const policy: MunicipalComparisonPolicy = {
 function descriptor(id:string, year:string, round='1'):DatasetDescriptor {
   return {
     id, revision:'immutable-'+year, status:'totalized', asOf:year+'-10-04T00:00:00Z',
-    territoryId:'br-sc-jaragua-do-sul', territoryVintage:year+'-map',
+    territoryId:'territory-alpha', territoryVintage:year+'-map',
     moduleId:'elections', domainId:'presidential', sourceGrain:'polling-place-neighborhood-label',
     analysisUnit:'polling-place-neighborhood-label', roundId:round, quality:{coveragePct:100,reconciled:true,notes:[]},
     provenance:{sourceId:'test',sourceUrl:'https://example.org',collectedAt:'2026-10-08T00:00:00Z'}
@@ -26,27 +26,27 @@ describe('comparação municipal com políticas auditáveis',()=>{
     expect(extractMunicipalMeasure(b)?.turnoutRate).toBe(90);
   });
   it('compara município apesar da safra diferente sem alegar comparação por bairro',()=>{
-    const result=assessMunicipalComparison(descriptor('2022','2022'),descriptor('2026','2026'),a,b,policy);
+    const result=assessMunicipalComparison(descriptor('period-alpha','period-alpha'),descriptor('period-beta','period-beta'),a,b,policy);
     expect(result.compatible).toBe(true);
     expect(result.validVotesDelta).toBe(150);
     expect(result.turnoutRateDeltaPp).toBe(5);
   });
   it('bloqueia turnos, domínios e cidades incompatíveis',()=>{
-    const second=descriptor('2026','2026','2');
+    const second=descriptor('period-beta','period-beta','2');
     second.territoryId='other-city'; second.domainId='other-domain';
-    const r=assessMunicipalComparison(descriptor('2022','2022'),second,a,b,policy);
+    const r=assessMunicipalComparison(descriptor('period-alpha','period-alpha'),second,a,b,policy);
     expect(r.compatible).toBe(false);
     expect(r.validVotesDelta).toBeNull();
     expect(r.issues.length).toBeGreaterThanOrEqual(3);
   });
   it('rejeita totais inválidos, cobertura insuficiente e origem sem reconciliação',()=>{
-    const second=descriptor('2026','2026'); second.quality.reconciled=false;
+    const second=descriptor('period-beta','period-beta'); second.quality.reconciled=false;
     second.quality.coveragePct=94;
-    const r=assessMunicipalComparison(descriptor('2022','2022'),second,a,{rows:[],summary:{validVotes:1500,turnout:990,eligible:1100}},policy);
+    const r=assessMunicipalComparison(descriptor('period-alpha','period-alpha'),second,a,{rows:[],summary:{validVotes:1500,turnout:990,eligible:1100}},policy);
     expect(r.compatible).toBe(false);
     expect(r.issues).toContain('Totais municipais inválidos ou ausentes.');
   });
   it('não calcula valores sem política explícita',()=>{
-    expect(assessMunicipalComparison(descriptor('2022','2022'),descriptor('2026','2026'),a,b,null).compatible).toBe(false);
+    expect(assessMunicipalComparison(descriptor('period-alpha','period-alpha'),descriptor('period-beta','period-beta'),a,b,null).compatible).toBe(false);
   });
 });
