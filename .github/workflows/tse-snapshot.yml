@@ -1,0 +1,31 @@
+name: TSE source snapshot
+
+on:
+  workflow_dispatch:
+    inputs:
+      manifest_path:
+        description: Source manifest to snapshot
+        required: true
+        default: data/sources/tse/2026-sc-r1.json
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Download and verify official source
+        run: python scripts/fetch_tse_snapshot.py "${{ inputs.manifest_path }}" --out-dir raw-snapshot
+      - name: Upload verified raw snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: tse-source-snapshot-${{ github.run_id }}
+          path: raw-snapshot/
+          if-no-files-found: error
+          retention-days: 90
