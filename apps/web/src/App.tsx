@@ -1,5 +1,5 @@
 import type { FeatureCollection } from 'geojson';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AtlasMap } from './components/AtlasMap';
 import { ComparisonPanel } from './components/ComparisonPanel';
 import type { MunicipalComparisonPolicy } from './lib/comparison';
@@ -18,6 +18,11 @@ async function json<T>(uri: string): Promise<T> {
 }
 
 export default function App() {
+  // Pin checks apply to the incoming deep link, never to a subsequent user selection.
+  const initialPin = useRef({
+    dataset: new URLSearchParams(location.search).get('dataset'),
+    revision: new URLSearchParams(location.search).get('revision')
+  });
   const [registry, setRegistry] = useState<WebRegistry | null>(null);
   const [catalog, setCatalog] = useState<Catalog>({});
   const [geometry, setGeometry] = useState<FeatureCollection | null>(null);
@@ -46,7 +51,8 @@ export default function App() {
         const policies = await json<MunicipalComparisonPolicy[]>('./comparison-policies.json');
         setComparisonPolicy(policies.find(item => item.id === nextRegistry.comparisonPolicyId) ?? null);
         setRegistry(nextRegistry); setCatalog(nextCatalog); setGeometry(nextGeometry);
-        setSelectedDatasetId(readSelection(nextRegistry.defaultDatasetId));
+        const requested = readSelection(nextRegistry.defaultDatasetId);
+        setSelectedDatasetId(nextRegistry.datasets.some(item => item.id === requested) ? requested : nextRegistry.defaultDatasetId);
       } catch (cause) { setError(String(cause)); }
     })();
   }, []);
@@ -62,6 +68,7 @@ export default function App() {
 
   useEffect(() => {
     if (!activeRef) return;
+    let live = true;
     setSelection(null); setDataset(null); setDescriptor(null); setCandidates([]); setError(null);
     void (async () => {
       try {
@@ -70,13 +77,15 @@ export default function App() {
           json<ElectionDataset>(activeRef.dataUri)
         ]);
         const nextCandidates = activeRef.candidateCatalogUri ? await json<Candidate[]>(activeRef.candidateCatalogUri) : [];
+        if (!live) return;
         setDescriptor(nextDescriptor); setDataset(nextDataset); setCandidates(nextCandidates);
-        // Only immutable revisions present in this repository are served.
-        setRevisionUnavailable(Boolean(new URLSearchParams(location.search).get('revision')) &&
-          new URLSearchParams(location.search).get('dataset') === activeRef.id &&
-          new URLSearchParams(location.search).get('revision') !== nextDescriptor.revision);
-      } catch (cause) { setError(String(cause)); }
+        const pin = initialPin.current;
+        // Do not rewrite or silently replace an immutable revision specified by an incoming link.
+        setRevisionUnavailable(Boolean(pin.revision && pin.dataset === activeRef.id &&
+          pin.revision !== nextDescriptor.revision));
+      } catch (cause) { if (live) setError(String(cause)); }
     })();
+    return () => { live = false; };
   }, [activeRef]);
 
   useEffect(() => {
@@ -135,7 +144,12 @@ export default function App() {
         <h2>{t(registry.module.labelKey)}</h2>
       </div>
       <nav className="period-list" aria-label={t('nav.periods')}>
-        {registry.datasets.map(item => <button key={item.id} className={item.id === selectedDatasetId ? 'active' : ''} onClick={() => { setRevisionUnavailable(false); setSelectedDatasetId(item.id); if (window.innerWidth <= 800) setSidebarOpen(false); }}>
+        {registry.datasets.map(item => <button key={item.id} className={item.id === selectedDatasetId ? 'active' : ''} onClick={() => {
+          initialPin.current = { dataset: null, revision: null };
+          setRevisionUnavailable(false);
+          setSelectedDatasetId(item.id);
+          if (window.innerWidth <= 800) setSidebarOpen(false);
+        }}>
           <span>{t(item.labelKey)}</span><small>{item.roundId ? t('period.round',{round:item.roundId}) : ''}</small>
         </button>)}
       </nav>
@@ -173,7 +187,10 @@ export default function App() {
       <button className="sheet-handle" onClick={() => setSheetExpanded(value => !value)} aria-label={t('sheet.toggle')}><span /></button>
       {revisionUnavailable && <p className="comparison-blocked-message" role="alert">
         A revisão fixa solicitada não está disponível neste build. Exibimos apenas a revisão carregada.
-        <button onClick={() => { setRevisionUnavailable(false); history.replaceState(null, '', location.pathname); }}>Usar revisão disponível</button>
+        <button onClick={() => {
+          initialPin.current = { dataset: null, revision: null };
+          setRevisionUnavailable(false);
+        }}>Usar revisão disponível</button>
       </p>}
       {comparisonEnabled && comparisonError && <p role="alert">Falha ao carregar comparação: {comparisonError}</p>}
       {comparisonEnabled && !comparisonRef && <p role="status" className="comparison-blocked-message">Não há outro período do mesmo turno disponível para a comparação.</p>}
