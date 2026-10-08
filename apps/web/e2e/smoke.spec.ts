@@ -111,3 +111,62 @@ test('unknown pinned revision is not silently replaced', async ({ page }) => {
   await expect(page.locator('.comparison-panel')).toHaveCount(0);
   expect(errors).toEqual([]);
  });
+
+test('theme and territorial selection survive a shared link',async({page})=>{
+ await page.goto('/');
+ await page.getByLabel('Selecionar território').selectOption({index:1});
+ const label=await page.getByLabel('Selecionar território').inputValue();
+ await page.getByRole('button',{name:'Alternar tema claro e escuro'}).click();
+ await expect(page).toHaveURL(/theme=light/);
+ await expect(page).toHaveURL(/feature=/);
+ await page.reload();
+ await expect(page.getByLabel('Selecionar território')).toHaveValue(label);
+ await expect(page.locator('html')).toHaveAttribute('data-theme','light');
+ const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
+ expect(axe.violations).toEqual([]);
+});
+
+test('verified BU retains source semantics and blocks incomparable legacy metric',async({page})=>{
+ await page.goto('/?dataset=elections-presidential-2026-r1-bu');
+ await expect(page.getByText('108.638')).toBeVisible();
+ await expect(page.getByText('Votos nominais nos boletins',{exact:true})).toBeVisible();
+ await page.getByText('Inspecionar seções da fonte').click();
+ await page.getByLabel('Seção eleitoral').selectOption({index:1});
+ await expect(page.getByText(/Local de votação:/)).toBeVisible();
+ if(test.info().project.name.startsWith('mobile')) await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await page.getByRole('checkbox',{name:'Comparar municípios'}).check();
+ await expect(page.locator('.comparison-panel')).toContainText('Métricas de origem distintas');
+});
+
+test('altered dataset bytes fail closed before rendering totals',async({page})=>{
+ await page.route('**/data/presidential-2026-r1.json',async route=>route.fulfill({contentType:'application/json',body:'{"rows":[],"summary":{"validVotes":999999}}'}));
+ await page.goto('/');
+ await expect(page.getByText(/dataset-checksum-mismatch/)).toBeVisible();
+ await expect(page.getByText('999.999')).toHaveCount(0);
+});
+
+test('metric and candidate filters are explicit and reset preserves municipal scope',async({page})=>{
+ await page.goto('/');
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await page.getByLabel('Selecionar métrica municipal').selectOption('blank-votes');
+ await expect(page.locator('.summary-grid article').first()).toContainText('1.262');
+ await page.getByLabel('Filtrar candidato').selectOption({index:1});
+ await expect(page.locator('.candidate-row')).toHaveCount(1);
+ await expect(page).toHaveURL(/metric=blank-votes/);
+ await expect(page).toHaveURL(/candidate=/);
+ await page.getByRole('button',{name:'Limpar filtros e seleção'}).click();
+ await expect(page.locator('.summary-grid article').first()).toContainText('108.628');
+ await expect(page.locator('.candidate-row')).toHaveCount(12);
+});
+
+test('a non-electoral module renders map, metric and immutable permalink through the core',async({page})=>{
+ await page.goto('/?module=module-synthetic');
+ await expect(page.getByRole('heading',{name:'Módulo sintético'})).toBeVisible();
+ await expect(page.getByText('Valores: 10, 20, 30 · Total: 60')).toBeVisible();
+ await expect(page.locator('.atlas-map')).toBeVisible();
+ await page.getByLabel('Selecionar território').selectOption('Unidade B');
+ await expect(page.getByText('Selecionado: Unidade B · Valor: 20')).toBeVisible();
+ await expect(page).toHaveURL(/revision=rev-001/);
+ await page.reload();
+ await expect(page.getByLabel('Selecionar território')).toHaveValue('Unidade B');
+});

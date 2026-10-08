@@ -1,3 +1,5 @@
+> Estado atual (2026-10-08): GitHub Pages está habilitado e publicado. Consulte [a implementação validada](implementation-roadmap-2026-10-08.md). O conteúdo anterior abaixo permanece como histórico e não descreve os gates atuais.
+
 # Validação adicional do Atlas · 08/10/2026 (última execução)
 
 **Commit validado:** `95b50336df3e3c1ec5190258713e74d5cc4b532a`

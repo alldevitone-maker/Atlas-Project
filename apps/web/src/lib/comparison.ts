@@ -53,6 +53,7 @@ export function assessMunicipalComparison(
   policy: MunicipalComparisonPolicy | null
 ): ComparisonResult {
   const issues: string[] = [];
+  if (leftDataset.validVotesMeaning !== rightDataset.validVotesMeaning) issues.push('Métricas de origem distintas: votos nominais em BU não equivalem automaticamente a votos válidos do resultado final.');
   const left = extractMunicipalMeasure(leftDataset);
   const right = extractMunicipalMeasure(rightDataset);
   if (!policy || policy.aggregationScope !== 'municipality' || policy.onIncompatible !== 'reject') {

@@ -23,6 +23,8 @@ for fixture in sorted(FIXTURES.glob('valid-*.json')):
 invalid_cases = {
     'invalid-dataset-missing-revision.json':'dataset',
     'invalid-crosswalk-confidence.json':'crosswalk',
+    'invalid-crosswalk-reviewed-without-evidence.json':'crosswalk',
+    'invalid-dataset-official-without-proof.json':'dataset',
 }
 for filename, key in invalid_cases.items():
     errors = list(Draft202012Validator(schema_cache[key], format_checker=checker).iter_errors(load(FIXTURES/filename)))

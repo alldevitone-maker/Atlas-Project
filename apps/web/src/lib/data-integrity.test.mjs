@@ -14,7 +14,7 @@ describe('published data integrity', () => {
    expect((s.validVotes ?? s.valid) + (s.blankVotes ?? s.blank) + s.nullVotes).toBe(s.turnout);
    expect(s.turnout + s.abstention).toBe(s.eligible ?? s.apt);
    expect(descriptor.provenance.sourceUrl).toMatch(/^https:/);
-   expect(descriptor.sourceStatus).toBe('unverified-legacy');
+   expect(descriptor.sourceStatus).toBe(data.validVotesMeaning === 'nominal-bu' ? 'totalized' : 'unverified-legacy');
    expect(descriptor.status).not.toBe('official');
    expect(descriptor.crosswalkId).toBeNull();
   });

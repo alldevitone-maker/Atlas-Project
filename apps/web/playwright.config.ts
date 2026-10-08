@@ -11,8 +11,10 @@ export default defineConfig({
     screenshot: 'only-on-failure'
   },
   projects: [
-    { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'], launchOptions: { args: ['--enable-webgl','--use-angle=swiftshader','--enable-unsafe-swiftshader'] } } },
-    { name: 'mobile-chromium', use: { ...devices['Pixel 7'], browserName: 'chromium', launchOptions: { args: ['--enable-webgl','--use-angle=swiftshader','--enable-unsafe-swiftshader'] } } }
+    { name: 'desktop-chromium', testIgnore:'**/safari.spec.ts', use: { ...devices['Desktop Chrome'], launchOptions: { args: ['--enable-webgl','--use-angle=swiftshader','--enable-unsafe-swiftshader'] } } },
+    { name: 'mobile-chromium', testIgnore:'**/safari.spec.ts', use: { ...devices['Pixel 7'], browserName: 'chromium', launchOptions: { args: ['--enable-webgl','--use-angle=swiftshader','--enable-unsafe-swiftshader'] } } }
+    ,{name:'desktop-webkit',testMatch:'**/safari.spec.ts',use:{...devices['Desktop Safari']}}
+    ,{name:'mobile-webkit',testMatch:'**/safari.spec.ts',use:{...devices['iPhone 13']}}
   ],
   webServer: {
     command: 'npm run preview -- --host 127.0.0.1 --port 4173 --strictPort',

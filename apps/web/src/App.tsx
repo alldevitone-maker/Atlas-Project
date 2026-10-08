@@ -6,7 +6,13 @@ import type { MunicipalComparisonPolicy } from './lib/comparison';
 import { translator, type Catalog } from './lib/i18n';
 import { readSelection, writeSelection } from './lib/url';
 import type { Candidate, DatasetDescriptor, ElectionDataset, WebRegistry } from './types';
+import { evaluateExpression } from '../../../packages/metrics/src/index';
 import './styles.css';
+import { loadElection, descriptorSchema, electionSchema } from './lib/validated-data';
+import { extractMunicipalMeasure } from './lib/comparison';
+import { AtlasRuntime } from '../../../packages/runtime/src/index';
+import { Registry } from '../../../packages/registry/src/index';
+import { municipalCandidates } from '../../../packages/domain-elections/src/index';
 
 const number = new Intl.NumberFormat('pt-BR');
 const percent = new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 2 });
@@ -23,6 +29,7 @@ export default function App() {
     dataset: new URLSearchParams(location.search).get('dataset'),
     revision: new URLSearchParams(location.search).get('revision')
   });
+  const [runtime,setRuntime] = useState<AtlasRuntime | null>(null);
   const [registry, setRegistry] = useState<WebRegistry | null>(null);
   const [catalog, setCatalog] = useState<Catalog>({});
   const [geometry, setGeometry] = useState<FeatureCollection | null>(null);
@@ -30,6 +37,7 @@ export default function App() {
   const [descriptor, setDescriptor] = useState<DatasetDescriptor | null>(null);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [selectedDatasetId, setSelectedDatasetId] = useState<string>('');
+  const [inspectedRow,setInspectedRow] = useState<import('./types').ElectionRow | null>(null);
   const [selection, setSelection] = useState<{label:string; value:number|null} | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(() => window.matchMedia('(min-width: 801px)').matches);
   const [comparisonEnabled, setComparisonEnabled] = useState(() => Boolean(new URLSearchParams(location.search).get('compare')));
@@ -38,7 +46,17 @@ export default function App() {
   const [comparisonDescriptor, setComparisonDescriptor] = useState<DatasetDescriptor | null>(null);
   const [comparisonError, setComparisonError] = useState<string | null>(null);
   const [comparisonPolicy, setComparisonPolicy] = useState<MunicipalComparisonPolicy | null>(null);
-  const [sheetExpanded, setSheetExpanded] = useState(false);
+  const [sheetExpanded, setSheetExpanded] = useState(() => new URLSearchParams(location.search).get('panel') === 'expanded');
+  const [selectedMetric,setSelectedMetric] = useState(() => new URLSearchParams(location.search).get('metric') || 'valid-votes');
+  const [candidateFilter,setCandidateFilter] = useState(() => new URLSearchParams(location.search).get('candidate') || '');
+  const [theme, setTheme] = useState(() => new URLSearchParams(location.search).get('theme') === 'light' ? 'light' : 'dark');
+  const initialFeature = useRef(new URLSearchParams(location.search).get('feature'));
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    const params = new URLSearchParams(location.search); params.set('theme', theme); params.set('panel',sheetExpanded ? 'expanded' : 'collapsed'); params.set('metric',selectedMetric);
+    if(candidateFilter)params.set('candidate',candidateFilter);else params.delete('candidate');
+    history.replaceState(null,'',`${location.pathname}?${params}${location.hash}`);
+  }, [theme, sheetExpanded, selectedMetric, candidateFilter]);
   const [error, setError] = useState<string | null>(null);
   const [revisionUnavailable, setRevisionUnavailable] = useState(false);
 
@@ -46,6 +64,10 @@ export default function App() {
     void (async () => {
       try {
         const nextRegistry = await json<WebRegistry>('./registry.json');
+        const descriptors = await Promise.all([...nextRegistry.datasets,...(nextRegistry.revisions ?? [])].map(async ref => ({...descriptorSchema.parse(await json<unknown>(ref.descriptorUri)), uri:ref.dataUri})));
+        const nextRuntime = new AtlasRuntime({registry:new Registry({datasets:descriptors})});
+        nextRuntime.hydrateFromSearch(location.search);
+        setRuntime(nextRuntime);
         const nextCatalog = await json<Catalog>(`./locales/${nextRegistry.app.locale}.json`);
         const nextGeometry = await json<FeatureCollection>(nextRegistry.territory.geometryUri);
         const policies = await json<MunicipalComparisonPolicy[]>('./comparison-policies.json');
@@ -57,7 +79,10 @@ export default function App() {
     })();
   }, []);
 
-  const activeRef = useMemo(() => registry?.datasets.find(item => item.id === selectedDatasetId) ?? null, [registry, selectedDatasetId]);
+  const activeRef = useMemo(() => {
+    const pin=initialPin.current;
+    return (pin.dataset === selectedDatasetId && pin.revision ? registry?.revisions?.find(item=>item.id===selectedDatasetId && item.revision===pin.revision) : null) ?? registry?.datasets.find(item=>item.id===selectedDatasetId) ?? null;
+  }, [registry,selectedDatasetId]);
   const comparisonOptions = useMemo(
     () => registry?.datasets.filter(item => item.id !== selectedDatasetId && item.roundId === activeRef?.roundId && item.periodId !== activeRef?.periodId) ?? [],
     [registry, activeRef, selectedDatasetId]
@@ -67,18 +92,22 @@ export default function App() {
   const comparisonRef = registry?.datasets.find(item => item.id === resolvedComparisonId) ?? null;
 
   useEffect(() => {
-    if (!activeRef) return;
+    if (!activeRef || !runtime) return;
     let live = true;
-    setSelection(null); setDataset(null); setDescriptor(null); setCandidates([]); setError(null);
+    setInspectedRow(null); setSelection(null); setDataset(null); setDescriptor(null); setCandidates([]); setError(null);
     void (async () => {
       try {
-        const [nextDescriptor, nextDataset] = await Promise.all([
-          json<DatasetDescriptor>(activeRef.descriptorUri),
-          json<ElectionDataset>(activeRef.dataUri)
-        ]);
+        const nextDescriptor = runtime.registry.getDataset(activeRef.id, activeRef.revision)!;
+        runtime.store.set({dataset:nextDescriptor.id, revision:nextDescriptor.revision});
+        const nextDataset = electionSchema.parse(await runtime.loadResolved());
         const nextCandidates = activeRef.candidateCatalogUri ? await json<Candidate[]>(activeRef.candidateCatalogUri) : [];
         if (!live) return;
         setDescriptor(nextDescriptor); setDataset(nextDataset); setCandidates(nextCandidates);
+        if (initialFeature.current) {
+          const label = initialFeature.current;
+          if (geometry?.features.some(feature => feature.properties?.[registry!.territory.geometryLabelField] === label)) setSelection({label,value:null});
+          initialFeature.current = null;
+        }
         const pin = initialPin.current;
         // Do not rewrite or silently replace an immutable revision specified by an incoming link.
         setRevisionUnavailable(Boolean(pin.revision && pin.dataset === activeRef.id &&
@@ -86,7 +115,7 @@ export default function App() {
       } catch (cause) { if (live) setError(String(cause)); }
     })();
     return () => { live = false; };
-  }, [activeRef]);
+  }, [activeRef, runtime]);
 
   useEffect(() => {
     if (!descriptor || !activeRef || revisionUnavailable) return;
@@ -99,10 +128,8 @@ export default function App() {
     if (!comparisonEnabled || !comparisonRef) return;
     void (async () => {
       try {
-        const [desc, data] = await Promise.all([
-          json<DatasetDescriptor>(comparisonRef.descriptorUri),
-          json<ElectionDataset>(comparisonRef.dataUri)
-        ]);
+        const desc = descriptorSchema.parse(await json<unknown>(comparisonRef.descriptorUri));
+        const data = await loadElection(desc, comparisonRef.dataUri);
         if (live) { setComparisonDescriptor(desc); setComparisonData(data); }
       } catch (cause) { if (live) setComparisonError(String(cause)); }
     })();
@@ -110,22 +137,18 @@ export default function App() {
   }, [comparisonEnabled, comparisonRef?.id, comparisonRef?.descriptorUri, comparisonRef?.dataUri]);
 
   const t = useMemo(() => translator(catalog), [catalog]);
-  const handleSelect = useCallback((next:{label:string;value:number|null}) => setSelection(next.label ? next : null), []);
+  const handleSelect = useCallback((next:{label:string;value:number|null}) => {
+    setSelection(next.label ? next : null);
+    const params = new URLSearchParams(location.search);
+    if (next.label) params.set('feature',next.label); else params.delete('feature');
+    history.replaceState(null,'',`${location.pathname}?${params}${location.hash}`);
+  }, []);
 
-  const candidateRows = useMemo(() => {
-    if (!dataset || !candidates.length) return [];
-    const votes = (dataset.summary.candidateVotes as Record<string, number> | undefined) ??
-      dataset.rows.reduce<Record<string, number>>((out, row) => {
-        for (const [key, votes] of Object.entries(row.candidateVotes)) out[key] = (out[key] ?? 0) + votes;
-        return out;
-      }, {});
-    const valid = Number(dataset.summary.validVotes ?? dataset.summary.valid ?? 0);
-    return candidates.map(candidate => ({
-      ...candidate,
-      votes: Number(votes[String(candidate.ballotNumber)] ?? 0),
-      share: valid > 0 ? Number(votes[String(candidate.ballotNumber)] ?? 0) / valid : 0
-    })).sort((a,b)=>b.votes-a.votes);
-  }, [dataset, candidates]);
+  const candidateRows = useMemo(() => dataset ? municipalCandidates(dataset,candidates) : [], [dataset,candidates]);
+  const metric = registry?.metrics?.find(item=>item.id === selectedMetric) ?? registry?.metrics?.[0];
+  const primary = dataset && metric ? evaluateExpression(metric.expression,{...dataset.summary,validVotes:dataset.summary.validVotes ?? dataset.summary.valid,blankVotes:dataset.summary.blankVotes ?? dataset.summary.blank,eligible:dataset.summary.eligible ?? dataset.summary.apt}) : null;
+  const measures = dataset ? extractMunicipalMeasure(dataset) : null;
+  const summaryCount = (key: string) => typeof dataset?.summary[key] === 'number' ? number.format(dataset.summary[key] as number) : '—';
 
   if (error) return <main className="fatal"><h1>{t('error.title')}</h1><pre>{error}</pre></main>;
   if (!registry || !geometry) return <main className="loading">{t('app.loading')}</main>;
@@ -135,7 +158,8 @@ export default function App() {
       <button className="icon-button" onClick={() => setSidebarOpen(value => !value)} aria-label={t('nav.toggle')} aria-expanded={sidebarOpen} aria-controls="atlas-sidebar">☰</button>
       <div className="brand"><strong>{t(registry.app.titleKey)}</strong><span>{t(registry.app.subtitleKey)}</span></div>
       <div className="topbar-spacer" />
-      {descriptor && <div className={`data-status status-${descriptor.status}`}><span>{t(`status.${descriptor.status}`)}</span><small>{new Date(descriptor.asOf).toLocaleString('pt-BR')}</small></div>}
+      <button className="icon-button" aria-label="Alternar tema claro e escuro" aria-pressed={theme === 'light'} onClick={() => setTheme(value => value === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? '☀' : '☾'}</button>
+      {descriptor && <div className={`data-status status-${descriptor.status}`}><span>{t(`status.${descriptor.status}`)}{descriptor.sourceStatus === 'unverified-legacy' ? ' · legado não verificado' : ''}</span><small>{new Date(descriptor.asOf).toLocaleString('pt-BR')}</small></div>}
     </header>
 
     <aside id="atlas-sidebar" inert={!sidebarOpen} className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
@@ -148,11 +172,13 @@ export default function App() {
           initialPin.current = { dataset: null, revision: null };
           setRevisionUnavailable(false);
           setSelectedDatasetId(item.id);
+          const params = new URLSearchParams(location.search); params.delete('feature'); history.replaceState(null,'',`${location.pathname}?${params}${location.hash}`);
           if (window.innerWidth <= 800) setSidebarOpen(false);
         }}>
           <span>{t(item.labelKey)}</span><small>{item.roundId ? t('period.round',{round:item.roundId}) : ''}</small>
         </button>)}
       </nav>
+      <div className="analysis-controls"><label htmlFor="metric-choice">Selecionar métrica municipal</label><select id="metric-choice" value={metric?.id ?? selectedMetric} onChange={event=>setSelectedMetric(event.target.value)}>{registry.metrics?.map(item=><option key={item.id} value={item.id}>{t(item.labelKey)}</option>)}</select><label htmlFor="candidate-choice">Filtrar candidato</label><select id="candidate-choice" value={candidateFilter} onChange={event=>setCandidateFilter(event.target.value)}><option value="">Todos os candidatos</option>{candidateRows.map(candidate=><option key={candidate.id} value={candidate.id}>{candidate.officialName || `Número de urna ${candidate.ballotNumber} (nome não catalogado)`}</option>)}</select><button onClick={()=>{handleSelect({label:'',value:null});setCandidateFilter('');setSelectedMetric(registry.metric.id);}}>Limpar filtros e seleção</button></div>
       <div className="comparison-controls">
         <label className="comparison-toggle">
           <input type="checkbox" checked={comparisonEnabled}
@@ -173,7 +199,7 @@ export default function App() {
       {descriptor && <section className="provenance">
         <span className="eyebrow">{t('data.provenance')}</span>
         <a href={descriptor.provenance.sourceUrl} target="_blank" rel="noreferrer">{descriptor.provenance.sourceId}</a>
-        <span>Origem: {descriptor.sourceGrain}</span><span>Unidade: {descriptor.analysisUnit}</span>
+        <span>Estado da fonte: {descriptor.sourceStatus ?? 'não declarado'} · derivação: {descriptor.derivedStatus ?? descriptor.status}</span><span>Licença: {descriptor.provenance.license ?? 'não informada na fonte capturada'}</span><a href={descriptor.provenance.methodDoc?.startsWith('https://') ? descriptor.provenance.methodDoc : 'https://github.com/alldevitone-maker/Atlas-Project/blob/main/docs/methodology.md'} target="_blank" rel="noreferrer">Metodologia</a><span>Origem: {descriptor.sourceGrain}</span><span>Unidade: {descriptor.analysisUnit}</span>
         <span>Cobertura declarada da extração, não cobertura espacial auditada.</span>
         {descriptor.quality.notes.map(note => <span key={note}>{note}</span>)}
         <span>{t('data.revision',{revision:descriptor.revision})}</span>
@@ -182,7 +208,7 @@ export default function App() {
     </aside>
 
     <section className="map-stage">
-      {dataset && <Suspense fallback={<p role="status">Carregando mapa…</p>}><AtlasMap geometry={geometry} geometryLabelField={registry.territory.geometryLabelField} dataset={dataset} datasetField={registry.join.datasetField} metricField={registry.metric.rowField} prototype={registry.join.prototype} metricLabel={t(registry.metric.labelKey)} onSelect={handleSelect} /></Suspense>}
+      {dataset && <Suspense fallback={<p role="status">Carregando mapa…</p>}><AtlasMap geometry={geometry} geometryLabelField={registry.territory.geometryLabelField} dataset={dataset} datasetField={registry.join.datasetField} metricField={registry.metric.rowField} prototype={registry.join.prototype} metricLabel={t(registry.metric.labelKey)} selectedLabel={selection?.label ?? ''} onSelect={handleSelect} /></Suspense>}
       {registry.join.prototype && <div className="method-badge">{t('method.prototype')} Malha exploratória, sem coloração eleitoral: associação espacial não auditada.</div>}
     </section>
 
@@ -203,17 +229,19 @@ export default function App() {
           baseline={{descriptor: comparisonDescriptor, data: comparisonData, label: t(comparisonRef!.labelKey) + ' · ' + comparisonRef!.roundId + 'º turno'}}
           current={{descriptor, data: dataset, label: t(activeRef.labelKey) + ' · ' + activeRef.roundId + 'º turno'}} />}
       <div className="summary-grid">
-        <article><span>{t(registry.metric.labelKey)}</span><strong>{dataset ? number.format(Number(dataset.summary.validVotes ?? dataset.summary.valid ?? 0)) : '—'}</strong></article>
-        <article><span>{t('metric.turnout')}</span><strong>{dataset ? percent.format(Number(dataset.summary.turnoutPct ?? 0) / 100) : '—'}</strong></article>
-        <article><span>{t('metric.abstention')}</span><strong>{dataset ? percent.format(Number(dataset.summary.abstentionPct ?? 0) / 100) : '—'}</strong></article>
+        <article><span>{dataset?.validVotesMeaning === 'nominal-bu' && metric?.id === 'valid-votes' ? 'Votos nominais nos boletins' : t(metric?.labelKey ?? registry.metric.labelKey)}</span><strong>{primary == null ? '—' : metric?.format === 'percent' ? percent.format(primary) : number.format(primary)}</strong></article>
+        <article><span>{t('metric.turnout')}</span><strong>{measures ? percent.format(measures.turnoutRate / 100) : '—'}</strong></article>
+        <article><span>{t('metric.abstention')}</span><strong>{measures ? percent.format(measures.abstentionRate / 100) : '—'}</strong></article>
         <article><span>{t('selection.title')}</span><strong>{selection?.label ?? t('selection.none')}</strong><small>{selection?.value == null ? '' : number.format(selection.value)}</small></article>
       </div>
+      <p className="semantics">Brancos: {summaryCount('blankVotes')} · Nulos: {summaryCount('nullVotes')} · Aptos: {summaryCount('eligible')} · Comparecimento: {summaryCount('turnout')}. Percentuais dos candidatos usam votos válidos como denominador.</p>
       {candidateRows.length > 0 && <div className="candidate-list">
-        {candidateRows.map(candidate => <div className="candidate-row" key={candidate.id}>
-          <div><strong>{candidate.officialName}</strong><span>{candidate.ballotNumber}</span></div>
-          <div className="candidate-value"><strong>{number.format(candidate.votes)}</strong><span>{percent.format(candidate.share)}</span></div>
+        {candidateRows.filter(candidate=>!candidateFilter || candidate.id===candidateFilter).map(candidate => <div className="candidate-row" key={candidate.id}>
+          <div><strong>{candidate.officialName || `Número de urna ${candidate.ballotNumber} (nome não catalogado)`}</strong><span>{candidate.ballotNumber}</span></div>
+          <div className="candidate-value"><strong>{number.format(candidate.votes)}</strong><span>{candidate.share == null ? '—' : percent.format(candidate.share)}</span></div>
         </div>)}
       </div>}
+      {dataset?.validVotesMeaning === 'nominal-bu' && <details className="semantics"><summary>Inspecionar seções da fonte</summary><p>Identificadores de local de votação, sem coordenadas nem associação por bairro. Seções: {dataset.rows.length}.</p><label htmlFor="section-inspector">Seção eleitoral</label><select id="section-inspector" onChange={event => {const row=dataset.rows.find(item=>item.sourceUnitId===event.target.value);setInspectedRow(row ?? null);}}><option value="">Selecionar seção</option>{dataset.rows.map(row=><option key={row.sourceUnitId} value={row.sourceUnitId}>{row.label}</option>)}</select>{inspectedRow && <p>Local de votação: {String(inspectedRow.pollingPlaceId)} · Nominais: {number.format(inspectedRow.validVotes)} · Brancos: {String(inspectedRow.blankVotes)} · Nulos: {String(inspectedRow.nullVotes)}</p>}</details>}
       {dataset?.semantics && <p className="semantics">{dataset.semantics}</p>}
     </section>
   </main>;

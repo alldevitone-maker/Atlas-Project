@@ -1,6 +1,7 @@
 export type DatasetStatus = 'draft' | 'provisional' | 'totalized' | 'official';
 
 export interface DatasetRef {
+  revision?: string;
   id: string;
   labelKey: string;
   periodId: string;
@@ -15,42 +16,33 @@ export interface WebRegistry {
   territory: { id: string; labelKey: string; geometryUri: string; geometryLabelField: string };
   module: { id: string; labelKey: string; domainId: string };
   datasets: DatasetRef[];
+  revisions?: DatasetRef[];
   defaultDatasetId: string;
   comparisonPolicyId: string;
+  metrics?: {id:string;labelKey:string;expression:import('../../../packages/contracts/src/index').MetricExpression;format:'integer' | 'percent'}[];
   metric: { id: string; labelKey: string; rowField: string; format: 'integer' | 'percent' };
   join: { strategy: string; datasetField: string; prototype: boolean };
 }
 
-export interface DatasetDescriptor {
-  id: string;
-  revision: string;
-  status: DatasetStatus;
-  territoryId: string;
-  territoryVintage: string;
-  sourceGrain: string;
-  analysisUnit: string;
-  moduleId: string;
-  domainId?: string | null;
-  periodId: string;
-  roundId?: string | null;
-  asOf: string;
-  quality: { coveragePct: number; reconciled: boolean; notes: string[] };
-  provenance: { sourceId: string; sourceUrl: string; collectedAt: string };
-}
+export type { DatasetDescriptor } from '../../../packages/contracts/src/index';
 
 export interface ElectionRow {
   sourceUnitId: string;
   label: string;
   validVotes: number;
-  turnout: number;
-  abstention: number;
+  turnout?: number;
+  abstention?: number;
   candidateVotes: Record<string, number>;
+  pollingPlaceId?: string;
+  blankVotes?: number;
+  nullVotes?: number;
 }
 
 export interface ElectionDataset {
+  validVotesMeaning?: string;
   rows: ElectionRow[];
   summary: Record<string, unknown>;
-  semantics?: string;
+  semantics?: string | null;
 }
 
 export interface Candidate {

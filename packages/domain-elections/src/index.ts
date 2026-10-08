@@ -15,3 +15,26 @@ export function topTwoMargin(results: CandidateResult[], validVotes: number): nu
   const second = ranked[1]!;
   return (first.votes - second.votes) / validVotes;
 }
+
+export interface CandidateCatalogEntry {
+  id: string;
+  officialName: string;
+  ballotNumber: string | number;
+}
+
+/** Municipal aggregates only; missing catalogs yield ballot identifiers, never inferred names. */
+export function municipalCandidates(data: {
+  rows: { candidateVotes: Record<string, number> }[];
+  summary: Record<string, unknown>;
+}, catalog: CandidateCatalogEntry[]) {
+  const votes = (data.summary.candidateVotes as Record<string, number> | undefined) ??
+    data.rows.reduce<Record<string, number>>((out,row) => {
+      for (const [key,value] of Object.entries(row.candidateVotes)) out[key]=(out[key] ?? 0)+value;
+      return out;
+    }, {});
+  const valid = data.summary.validVotes ?? data.summary.valid;
+  const entries = catalog.length ? catalog : Object.keys(votes).map(ballotNumber => ({id:`ballot-${ballotNumber}`,ballotNumber,officialName:''}));
+  const ranked=rankCandidates(entries.map(entry=>({candidateId:entry.id,votes:votes[String(entry.ballotNumber)] ?? 0})));
+  return ranked.map(result=>({ ...entries.find(entry=>entry.id === result.candidateId)!, votes:result.votes,
+    share:typeof valid === 'number' && valid > 0 ? result.votes/valid : null }));
+}

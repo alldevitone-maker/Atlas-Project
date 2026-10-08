@@ -42,6 +42,15 @@
       "descriptorUri": "./data/presidential-2026-r1.dataset.json",
       "dataUri": "./data/presidential-2026-r1.json",
       "candidateCatalogUri": "./data/presidential-2026-candidates.json"
+    },
+    {
+      "id": "elections-presidential-2026-r1-bu",
+      "labelKey": "period.2026.bu",
+      "periodId": "2026",
+      "roundId": "1",
+      "descriptorUri": "./data/presidential-2026-r1-bu-7b347d87beb7.dataset.json",
+      "dataUri": "./data/presidential-2026-r1-bu-7b347d87beb7.json",
+      "candidateCatalogUri": "./data/presidential-2026-r1-bu-7b347d87beb7.candidates.json"
     }
   ],
   "defaultDatasetId": "elections-presidential-2026-r1",
@@ -56,5 +65,94 @@
     "datasetField": "sourceUnitId",
     "prototype": true
   },
-  "comparisonPolicyId": "municipality-aggregate-v1"
+  "comparisonPolicyId": "municipality-aggregate-v1",
+  "revisions": [
+    {
+      "id": "elections-presidential-2022-r1",
+      "labelKey": "period.2022",
+      "periodId": "2022",
+      "roundId": "1",
+      "descriptorUri": "./data/revisions/elections-presidential-2022-r1-legacy-1b7f4f116ed7.dataset.json",
+      "dataUri": "./data/revisions/elections-presidential-2022-r1-legacy-1b7f4f116ed7.json",
+      "candidateCatalogUri": null,
+      "revision": "legacy-1b7f4f116ed7"
+    },
+    {
+      "id": "elections-presidential-2022-r2",
+      "labelKey": "period.2022",
+      "periodId": "2022",
+      "roundId": "2",
+      "descriptorUri": "./data/revisions/elections-presidential-2022-r2-legacy-e45a9bef90a5.dataset.json",
+      "dataUri": "./data/revisions/elections-presidential-2022-r2-legacy-e45a9bef90a5.json",
+      "candidateCatalogUri": null,
+      "revision": "legacy-e45a9bef90a5"
+    },
+    {
+      "id": "elections-presidential-2026-r1",
+      "labelKey": "period.2026",
+      "periodId": "2026",
+      "roundId": "1",
+      "descriptorUri": "./data/revisions/elections-presidential-2026-r1-legacy-6f965e3f3c00.dataset.json",
+      "dataUri": "./data/revisions/elections-presidential-2026-r1-legacy-6f965e3f3c00.json",
+      "candidateCatalogUri": "./data/presidential-2026-candidates.json",
+      "revision": "legacy-6f965e3f3c00"
+    },
+    {
+      "id": "elections-presidential-2026-r1-bu",
+      "labelKey": "period.2026.bu",
+      "periodId": "2026",
+      "roundId": "1",
+      "descriptorUri": "./data/revisions/elections-presidential-2026-r1-bu-bu-7b347d87beb7.dataset.json",
+      "dataUri": "./data/revisions/elections-presidential-2026-r1-bu-bu-7b347d87beb7.json",
+      "candidateCatalogUri": "./data/presidential-2026-r1-bu-7b347d87beb7.candidates.json",
+      "revision": "bu-7b347d87beb7"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "valid-votes",
+      "labelKey": "metric.validVotes",
+      "expression": {
+        "op": "field",
+        "field": "validVotes"
+      },
+      "format": "integer"
+    },
+    {
+      "id": "blank-votes",
+      "labelKey": "metric.blankVotes",
+      "expression": {
+        "op": "field",
+        "field": "blankVotes"
+      },
+      "format": "integer"
+    },
+    {
+      "id": "null-votes",
+      "labelKey": "metric.nullVotes",
+      "expression": {
+        "op": "field",
+        "field": "nullVotes"
+      },
+      "format": "integer"
+    },
+    {
+      "id": "turnout",
+      "labelKey": "metric.turnout.count",
+      "expression": {
+        "op": "field",
+        "field": "turnout"
+      },
+      "format": "integer"
+    },
+    {
+      "id": "eligible",
+      "labelKey": "metric.eligible",
+      "expression": {
+        "op": "field",
+        "field": "eligible"
+      },
+      "format": "integer"
+    }
+  ]
 }

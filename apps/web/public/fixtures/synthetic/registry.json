@@ -1,0 +1,86 @@
+{
+  "modules": [
+    {
+      "id": "module-synthetic",
+      "labelKey": "modules.synthetic",
+      "status": "active",
+      "domainPackage": null,
+      "children": []
+    }
+  ],
+  "datasets": [
+    {
+      "id": "dataset-synthetic",
+      "revision": "rev-001",
+      "supersedes": null,
+      "moduleId": "module-synthetic",
+      "domainId": null,
+      "periodId": "period-a",
+      "roundId": null,
+      "status": "draft",
+      "asOf": "2026-10-07T00:00:00Z",
+      "publishedAt": "2026-10-07T00:00:00Z",
+      "sourceGrain": "unit",
+      "analysisUnit": "unit",
+      "territoryId": "territory-synthetic",
+      "territoryVintage": "v1",
+      "crosswalkId": null,
+      "format": "json",
+      "uri": "./fixtures/synthetic/data.json",
+      "schemaRef": "synthetic-values-v1",
+      "candidateCatalogUri": null,
+      "comparisonPolicyId": "same-unit-v1",
+      "provenance": {
+        "sourceId": "source-synthetic",
+        "sourceUrl": "https://example.invalid/source",
+        "collectedAt": "2026-10-07T00:00:00Z",
+        "license": null,
+        "methodDoc": null
+      },
+      "quality": {
+        "coveragePct": 100,
+        "reconciled": true,
+        "notes": [
+          "Synthetic contract fixture"
+        ]
+      },
+      "checksum": "811d0cdcc584650b370e6fef5aa4036824e1f4d847de06f691b3056ffa7853ee",
+      "sourceStatus": "draft",
+      "derivedStatus": "draft"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "metric-synthetic-value",
+      "labelKey": "metrics.syntheticValue",
+      "expression": {
+        "op": "field",
+        "field": "value"
+      },
+      "format": "integer",
+      "comparisonPolicyId": "same-unit-v1",
+      "minReliableObservations": null,
+      "palette": {
+        "type": "sequential",
+        "ref": "neutral",
+        "center": null
+      },
+      "classification": "continuous"
+    }
+  ],
+  "policies": [
+    {
+      "id": "same-unit-v1",
+      "requiresSameTerritoryVintage": true,
+      "requiresSameAnalysisUnit": true,
+      "allowAbsoluteDelta": true,
+      "allowRelativeDelta": true,
+      "onIncompatible": "reject",
+      "messageKey": "comparison.incompatible"
+    }
+  ],
+  "catalog": {
+    "modules.synthetic": "M\u00f3dulo sint\u00e9tico",
+    "metrics.syntheticValue": "Valor sint\u00e9tico"
+  }
+}

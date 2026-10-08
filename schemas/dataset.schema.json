@@ -137,6 +137,14 @@
             "string",
             "null"
           ]
+        },
+        "sourceSnapshotUri": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceChecksum": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
       },
       "required": [
@@ -211,5 +219,46 @@
     "provenance",
     "quality",
     "checksum"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "official"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "sourceStatus",
+          "derivedStatus"
+        ],
+        "properties": {
+          "sourceStatus": {
+            "const": "official"
+          },
+          "derivedStatus": {
+            "const": "official"
+          },
+          "quality": {
+            "properties": {
+              "reconciled": {
+                "const": true
+              }
+            }
+          },
+          "provenance": {
+            "required": [
+              "sourceSnapshotUri",
+              "sourceChecksum"
+            ]
+          }
+        }
+      }
+    }
   ]
 }

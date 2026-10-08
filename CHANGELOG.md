@@ -1,3 +1,7 @@
+## 0.2.2 — 2026-10-08
+
+Extração de BU vinculada à fonte, revisões imutáveis, integração do core e filtros/inspector/temas. Gates de contratos, integridade, AST, orçamento de assets e E2E Chromium/WebKit. Pendências científicas e de release estão no [relatório](docs/implementation-roadmap-2026-10-08.md); v0.3.0 não declarada concluída.
+
 # Changelog
 
 ## 0.2.1 · Repository bootstrap

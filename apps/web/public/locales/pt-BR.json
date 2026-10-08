@@ -24,5 +24,10 @@
   "selection.title": "Área selecionada",
   "selection.none": "Toque ou clique no mapa",
   "sheet.toggle": "Expandir ou recolher painel",
-  "territory.label": "Jaraguá do Sul"
+  "territory.label": "Jaraguá do Sul",
+  "period.2026.bu": "2026 · Boletins verificados",
+  "metric.blankVotes": "Votos brancos",
+  "metric.nullVotes": "Votos nulos",
+  "metric.turnout.count": "Comparecimento",
+  "metric.eligible": "Eleitores aptos"
 }

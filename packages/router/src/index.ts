@@ -1,8 +1,8 @@
 export type UrlState = Record<string, string | undefined>;
 
 const ALLOWED_KEYS = [
-  'territory', 'module', 'domain', 'dataset', 'revision', 'compare',
-  'metric', 'feature', 'basemap', 'panel', 'theme', 'locale'
+  'territory', 'module', 'domain', 'period', 'round', 'dataset', 'revision', 'compare',
+  'metric', 'candidate', 'layers', 'feature', 'basemap', 'panel', 'theme', 'locale'
 ] as const;
 
 export function parseUrlState(search: string): UrlState {

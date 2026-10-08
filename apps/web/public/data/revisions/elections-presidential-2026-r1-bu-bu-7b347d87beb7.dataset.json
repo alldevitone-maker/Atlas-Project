@@ -1,0 +1,41 @@
+{
+  "analysisUnit": "polling-section",
+  "asOf": "2026-10-08T01:47:14.333568+00:00",
+  "candidateCatalogUri": "./presidential-2026-r1-bu-7b347d87beb7.candidates.json",
+  "checksum": "7b347d87beb72fc95b07dca7a3856e87ddb32aac942e9b2809b1954a0694f6ea",
+  "comparisonPolicyId": "municipality-aggregate-v1",
+  "crosswalkId": null,
+  "derivedStatus": "provisional",
+  "domainId": "presidential",
+  "format": "json",
+  "id": "elections-presidential-2026-r1-bu",
+  "moduleId": "elections",
+  "periodId": "2026",
+  "provenance": {
+    "collectedAt": "2026-10-08T01:47:14.333568+00:00",
+    "license": null,
+    "methodDoc": "https://github.com/alldevitone-maker/Atlas-Project/blob/main/docs/bu-source-reconciliation.md",
+    "sourceId": "tse-bu-2026-sc-r1",
+    "sourceUrl": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_SC_051020261403.zip"
+  },
+  "publishedAt": "2026-10-08T01:47:14.333568+00:00",
+  "quality": {
+    "coveragePct": 100,
+    "notes": [
+      "SHA-256 e SHA-512 do arquivo bruto verificados. Todas as seções extraídas reconciliam internamente; completude contra universo externo não certificada.",
+      "BU nominal não equivale a resultado final homologado. Sem correspondência espacial auditada.",
+      "Divergência com legado: +10 votos nominais e -10 nulos; comparação bloqueada até esclarecer semântica."
+    ],
+    "reconciled": true
+  },
+  "revision": "bu-7b347d87beb7",
+  "roundId": "1",
+  "schemaRef": "election-results-v1",
+  "sourceGrain": "polling-section",
+  "sourceStatus": "totalized",
+  "status": "provisional",
+  "supersedes": null,
+  "territoryId": "br-sc-jaragua-do-sul",
+  "territoryVintage": "tse-section-2026",
+  "uri": "./elections-presidential-2026-r1-bu-bu-7b347d87beb7.json"
+}

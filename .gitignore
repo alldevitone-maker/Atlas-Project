@@ -8,3 +8,6 @@ test-results/
 !.env.example
 
 *.tsbuildinfo
+
+__pycache__/
+*.pyc

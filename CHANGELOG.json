@@ -1,5 +1,23 @@
 [
   {
+    "version": "0.2.2",
+    "date": "2026-10-08",
+    "status": "development",
+    "summary": "Verified BU extraction, immutable revisions, core integration and release gates",
+    "changes": [
+      "Preserve municipal source subset and independently check raw archive hashes",
+      "Block nominal-BU versus legacy-valid-vote comparisons",
+      "Integrate core runtime, metrics, map, interaction, router and i18n with web",
+      "Add municipal filters, section inspector, explicit denominators and accessible themes",
+      "Add descriptor/runtime integrity, crosswalk evidence, AST guard and release budgets",
+      "Gate Pages on foundation and Chromium/WebKit desktop-mobile tests"
+    ],
+    "limitations": [
+      "No audited neighborhood results or final official-result seal",
+      "2022 independent raw capture and geospatial validation remain pending"
+    ]
+  },
+  {
     "version": "0.2.1",
     "date": "2026-10-07",
     "summary": "Standalone repository bootstrap and CI dependency fix",

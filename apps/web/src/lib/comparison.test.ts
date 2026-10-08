@@ -11,6 +11,7 @@ const policy: MunicipalComparisonPolicy = {
 };
 function descriptor(id:string, year:string, round='1'):DatasetDescriptor {
   return {
+    publishedAt:'2026-10-08T00:00:00Z', format:'json', uri:'/fixture.json', schemaRef:'election-results-v1', checksum:'a'.repeat(64),
     id, periodId:year, revision:'immutable-'+year, status:'totalized', asOf:year+'-10-04T00:00:00Z',
     territoryId:'territory-alpha', territoryVintage:year+'-map',
     moduleId:'elections', domainId:'presidential', sourceGrain:'polling-place-neighborhood-label',

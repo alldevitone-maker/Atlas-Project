@@ -62,6 +62,8 @@ export interface CrosswalkAssociation {
   confidence: number;
   reviewed: boolean;
   weight?: number | null;
+  evidenceRef?: string;
+  ambiguous?: boolean;
 }
 
 export interface Crosswalk {
@@ -74,6 +76,7 @@ export interface Crosswalk {
   checksum: string;
   coverage: { matched: number; total: number; pct: number };
   associations: CrosswalkAssociation[];
+  unmappedPolicy?: 'exclude-and-report' | 'reject';
 }
 
 export type MetricExpression =
@@ -118,6 +121,8 @@ export interface DatasetDescriptor {
   periodId: string;
   roundId?: string | null;
   status: DatasetStatus;
+  sourceStatus?: DatasetStatus | 'unverified-legacy';
+  derivedStatus?: DatasetStatus;
   asOf: string;
   publishedAt: string;
   sourceGrain: string;
@@ -136,6 +141,8 @@ export interface DatasetDescriptor {
     collectedAt: string;
     license?: string | null;
     methodDoc?: string | null;
+    sourceSnapshotUri?: string;
+    sourceChecksum?: string;
   };
   quality: { coveragePct: number; reconciled: boolean; notes: string[] };
   checksum: string;

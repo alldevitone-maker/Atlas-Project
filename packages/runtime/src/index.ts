@@ -38,7 +38,7 @@ export class AtlasRuntime {
     const state = this.store.get();
     const explicitId = typeof state.dataset === 'string' ? state.dataset : undefined;
     if (explicitId) {
-      const descriptor = this.registry.getDataset(explicitId);
+      const descriptor = this.registry.getDataset(explicitId, typeof state.revision === 'string' ? state.revision : undefined);
       if (!descriptor) throw new Error(`dataset-not-found:${explicitId}`);
       if (typeof state.revision === 'string' && descriptor.revision !== state.revision) {
         throw new Error(`dataset-revision-mismatch:${state.revision}`);
@@ -48,7 +48,12 @@ export class AtlasRuntime {
 
     const moduleId = typeof state.module === 'string' ? state.module : undefined;
     if (!moduleId) throw new Error('module-not-selected');
-    const descriptor = this.registry.resolveLatestDataset({ moduleId });
+    const descriptor = this.registry.resolveLatestDataset({ moduleId,
+      ...(typeof state.territory === 'string' ? {territoryId:state.territory} : {}),
+      ...(typeof state.domain === 'string' ? {domainId:state.domain} : {}),
+      ...(typeof state.period === 'string' ? {periodId:state.period} : {}),
+      ...(typeof state.round === 'string' ? {roundId:state.round} : {})
+    });
     if (!descriptor) throw new Error(`dataset-not-found-for-module:${moduleId}`);
     return descriptor;
   }

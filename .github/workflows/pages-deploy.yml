@@ -5,6 +5,12 @@ on:
     branches: [main]
     paths:
       - 'apps/web/**'
+      - 'packages/**'
+      - 'pipelines/**'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'data/**'
+      - 'tests/**'
       - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
 
@@ -24,15 +30,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Foundation release gate
+        run: |
+          npm ci --no-audit --no-fund
+          pip install jsonschema==4.26.0
+          npm run verify:foundation
       - name: Install pinned dependencies
         run: npm ci --prefix apps/web --no-audit --no-fund
       - name: Typecheck and produce web bundle
         run: npm run build --prefix apps/web
+      - name: Check asset budgets
+        run: node scripts/check_web_budget.mjs
       - name: Run F6 comparison regression tests
         run: npm run test --prefix apps/web
       - name: Install browser for release gate
         working-directory: apps/web
-        run: npx playwright install chromium --with-deps
+        run: npx playwright install chromium webkit --with-deps
       - name: Desktop and mobile release gate
         run: npm run test:e2e --prefix apps/web
       - name: Upload for GitHub Pages

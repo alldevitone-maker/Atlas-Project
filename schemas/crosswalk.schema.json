@@ -96,6 +96,13 @@
             ],
             "exclusiveMinimum": 0,
             "maximum": 1
+          },
+          "evidenceRef": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ambiguous": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -104,8 +111,38 @@
           "method",
           "confidence",
           "reviewed"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "reviewed": {
+                  "const": true
+                }
+              },
+              "required": [
+                "reviewed"
+              ]
+            },
+            "then": {
+              "required": [
+                "evidenceRef"
+              ],
+              "properties": {
+                "ambiguous": {
+                  "const": false
+                }
+              }
+            }
+          }
         ]
       }
+    },
+    "unmappedPolicy": {
+      "enum": [
+        "exclude-and-report",
+        "reject"
+      ]
     }
   },
   "required": [

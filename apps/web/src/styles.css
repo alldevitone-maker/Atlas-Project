@@ -36,3 +36,8 @@
 @media(max-width:800px){.map-stage .maplibregl-ctrl-bottom-right{bottom:39dvh!important}}
 
 .bottom-sheet:focus-visible{outline:3px solid #9fc4ff;outline-offset:-3px}
+
+:root[data-theme="light"]{color:#12283c;background:#f5f8fc}:root[data-theme="light"] .shell{background:#f5f8fc}:root[data-theme="light"] .topbar,:root[data-theme="light"] .sidebar,:root[data-theme="light"] .bottom-sheet{background:#f5f8fc;color:#12283c}:root[data-theme="light"] .brand span,:root[data-theme="light"] .data-status small,:root[data-theme="light"] .provenance,:root[data-theme="light"] .semantics{color:#39536c}:root[data-theme="light"] .provenance a{color:#165594}:root[data-theme="light"] .summary-grid article,:root[data-theme="light"] .candidate-row{background:#e4edf6;color:#12283c}:root[data-theme="light"] .summary-grid span,:root[data-theme="light"] .candidate-row span{color:#39536c}:root[data-theme="light"] .period-list button{background:#e4edf6;color:#12283c}:root[data-theme="light"] .period-list button.active{background:#c2daf4}:root[data-theme="light"] .comparison-toggle{color:#12283c}
+:root[data-theme="light"] .eyebrow,:root[data-theme="light"] .period-list small{color:#39536c}
+
+.analysis-controls{display:grid;gap:7px;margin-top:16px;font-size:12px}.analysis-controls select,.analysis-controls button{max-width:100%;min-height:44px;background:#14283a;border:1px solid #49627a;color:#eef4fa;border-radius:7px;padding:7px}.semantics select{max-width:100%;min-height:44px}

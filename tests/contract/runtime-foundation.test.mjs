@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
 import { DataLoader } from '../../dist/packages/data-loader/src/index.js';
 import { MapEngine } from '../../dist/packages/map-engine/src/index.js';
@@ -23,7 +24,7 @@ const descriptor = {
 test('generic DataLoader uses adapter by descriptor format', async () => {
   const fetcher = async () => new Response(JSON.stringify({value:17}), {status:200, headers:{'content-type':'application/json'}});
   const loader = new DataLoader(undefined, fetcher);
-  assert.deepEqual(await loader.load(descriptor), {value:17});
+  assert.deepEqual(await loader.load({...descriptor, checksum:createHash('sha256').update(JSON.stringify({value:17})).digest('hex')}), {value:17});
 });
 
 test('MapEngine + LayerManager remain domain agnostic', () => {
@@ -63,11 +64,32 @@ test('i18n and UI slots are runtime-configurable', () => {
 
 test('AtlasRuntime preserves explicit immutable revision in permalink', async () => {
   const module={id:'module-alpha',labelKey:'module.alpha',status:'active',children:[]};
-  const registry=new Registry({modules:[module],datasets:[descriptor]});
+  const registry=new Registry({modules:[module],datasets:[{...descriptor,checksum:createHash('sha256').update(JSON.stringify({ok:true})).digest('hex')}]});
   const fetcher=async()=>new Response(JSON.stringify({ok:true}),{status:200});
   const runtime=new AtlasRuntime({registry,store:new AtlasStore(),loader:new DataLoader(undefined,fetcher)});
   runtime.hydrateFromSearch('?module=module-alpha&dataset=dataset-alpha&revision=rev-a');
   assert.equal(runtime.resolveDataset().revision,'rev-a');
   assert.match(runtime.permalink(),/revision=rev-a/);
   assert.deepEqual(await runtime.loadResolved(),{ok:true});
+});
+
+
+test('revisions survive registry insertion and exact pins never resolve to latest', () => {
+  const old = {...descriptor, revision:'old', publishedAt:'1999-01-01T00:00:00Z'};
+  const registry = new Registry({datasets:[descriptor,old]});
+  assert.equal(registry.getDataset(descriptor.id).revision,'rev-a');
+  assert.equal(registry.getDataset(descriptor.id,'old').revision,'old');
+  assert.equal(registry.getDataset(descriptor.id,'missing'),undefined);
+  const runtime = new AtlasRuntime({registry});
+  runtime.hydrateFromSearch('?dataset=dataset-alpha&revision=old');
+  assert.equal(runtime.resolveDataset().revision,'old');
+});
+
+test('loader rejects altered bytes before parsing', async () => {
+  const loader = new DataLoader(undefined,async()=>new Response('{"value":18}'));
+  await assert.rejects(loader.load(descriptor),/dataset-checksum-mismatch/);
+});
+
+test('immutable revision cannot be reused with different bytes',()=>{
+ assert.throws(()=>new Registry({datasets:[descriptor,{...descriptor,checksum:'b'.repeat(64)}]}),/dataset-revision-collision/);
 });

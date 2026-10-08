@@ -35,6 +35,18 @@
       "sourceCoveragePct": 83.7838,
       "joinStrategy": "normalized-exact-label",
       "prototype": true
+    },
+    {
+      "datasetId": "elections-presidential-2026-r1-bu",
+      "revision": "bu-7b347d87beb7",
+      "status": "provisional",
+      "geometryFeatures": 37,
+      "sourceRows": 384,
+      "matchedLabels": 0,
+      "geometryCoveragePct": 0.0,
+      "sourceCoveragePct": 0.0,
+      "joinStrategy": "normalized-exact-label",
+      "prototype": true
     }
   ]
 }

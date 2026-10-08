@@ -24,7 +24,9 @@
     "sourceUrl": "https://example.invalid/source",
     "collectedAt": "2026-10-07T00:00:00Z",
     "license": null,
-    "methodDoc": null
+    "methodDoc": null,
+    "sourceSnapshotUri": "fixture://snapshot",
+    "sourceChecksum": "1111111111111111111111111111111111111111111111111111111111111111"
   },
   "quality": {
     "coveragePct": 100,
@@ -33,5 +35,7 @@
       "Synthetic contract fixture"
     ]
   },
-  "checksum": "0000000000000000000000000000000000000000000000000000000000000000"
+  "checksum": "0000000000000000000000000000000000000000000000000000000000000000",
+  "sourceStatus": "official",
+  "derivedStatus": "official"
 }

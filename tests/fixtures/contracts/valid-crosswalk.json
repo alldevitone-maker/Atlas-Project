@@ -18,7 +18,10 @@
       "method": "official-field",
       "confidence": 1,
       "reviewed": true,
-      "weight": null
+      "weight": null,
+      "evidenceRef": "fixture://official-field",
+      "ambiguous": false
     }
-  ]
+  ],
+  "unmappedPolicy": "exclude-and-report"
 }
