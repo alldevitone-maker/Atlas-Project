@@ -2,6 +2,15 @@
 
 Fundação do novo Atlas municipal independente do `api-lab-faculdade`.
 
+## Documentação principal
+
+- [Roadmap v3.2 completo: execução, fontes, contratos e gates](docs/reference/roadmap-v3.2-execution.md)
+- [Resumo do roadmap v3.2](docs/roadmap.md)
+- [Histórico v3](docs/reference/roadmap-v3-full.md) e [revisão v3.1](docs/reference/roadmap-v3.1-review-delta.md)
+- [Build status (último inventário)](docs/build-status.md)
+
+**Auditoria de 08/10/2026:** o monorepo está no GitHub e o CI da fundação passou no commit de publicação do roadmap. O frontend React ainda depende de aprovação do novo [web-build CI](.github/workflows/web-build.yml). GitHub Pages não estava habilitado na auditoria: publicar código ou artefato não equivale a URL do produto em produção.
+
 ## Estado
 
 **Fase atual:** Build 0.2.1 · contratos, core runtime, pipelines normalizados e scaffold web.  
@@ -30,11 +39,7 @@ Fundação do novo Atlas municipal independente do `api-lab-faculdade`.
 
 ## Próximo marco
 
-Implementar e validar os contratos:
-`Territory`, `TerritoryUnit`, `Module`, `Dataset`, `Candidate`,
-`Crosswalk`, `Metric`, `ComparisonPolicy`, `Basemap` e `Attribution`.
-
-Depois disso, executar um **slice vertical 2022 / 1º turno** ponta a ponta.
+Confirmar o build do frontend no CI, conferir dataset/revisão e avançar o módulo Eleições (F6) com `ComparisonPolicy` e proveniência. Os contratos, fixtures e o slice 2022 já existem como implementação de fundação, mas o join territorial é protótipo e não deve ser apresentado como resultado oficial por bairro.
 
 ## Baseline imutável
 
