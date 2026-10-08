@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
-import maplibregl, { type GeoJSONSource, type Map as MlMap } from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
+import type { Map as MlMap } from 'maplibre-gl';
+import type { FeatureCollection } from 'geojson';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { ElectionDataset } from '../types';
 
 interface Props {
-  geometry: GeoJSON.FeatureCollection;
+  geometry: FeatureCollection;
   geometryLabelField: string;
   dataset: ElectionDataset;
   datasetField: string;
@@ -15,7 +17,7 @@ interface Props {
 
 const normalize = (value: unknown) => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toUpperCase();
 
-function boundsFor(fc: GeoJSON.FeatureCollection): [[number, number], [number, number]] {
+function boundsFor(fc: FeatureCollection): [[number, number], [number, number]] {
   const points: [number, number][] = [];
   const walk = (node: unknown): void => {
     if (!Array.isArray(node)) return;
@@ -43,10 +45,10 @@ export function AtlasMap(props: Props) {
       return {
         ...feature,
         id: feature.id ?? index,
-        properties: { ...(feature.properties ?? {}), __atlasLabel: label, __atlasMetric: Number.isFinite(value) ? value : null }
+        properties: { ...(feature.properties ?? {}), __atlasLabel: label, __atlasMetric: value !== null && Number.isFinite(value) ? value : null }
       };
     });
-    const fc: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features };
+    const fc: FeatureCollection = { type: 'FeatureCollection', features };
     const numeric = features.map(f => Number(f.properties?.__atlasMetric)).filter(Number.isFinite);
     const min = numeric.length ? Math.min(...numeric) : 0;
     const max = numeric.length ? Math.max(...numeric) : 1;

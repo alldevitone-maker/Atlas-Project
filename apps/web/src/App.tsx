@@ -1,3 +1,4 @@
+import type { FeatureCollection } from 'geojson';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AtlasMap } from './components/AtlasMap';
 import { translator, type Catalog } from './lib/i18n';
@@ -17,7 +18,7 @@ async function json<T>(uri: string): Promise<T> {
 export default function App() {
   const [registry, setRegistry] = useState<WebRegistry | null>(null);
   const [catalog, setCatalog] = useState<Catalog>({});
-  const [geometry, setGeometry] = useState<GeoJSON.FeatureCollection | null>(null);
+  const [geometry, setGeometry] = useState<FeatureCollection | null>(null);
   const [dataset, setDataset] = useState<ElectionDataset | null>(null);
   const [descriptor, setDescriptor] = useState<DatasetDescriptor | null>(null);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -32,7 +33,7 @@ export default function App() {
       try {
         const nextRegistry = await json<WebRegistry>('./registry.json');
         const nextCatalog = await json<Catalog>(`./locales/${nextRegistry.app.locale}.json`);
-        const nextGeometry = await json<GeoJSON.FeatureCollection>(nextRegistry.territory.geometryUri);
+        const nextGeometry = await json<FeatureCollection>(nextRegistry.territory.geometryUri);
         setRegistry(nextRegistry); setCatalog(nextCatalog); setGeometry(nextGeometry);
         setSelectedDatasetId(readSelection(nextRegistry.defaultDatasetId));
       } catch (cause) { setError(String(cause)); }
