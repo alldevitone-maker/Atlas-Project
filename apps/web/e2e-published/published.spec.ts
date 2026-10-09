@@ -56,3 +56,26 @@ test('published captured 2022 data and catalog load with matching hashes',async(
  await expect(page.locator('.data-status')).toContainText(/provisório/i);
  await expect(page.locator('.summary-grid article').first()).toContainText('Votos nominais nos boletins');
 });
+
+test('published panel arrows and drag gestures work on desktop and touch',async({page,isMobile})=>{
+ await page.goto('./');
+ for(const [selector,axis] of [['.sidebar-handle','x'],['.sheet-handle','y']] as const){
+  const control=page.locator(selector);await expect(control).toBeVisible();
+  await control.click();const state=await control.getAttribute('aria-expanded');
+  await control.click();await expect(control).toHaveAttribute('aria-expanded',state==='true'?'false':'true');
+  for(const open of [true,false]){
+   await control.click({trial:true});
+   const box=await control.boundingBox();if(!box)throw new Error('missing handle');
+   const x=box.x+box.width/2,y=box.y+box.height/2,delta=(axis==='x'?1:-1)*(open?65:-65);
+   if(isMobile){
+    const cdp=await page.context().newCDPSession(page);
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+(axis==='x'?delta:0),y:y+(axis==='y'?delta:0)}]});
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();
+   }else{
+    await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+(axis==='x'?delta:0),y+(axis==='y'?delta:0),{steps:8});await page.mouse.up();
+   }
+   await expect(control).toHaveAttribute('aria-expanded',String(open));
+  }
+ }
+});

@@ -57,3 +57,14 @@
 .map-stage:has(.map-unavailable) .map-unavailable{position:relative;top:auto;left:auto;right:auto;margin:0;flex-shrink:0}
 .map-stage:has(.map-unavailable) .territory-selector{position:relative;bottom:auto;left:auto;align-self:flex-start;flex-shrink:0}
 @media(max-width:800px){.map-stage:has(.map-unavailable){padding-bottom:42dvh}}
+/* Shared, always reachable panel controls; gestures never intercept content scrolling. */
+.panel-handle{display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;border:1px solid #78b9ee;border-radius:14px;background:#132c40;color:#d5edff;cursor:grab;touch-action:none;user-select:none;box-shadow:0 0 12px #69bbff66;animation:panel-glow 2.4s ease-in-out infinite}
+.panel-handle:active{cursor:grabbing}.panel-handle svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:rotate .2s ease}
+.panel-handle.horizontal svg.expanded{rotate:180deg}.panel-handle.vertical svg{rotate:-90deg}.panel-handle.vertical svg.expanded{rotate:90deg}
+.sidebar-handle{position:fixed;left:0;top:50%;z-index:30;translate:var(--drag-offset) 0}.sidebar-handle.open{left:258px}
+.bottom-sheet .sheet-handle{display:flex;position:sticky;top:0;margin:0 auto 8px;width:56px;height:44px;z-index:2;translate:0 var(--drag-offset)}
+.bottom-sheet.expanded{height:min(65dvh,560px);grid-row:2/4;align-self:end}
+@keyframes panel-glow{50%{box-shadow:0 0 20px #69bbff99}}
+@media(max-width:800px){.sidebar-handle.open{left:calc(min(82vw,300px) - 22px)}.bottom-sheet.expanded{height:65dvh}}
+@media(prefers-reduced-motion:reduce){.panel-handle{animation:none}.panel-handle svg{transition:none}}
+:root[data-theme="light"] .panel-handle{background:#e4edf6;color:#163d60;border-color:#306f9f}

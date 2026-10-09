@@ -55,8 +55,9 @@ test('config-driven exploratory pair paints both candidate roles and preserves s
  await expect(page.getByLabel('Legenda exploratória do par')).toHaveCount(0);
  await page.getByRole('checkbox',{name:'Cores do legado (exploratório)'}).check();
  if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ if(await page.locator('.sheet-handle').getAttribute('aria-expanded')==='true')await page.locator('.sheet-handle').click();
  await page.getByLabel('Selecionar território').selectOption('');
- if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Expandir ou recolher painel'}).click();
+ if(await page.locator('.sheet-handle').getAttribute('aria-expanded')==='true')await page.locator('.sheet-handle').click();
  await expect(page.getByLabel('Legenda exploratória do par')).toContainText('Lula');
  await page.getByRole('button',{name:'Redefinir enquadramento do mapa'}).click();
  await expect(page.locator('.atlas-map canvas')).toHaveScreenshot('pair-secondary.png',{animations:'disabled',maxDiffPixelRatio:.015,threshold:.2});

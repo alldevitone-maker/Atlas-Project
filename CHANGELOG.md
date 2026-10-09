@@ -1,5 +1,10 @@
 ## Dados do rótulo selecionado — 2026-10-09
 
+## Gestos nos painéis — 2026-10-09
+
+- Alças compartilhadas nos painéis lateral e inferior, com arraste por mouse/toque, seta central, brilho e suporte a teclado e movimento reduzido.
+- Testes de gestos em desktop/mobile, WebKit e smoke publicado; detalhes em [Controles de painéis](docs/panel-gestures.md).
+
 Clique/seleção agora consulta o registro único do legado e abre seus votos em painel próprio, com denominador e proveniência do registro. Totais municipais permanecem separados. `ElectionSourceLabelResolver` herda `SourceLabelResolver`; não há regras por ano ou candidato. Fontes BU, ausências e ambiguidades continuam sem associação inventada com bairros. [Detalhes](docs/selected-source-panel.md).
 
 ## Apresentação de candidatos — 2026-10-09

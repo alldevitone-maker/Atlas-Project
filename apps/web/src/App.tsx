@@ -8,6 +8,7 @@ import { readSelection, writeSelection } from './lib/url';
 import type { Candidate, DatasetDescriptor, ElectionDataset, WebRegistry } from './types';
 import { evaluateExpression } from '../../../packages/metrics/src/index';
 import './styles.css';
+import { PanelHandle } from './components/PanelHandle';
 import { loadElection, descriptorSchema, electionSchema, webRegistrySchema, candidateCatalogSchema } from './lib/validated-data';
 import { extractMunicipalMeasure } from './lib/comparison';
 import { AtlasRuntime } from '../../../packages/runtime/src/index';
@@ -40,6 +41,8 @@ export default function App() {
   const [selectedDatasetId, setSelectedDatasetId] = useState<string>('');
   const [inspectedRow,setInspectedRow] = useState<import('./types').ElectionRow | null>(null);
   const [selection, setSelection] = useState<{label:string; value:number|null} | null>(null);
+  const [sidebarDrag, setSidebarDrag] = useState(0);
+  const [sheetDrag, setSheetDrag] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(() => window.matchMedia('(min-width: 801px)').matches);
   const [comparisonEnabled, setComparisonEnabled] = useState(() => Boolean(new URLSearchParams(location.search).get('compare')));
   const [comparisonDatasetId, setComparisonDatasetId] = useState(() => new URLSearchParams(location.search).get('compare') || '');
@@ -191,7 +194,8 @@ export default function App() {
       {descriptor && <div className={`data-status status-${descriptor.status}`}><span>{t(`status.${descriptor.status}`)}{descriptor.sourceStatus === 'unverified-legacy' ? ' · legado não verificado' : ''}</span><small>{new Date(descriptor.asOf).toLocaleString('pt-BR')}</small></div>}
     </header>
 
-    <aside id="atlas-sidebar" inert={!sidebarOpen} className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+    <PanelHandle axis="horizontal" onDrag={setSidebarDrag} expanded={sidebarOpen} onChange={setSidebarOpen} controls="atlas-sidebar" label="Expandir ou recolher menu lateral" className={sidebarOpen ? 'sidebar-handle open' : 'sidebar-handle'} />
+    <aside id="atlas-sidebar" style={{ translate: `${Math.max(-260, Math.min(260, sidebarDrag))}px 0`, visibility: sidebarDrag > 0 ? 'visible' : undefined }} inert={!sidebarOpen} className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
       <div className="sidebar-section">
         <span className="eyebrow">{t('nav.module')}</span>
         <h2>{t(registry.module.labelKey)}</h2>
@@ -248,8 +252,8 @@ export default function App() {
       {registry.join.prototype && <div className="method-badge">{t('method.prototype')} {presentation ? 'Cores de rótulos do legado: não são resultados oficiais por bairro nem residência dos eleitores.' : 'Malha exploratória, sem coloração eleitoral: associação espacial não auditada.'}{presentation && mapConfig && <div className="candidate-map-legend" aria-label="Legenda exploratória do par"><span><i style={{background:mapConfig.palette.a}}/>{mapConfig.labels.a}: {pairA?.officialName} · {mapConfig.labels.advantage}</span><span><i style={{background:mapConfig.palette.b}}/>{mapConfig.labels.b}: {pairB?.officialName} · {mapConfig.labels.advantage}</span><span><i style={{background:mapConfig.palette.neutral}}/>{mapConfig.labels.neutral}</span>{pairA?.id===pairB?.id && <strong>Selecione dois candidatos diferentes.</strong>}{selectedStyle && <span>Rótulo selecionado: {selectedStyle.category==='a' ? pairA?.officialName : selectedStyle.category==='b' ? pairB?.officialName : mapConfig.messages[selectedStyle.reason]}. Associação não auditada.</span>}<a href={mapConfig.sourceRef} target="_blank" rel="noreferrer">Paleta do mapa antigo</a></div>}</div>}
     </section>
 
-    <section ref={sheetRef} tabIndex={0} aria-label="Painel de dados eleitorais" className={`bottom-sheet ${sheetExpanded ? 'expanded' : ''}`}>
-      <button className="sheet-handle" onClick={() => setSheetExpanded(value => !value)} aria-label={t('sheet.toggle')}><span /></button>
+    <section id="atlas-bottom-sheet" style={{ translate: `0 ${Math.max(-100, Math.min(100, sheetDrag))}px` }} ref={sheetRef} tabIndex={0} aria-label="Painel de dados eleitorais" className={`bottom-sheet ${sheetExpanded ? 'expanded' : ''}`}>
+      <PanelHandle axis="vertical" onDrag={setSheetDrag} expanded={sheetExpanded} onChange={setSheetExpanded} controls="atlas-bottom-sheet" label={t('sheet.toggle')} className="sheet-handle" />
       {revisionUnavailable && <p className="comparison-blocked-message" role="alert">
         A revisão fixa solicitada não está disponível neste build. Exibimos apenas a revisão carregada.
         <button onClick={() => {
