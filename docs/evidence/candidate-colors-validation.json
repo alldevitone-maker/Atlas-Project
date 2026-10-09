@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "atlas-validation-evidence-v1",
+  "collectedAt": "2026-10-09T03:42:26.481806+00:00",
+  "applicationCommit": "0c62938b7436d21f9cf2fb9bee2ac07f83d9fc70",
+  "presentationCommit": "34f31b14e7a2f6ee9ce657fab77b33a947a0e5b6",
+  "local": {
+    "foundation": "PASS",
+    "coreTests": 23,
+    "webUnitTests": 21,
+    "chromiumTests": 46,
+    "webBuild": "PASS",
+    "astNoHardcode": "PASS",
+    "diffCheck": "PASS"
+  },
+  "actions": {
+    "ci": 37880144293,
+    "webBuild": 37880144304,
+    "browserE2E": 37880144305,
+    "pagesAndPublicSmoke": 37880144367,
+    "conclusion": "success",
+    "browserTests": 48,
+    "publishedSmokeTests": 8
+  },
+  "budgets": {
+    "initialJsGzip": {
+      "actual": 105275,
+      "limit": 110000
+    },
+    "mapJsGzip": {
+      "actual": 279611,
+      "limit": 300000
+    },
+    "worker": {
+      "actual": 507770,
+      "limit": 520000
+    }
+  },
+  "browser": {
+    "url": "https://alldevitone-maker.github.io/Atlas-Project/?dataset=elections-presidential-2026-r1&revision=legacy-6f965e3f3c00&metric=valid-votes&layers=territory&feature=Centro&basemap=neutral-dark&panel=collapsed&theme=dark&mapMode=legacy-pair&mapA=ballot-22&mapB=ballot-13",
+    "mode": "remote Chromium without WebGL2",
+    "swapPair": "PASS",
+    "reloadAndSelection": "PASS",
+    "selectedTerritorialValue": null,
+    "stylesheet": "assets/index-CqDDcACu.css",
+    "layout": [
+      {
+        "selector": ".method-badge",
+        "top": 76,
+        "bottom": 239.140625
+      },
+      {
+        "selector": ".map-unavailable",
+        "top": 251.140625,
+        "bottom": 309.140625
+      },
+      {
+        "selector": ".territory-selector",
+        "top": 321.140625,
+        "bottom": 478.140625
+      }
+    ],
+    "screenshot": "browser-candidate-colors-0c62938.jpg"
+  },
+  "limits": [
+    "Opt-in exploratory legacy label comparison; not official neighborhood results or residence",
+    "BU source sections never inherit neighborhood styles",
+    "Audited geometry, licensing and reviewed spatial crosswalk remain pending",
+    "Local live WebGL screenshot attempt returned ERR_EMPTY_RESPONSE; live WebGL confirmed by GitHub Actions tests; remote manual inspection covered fallback",
+    "Automated accessibility checks do not constitute full WCAG certification"
+  ]
+}
