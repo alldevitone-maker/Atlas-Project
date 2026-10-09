@@ -1,5 +1,17 @@
 import {test,expect} from '@playwright/test';
 
+test('published selection separates source-label counts from municipal totals',async({page})=>{
+ await page.goto('./?mapMode=legacy-pair');
+ await expect(page.getByText('108.628',{exact:true})).toBeVisible();
+ await page.getByLabel('Selecionar território').selectOption('Czerniewicz');
+ const panel=page.getByRole('region',{name:'Dados do rótulo selecionado'});
+ await expect(panel).toContainText('2.655');
+ await expect(panel).toContainText('1.982');
+ await expect(panel).toContainText('435');
+ await expect(panel).toContainText(/sem resultado oficial por bairro/);
+ await expect(page.locator('.summary-grid article').first()).toContainText('108.628');
+});
+
 test('published exploratory palette preserves provenance and pair state',async({page})=>{
  await page.goto('./?mapMode=legacy-pair');
  await expect(page.getByText('108.628')).toBeVisible();

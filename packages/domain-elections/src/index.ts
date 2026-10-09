@@ -1,3 +1,4 @@
+import {SourceLabelResolver} from '../../map-engine/src/source-label-resolver.js';
 import {PairPresentation,type PairPalette} from '../../map-engine/src/presentation.js';
 
 export interface CandidateResult {
@@ -6,16 +7,22 @@ export interface CandidateResult {
 }
 
 /** Presentation of legacy labels only. This is not a spatial crosswalk or residence estimate. */
-interface LegacyVoteRow {sourceUnitId:string;candidateVotes:Record<string,number>}
-export class ElectionPairPresentation extends PairPresentation<LegacyVoteRow> {
- protected labelFor(row:LegacyVoteRow){return row.sourceUnitId;}
- protected valuesFor(row:LegacyVoteRow,first:string,second:string):readonly [number|undefined,number|undefined]{
+interface ElectionSourceVoteRow {sourceUnitId:string;candidateVotes:Record<string,number>}
+export class ElectionPairPresentation extends PairPresentation<ElectionSourceVoteRow> {
+ protected labelFor(row:ElectionSourceVoteRow){return row.sourceUnitId;}
+ protected valuesFor(row:ElectionSourceVoteRow,first:string,second:string):readonly [number|undefined,number|undefined]{
   const valid=(value:number|undefined)=>typeof value==='number' && Number.isSafeInteger(value) && value>=0 ? value : undefined;
   return [valid(row.candidateVotes[first]),valid(row.candidateVotes[second])];
  }
 }
-export function legacyPairPresentation(rows:LegacyVoteRow[],first:string,second:string,palette:PairPalette) {
+export function legacyPairPresentation(rows:ElectionSourceVoteRow[],first:string,second:string,palette:PairPalette) {
  return new ElectionPairPresentation().render(rows,first,second,palette);
+}
+export class ElectionSourceLabelResolver<Row extends ElectionSourceVoteRow> extends SourceLabelResolver<Row> {
+ protected labelFor(row:Row){return row.sourceUnitId;}
+}
+export function resolveElectionSourceLabel<Row extends ElectionSourceVoteRow>(rows:Row[],label:string){
+ return new ElectionSourceLabelResolver<Row>().resolve(rows,label);
 }
 
 export function rankCandidates(results: CandidateResult[]): CandidateResult[] {
@@ -48,6 +55,14 @@ export function municipalCandidates(data: {
       return out;
     }, {});
   const valid = data.summary.validVotes ?? data.summary.valid;
+  return candidateResults(votes,typeof valid==='number' ? valid : undefined,catalog);
+}
+
+export function sourceUnitCandidates(row:{candidateVotes:Record<string,number>;validVotes:number},catalog:CandidateCatalogEntry[]){
+ return candidateResults(row.candidateVotes,row.validVotes,catalog.filter(item=>Object.hasOwn(row.candidateVotes,String(item.ballotNumber))));
+}
+
+function candidateResults(votes:Record<string,number>,valid:number|undefined,catalog:CandidateCatalogEntry[]){
   const known=new Set(catalog.map(item=>String(item.ballotNumber)));
   const entries = [...catalog,...Object.keys(votes).filter(number=>!known.has(number)).map(ballotNumber => ({id:`ballot-${ballotNumber}`,ballotNumber,officialName:''}))];
   const ranked=rankCandidates(entries.map(entry=>({candidateId:entry.id,votes:votes[String(entry.ballotNumber)] ?? 0})));

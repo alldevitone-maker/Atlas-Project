@@ -1,5 +1,7 @@
 # Roadmap — cores de candidatos por apresentação herdada
 
+Correção posterior: [painel de seleção por rótulo de origem, comum a todos os períodos e revisões](selected-source-panel.md).
+
 Referência: roadmap v3.2 e [ADR-016](adr/ADR-016-candidate-presentation.md). Esta entrega habilita um protótipo exploratório explícito; não encerra as pendências de cartografia e proveniência espacial.
 
 | Etapa | Entrega e aceite | Situação |

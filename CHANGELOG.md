@@ -1,3 +1,7 @@
+## Dados do rótulo selecionado — 2026-10-09
+
+Clique/seleção agora consulta o registro único do legado e abre seus votos em painel próprio, com denominador e proveniência do registro. Totais municipais permanecem separados. `ElectionSourceLabelResolver` herda `SourceLabelResolver`; não há regras por ano ou candidato. Fontes BU, ausências e ambiguidades continuam sem associação inventada com bairros. [Detalhes](docs/selected-source-panel.md).
+
 ## Apresentação de candidatos — 2026-10-09
 
 Duas cores históricas configuráveis no modo exploratório explícito. Apresentação genérica por herança, adaptador eleitoral sem tags de candidatos e renderer desacoplado. Legenda, troca de posições, URL persistente e guardas de neutralidade; BU por seção sem coloração de bairro. [Roadmap e limites](docs/roadmap-candidate-colors.md).

@@ -1,6 +1,39 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+test('selected source label displays its own counts for every registered legacy period and revision',async({page})=>{
+ const registry=await (await page.request.get('/registry.json')).json();
+ await page.goto('/?mapMode=legacy-pair');
+ await expect(page.getByText('108.628',{exact:true})).toBeVisible();
+ const canvas=page.locator('.atlas-map canvas');
+ await expect(canvas).toBeVisible();
+ await page.getByRole('button',{name:'Redefinir enquadramento do mapa'}).click();
+ const mobile=test.info().project.name.startsWith('mobile');
+ await expect.poll(async()=>{
+  if(!await page.getByLabel('Selecionar território').inputValue()){
+   if(mobile)await canvas.tap({position:{x:250,y:270}});else await canvas.click({position:{x:550,y:220}});
+  }
+  return page.getByLabel('Selecionar território').inputValue();
+ }).not.toBe('');
+ await expect(page.getByRole('region',{name:'Dados do rótulo selecionado'})).toBeVisible();
+ await expect(page.getByRole('region',{name:'Dados do rótulo selecionado'}).locator('table')).toBeVisible();
+ for(const ref of [...registry.datasets,...registry.revisions].filter((item:any)=>registry.candidateMapPresentation.eligibleDatasets.includes(item.id))){
+  const data=await (await page.request.get('/'+ref.dataUri)).json();
+  const row=data.rows.find((item:any)=>item.sourceUnitId==='CZERNIEWICZ');expect(row).toBeTruthy();
+  await page.goto('/?dataset='+ref.id+(ref.revision ? '&revision='+ref.revision : ''));
+  await expect(page.locator('.candidate-row')).not.toHaveCount(0);
+  await page.getByLabel('Selecionar território').selectOption('Czerniewicz');
+  const panel=page.getByRole('region',{name:'Dados do rótulo selecionado'});
+  await expect(panel).toContainText(new Intl.NumberFormat('pt-BR').format(row.validVotes));
+  await expect(panel).toContainText(/sem resultado oficial por bairro/);
+  const shown=await panel.locator('tbody tr td:first-of-type').allTextContents();
+  expect(shown.map(text=>Number(text.replaceAll('.',''))).sort((a,b)=>a-b)).toEqual(Object.values(row.candidateVotes).sort((a:any,b:any)=>a-b));
+  await expect(page.getByText('Resumo municipal ·',{exact:false})).toBeVisible();
+  await page.reload();await expect(panel).toContainText(new Intl.NumberFormat('pt-BR').format(row.validVotes));
+ }
+ const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();expect(axe.violations).toEqual([]);
+});
+
 test('config-driven exploratory pair paints both candidate roles and preserves shared state',async({page},testInfo)=>{
  await page.goto('/?mapMode=legacy-pair');
  await expect(page.getByText('108.628')).toBeVisible();
@@ -23,6 +56,7 @@ test('config-driven exploratory pair paints both candidate roles and preserves s
  await page.getByRole('checkbox',{name:'Cores do legado (exploratório)'}).check();
  if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
  await page.getByLabel('Selecionar território').selectOption('');
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Expandir ou recolher painel'}).click();
  await expect(page.getByLabel('Legenda exploratória do par')).toContainText('Lula');
  await page.getByRole('button',{name:'Redefinir enquadramento do mapa'}).click();
  await expect(page.locator('.atlas-map canvas')).toHaveScreenshot('pair-secondary.png',{animations:'disabled',maxDiffPixelRatio:.015,threshold:.2});
@@ -276,6 +310,7 @@ test('selecting the current dataset exits an older pin for the same id',async({p
 test('exploratory cartography retains its neutral visual baseline',async({page})=>{
  await page.goto('/');
  await page.getByLabel('Selecionar território').selectOption('Centro');
+ await page.getByRole('button',{name:'Recolher dados selecionados'}).click();
  await page.getByRole('button',{name:'Redefinir enquadramento do mapa'}).click();
  await expect(page.locator('.atlas-map canvas')).toHaveScreenshot('neutral-map.png',{animations:'disabled',maxDiffPixelRatio:.015,threshold:.2});
 });

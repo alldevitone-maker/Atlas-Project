@@ -1,5 +1,5 @@
 import type { FeatureCollection } from 'geojson';
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 const AtlasMap = lazy(() => import('./components/AtlasMap').then(module => ({ default: module.AtlasMap })));
 import { ComparisonPanel } from './components/ComparisonPanel';
 import type { MunicipalComparisonPolicy } from './lib/comparison';
@@ -12,7 +12,7 @@ import { loadElection, descriptorSchema, electionSchema, webRegistrySchema, cand
 import { extractMunicipalMeasure } from './lib/comparison';
 import { AtlasRuntime } from '../../../packages/runtime/src/index';
 import { Registry } from '../../../packages/registry/src/index';
-import { municipalCandidates,legacyPairPresentation } from '../../../packages/domain-elections/src/index';
+import { municipalCandidates,sourceUnitCandidates,legacyPairPresentation,resolveElectionSourceLabel } from '../../../packages/domain-elections/src/index';
 
 const number = new Intl.NumberFormat('pt-BR');
 const percent = new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 2 });
@@ -159,6 +159,11 @@ export default function App() {
   }, []);
 
   const candidateRows = useMemo(() => dataset ? municipalCandidates(dataset,candidates) : [], [dataset,candidates]);
+  const sheetRef=useRef<HTMLElement|null>(null);
+  const selectedLegacy=useMemo(()=>selection && dataset && descriptor?.sourceStatus==='unverified-legacy' && dataset.validVotesMeaning!=='nominal-bu' ? resolveElectionSourceLabel(dataset.rows,selection.label) : undefined,[selection?.label,dataset,descriptor]);
+  const selectedCandidates=useMemo(()=>selectedLegacy?.row ? sourceUnitCandidates(selectedLegacy.row,candidates) : [],[selectedLegacy,candidates]);
+  useEffect(()=>{if(selectedLegacy?.row)setSheetExpanded(true);},[selectedLegacy?.row]);
+  useLayoutEffect(()=>{if(sheetRef.current)sheetRef.current.scrollTop=0;},[selectedLegacy?.row,sheetExpanded]);
   const mapConfig=registry?.candidateMapPresentation;
   const pairA=candidateRows.find(item=>item.id===(mapA || mapConfig?.defaultPair.a)) ?? candidateRows[0];
   const pairB=candidateRows.find(item=>item.id===(mapB || mapConfig?.defaultPair.b)) ?? candidateRows[1];
@@ -243,7 +248,7 @@ export default function App() {
       {registry.join.prototype && <div className="method-badge">{t('method.prototype')} {presentation ? 'Cores de rótulos do legado: não são resultados oficiais por bairro nem residência dos eleitores.' : 'Malha exploratória, sem coloração eleitoral: associação espacial não auditada.'}{presentation && mapConfig && <div className="candidate-map-legend" aria-label="Legenda exploratória do par"><span><i style={{background:mapConfig.palette.a}}/>{mapConfig.labels.a}: {pairA?.officialName} · {mapConfig.labels.advantage}</span><span><i style={{background:mapConfig.palette.b}}/>{mapConfig.labels.b}: {pairB?.officialName} · {mapConfig.labels.advantage}</span><span><i style={{background:mapConfig.palette.neutral}}/>{mapConfig.labels.neutral}</span>{pairA?.id===pairB?.id && <strong>Selecione dois candidatos diferentes.</strong>}{selectedStyle && <span>Rótulo selecionado: {selectedStyle.category==='a' ? pairA?.officialName : selectedStyle.category==='b' ? pairB?.officialName : mapConfig.messages[selectedStyle.reason]}. Associação não auditada.</span>}<a href={mapConfig.sourceRef} target="_blank" rel="noreferrer">Paleta do mapa antigo</a></div>}</div>}
     </section>
 
-    <section tabIndex={0} aria-label="Resumo eleitoral municipal" className={`bottom-sheet ${sheetExpanded ? 'expanded' : ''}`}>
+    <section ref={sheetRef} tabIndex={0} aria-label="Painel de dados eleitorais" className={`bottom-sheet ${sheetExpanded ? 'expanded' : ''}`}>
       <button className="sheet-handle" onClick={() => setSheetExpanded(value => !value)} aria-label={t('sheet.toggle')}><span /></button>
       {revisionUnavailable && <p className="comparison-blocked-message" role="alert">
         A revisão fixa solicitada não está disponível neste build. Exibimos apenas a revisão carregada.
@@ -260,6 +265,15 @@ export default function App() {
         <ComparisonPanel territoryLabel={t(registry.territory.labelKey)} policy={comparisonPolicy}
           baseline={{descriptor: comparisonDescriptor, data: comparisonData, label: t(comparisonRef!.labelKey) + ' · ' + comparisonRef!.roundId + 'º turno'}}
           current={{descriptor, data: dataset, label: t(activeRef.labelKey) + ' · ' + activeRef.roundId + 'º turno'}} />}
+      {selection && <section className="selected-region" aria-label="Dados do rótulo selecionado" aria-live="polite">
+        <h2>{selection.label} · rótulo selecionado</h2>
+        <button onClick={()=>setSheetExpanded(value=>!value)}>{sheetExpanded ? 'Recolher dados selecionados' : 'Expandir dados selecionados'}</button>
+        <p>Associação nominal não auditada. Dados por rótulo de origem, sem resultado oficial por bairro nem residência dos eleitores.</p>
+        {selectedLegacy?.row ? <><p>Votos válidos no rótulo: <strong>{number.format(selectedLegacy.row.validVotes)}</strong> · Brancos: {selectedLegacy.row.blankVotes == null ? '—' : number.format(selectedLegacy.row.blankVotes)} · Nulos: {selectedLegacy.row.nullVotes == null ? '—' : number.format(selectedLegacy.row.nullVotes)}</p>
+        <table><caption>Votos registrados no legado para o rótulo selecionado</caption><thead><tr><th>Candidato</th><th>Votos</th><th>% dos válidos do rótulo</th></tr></thead><tbody>{selectedCandidates.filter(candidate=>!candidateFilter || candidate.id===candidateFilter).map(candidate=><tr key={candidate.id}><th scope="row">{candidate.officialName || `Número de urna ${candidate.ballotNumber}`}</th><td>{number.format(candidate.votes)}</td><td>{candidate.share == null ? '—' : percent.format(candidate.share)}</td></tr>)}</tbody></table>
+        <small>Fonte: {descriptor?.provenance.sourceId} · revisão {descriptor?.revision} · rótulo de origem {selectedLegacy.row.sourceUnitId}. Percentuais usam somente os votos válidos deste rótulo.</small></> : <p>{selectedLegacy?.status==='ambiguous' ? 'Rótulo ambíguo: não exibimos contagens.' : 'Não há dados associados de forma única a este rótulo. Os totais municipais abaixo não representam a área selecionada.'}</p>}
+      </section>}
+      {selection && <h2 className="scope-heading">Resumo municipal · {t(registry.territory.labelKey)}</h2>}
       <div className="summary-grid">
         <article><span>{dataset?.validVotesMeaning === 'nominal-bu' && metric?.id === 'valid-votes' ? 'Votos nominais nos boletins' : t(metric?.labelKey ?? registry.metric.labelKey)}</span><strong>{primary == null ? '—' : metric?.format === 'percent' ? percent.format(primary) : number.format(primary)}</strong></article>
         <article><span>{t('metric.turnout')}</span><strong>{measures ? percent.format(measures.turnoutRate / 100) : '—'}</strong></article>
