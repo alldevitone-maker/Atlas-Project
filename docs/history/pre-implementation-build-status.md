@@ -1,4 +1,4 @@
-> Estado atual (2026-10-08): GitHub Pages está habilitado e publicado. Consulte [a implementação validada](implementation-roadmap-2026-10-08.md). O conteúdo anterior abaixo permanece como histórico e não descreve os gates atuais.
+> Estado atual (2026-10-08): GitHub Pages está habilitado e publicado. Consulte [a implementação validada](../implementation-roadmap-2026-10-08.md). O conteúdo anterior abaixo permanece como histórico e não descreve os gates atuais.
 
 # Validação adicional do Atlas · 08/10/2026 (última execução)
 
@@ -30,7 +30,7 @@
 | Site publicado e inspecionado | PENDENTE | `has_pages=false` na API do repo e Pages não habilitado |
 | E2E Playwright + mobile real | PENDENTE | Não executados nesta fase |
 
-**Ativação necessária:** proprietário deve selecionar `Settings → Pages → Source → GitHub Actions` antes da publicação. Veja [guia de deployment](deployment.md).
+**Ativação necessária:** proprietário deve selecionar `Settings → Pages → Source → GitHub Actions` antes da publicação. Veja [guia de deployment](../deployment.md).
 
 **F6 entregue:** comparador de agregados municipais para turnos equivalentes, períodos do registry, política `municipality-aggregate-v1`, deltas municipais, aviso de proveniência, testes com dados reais, controles responsivos.
 

@@ -1,0 +1,233 @@
+{
+  "date": "2026-10-08",
+  "version": "0.2.2",
+  "repository": "alldevitone-maker/Atlas-Project",
+  "applicationCommit": "c23b39347dc689ae0ba619a3d010b20ebaeb2dfc",
+  "applicationTree": "d657b63d5c97778555e7c735194187280fe07395",
+  "workflows": [
+    {
+      "id": 37851415109,
+      "name": "CI",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37851415109"
+    },
+    {
+      "id": 37851415250,
+      "name": "Web build",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37851415250"
+    },
+    {
+      "id": 37851415120,
+      "name": "Browser E2E",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37851415120"
+    },
+    {
+      "id": 37851415148,
+      "name": "Publish Atlas to GitHub Pages",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/alldevitone-maker/Atlas-Project/actions/runs/37851415148"
+    }
+  ],
+  "pagesJobs": [
+    {
+      "id": 113564951054,
+      "name": "build",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Foundation release gate",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install pinned dependencies",
+          "conclusion": "success"
+        },
+        {
+          "name": "Typecheck and produce web bundle",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check asset budgets",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run F6 comparison regression tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install browser for release gate",
+          "conclusion": "success"
+        },
+        {
+          "name": "Desktop and mobile release gate",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload for GitHub Pages",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 113565742357,
+      "name": "deploy",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify GitHub Pages is enabled",
+          "conclusion": "success"
+        },
+        {
+          "name": "Publish site",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 113565837231,
+      "name": "published-smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm ci --prefix apps/web --no-audit --no-fund",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install published-site browser",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify live desktop and mobile",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve live verification evidence",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "testCounts": {
+    "core": 21,
+    "vitest": 20,
+    "chromium": 42,
+    "webkit": 2,
+    "publishedSmoke": 6,
+    "validContractFixtures": 10,
+    "invalidContractFixturesRejected": 4
+  },
+  "assetBytes": {
+    "initialJsGzip": 104048,
+    "mapJsGzip": 279546,
+    "worker": 507770
+  },
+  "publicSmokeArtifact": {
+    "id": 11582376523,
+    "name": "atlas-published-smoke",
+    "size_in_bytes": 516531,
+    "url": "https://api.github.com/repos/alldevitone-maker/Atlas-Project/actions/artifacts/11582376523",
+    "archive_download_url": "https://api.github.com/repos/alldevitone-maker/Atlas-Project/actions/artifacts/11582376523/zip",
+    "expired": false,
+    "created_at": "2026-10-08T22:10:23Z",
+    "expires_at": "2026-11-07T22:10:22Z",
+    "updated_at": "2026-10-08T22:10:23Z",
+    "digest": "sha256:531cd6d2a56ee7fd9650f90d3334a33c72b3ba1b8e088ebddadd9648234cf7cc",
+    "workflow_run": {
+      "id": 37851415148,
+      "repository_id": 1409535925,
+      "head_repository_id": 1409535925,
+      "head_branch": "main",
+      "head_sha": "c23b39347dc689ae0ba619a3d010b20ebaeb2dfc"
+    }
+  },
+  "artifactDownload": {
+    "copiedToRepository": false,
+    "reason": "Artifact metadata and successful job logs verified; signed file delivery returned HTTP 403 (1010) in this session."
+  },
+  "manualBrowser": {
+    "sidebarClientWidth": 264,
+    "sidebarScrollWidth": 264,
+    "webgl": "unavailable in cloud browser; fallback inspected",
+    "mapVerifiedBy": "published desktop/mobile Chromium smoke with software WebGL",
+    "pinnedComparison": "legacy-6f965e3f3c00 / legacy-1b7f4f116ed7",
+    "screenshot": "browser-published-c23b393.jpg"
+  },
+  "sourceSnapshots": [
+    "data/snapshots/tse/2022-sc-r1.json",
+    "data/snapshots/tse/2022-sc-r2.json",
+    "data/snapshots/tse/2026-sc-r1.json"
+  ]
+}

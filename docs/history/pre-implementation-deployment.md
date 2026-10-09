@@ -1,8 +1,8 @@
-> Estado atual (2026-10-08): GitHub Pages está habilitado e publicado. Consulte [a implementação validada](implementation-roadmap-2026-10-08.md). O conteúdo anterior abaixo permanece como histórico e não descreve os gates atuais.
+> Estado atual (2026-10-08): GitHub Pages está habilitado e publicado. Consulte [a implementação validada](../implementation-roadmap-2026-10-08.md). O conteúdo anterior abaixo permanece como histórico e não descreve os gates atuais.
 
 # Publicação do Atlas
 
-O build do frontend é gerado a partir de `apps/web` com Vite, e a página é enviada ao GitHub Pages pelo workflow [pages-deploy.yml](../.github/workflows/pages-deploy.yml).
+O build do frontend é gerado a partir de `apps/web` com Vite, e a página é enviada ao GitHub Pages pelo workflow [pages-deploy.yml](../../.github/workflows/pages-deploy.yml).
 
 ## Ativação administrativa necessária
 
