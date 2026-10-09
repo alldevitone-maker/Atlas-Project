@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "atlas-validation-evidence-v1",
+  "collectedAt": "2026-10-09T05:46:06.886984+00:00",
+  "applicationCommit": "74ce538ce7aaa3b63613480173e3d4180cb780e1",
+  "classes": {
+    "generic": "SourceLabelResolver",
+    "electoral": "ElectionSourceLabelResolver",
+    "colors": "ElectionPairPresentation"
+  },
+  "local": {
+    "foundation": "PASS",
+    "coreTests": 24,
+    "webUnitTests": 21,
+    "chromiumRegressionTests": 48,
+    "finalFocusedGestureAndPeriodTests": 2
+  },
+  "actions": {
+    "ci": 37889626063,
+    "webBuild": 37889626099,
+    "browserE2E": 37889625991,
+    "pagesAndPublicSmoke": 37889626047,
+    "conclusion": "success",
+    "browserTests": 50,
+    "publishedSmokeTests": 10
+  },
+  "budgets": {
+    "initialJsGzip": {
+      "actual": 105953,
+      "limit": 110000
+    },
+    "mapJsGzip": {
+      "actual": 279610,
+      "limit": 300000
+    },
+    "worker": {
+      "actual": 507770,
+      "limit": 520000
+    }
+  },
+  "coverage": {
+    "registeredLegacyPeriods": 3,
+    "registeredLegacyRevisions": 3,
+    "physicalClickAndTap": "PASS",
+    "reload": "PASS",
+    "selectedLabelAxe": "PASS",
+    "noUnrecordedCandidateZeros": "PASS"
+  },
+  "manualPublic": {
+    "url": "https://alldevitone-maker.github.io/Atlas-Project/?dataset=elections-presidential-2026-r1&revision=legacy-6f965e3f3c00&metric=valid-votes&layers=territory&feature=Czerniewicz&basemap=neutral-dark&panel=expanded&theme=dark&mapMode=legacy-pair&mapA=ballot-22&mapB=ballot-13",
+    "sourceLabel": "CZERNIEWICZ",
+    "sourceValidVotes": 2655,
+    "municipalValidVotes": 108628,
+    "sourceStatus": "unverified-legacy",
+    "reload": "PASS",
+    "screenshot": "selected-source-panel-74ce538.jpg",
+    "browserLimit": "Remote browser does not provide WebGL2; screenshot documents the source panel, not map rendering."
+  },
+  "methodology": [
+    "Raw legacy-label counts, not official neighborhood results or residence",
+    "No BU section-to-neighborhood mapping",
+    "Absent and ambiguous labels fail closed",
+    "Cartographic selection numeric value remains null",
+    "Election payloads and catalogs unchanged"
+  ]
+}
