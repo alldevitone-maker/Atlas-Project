@@ -1,0 +1,37 @@
+{
+  "applicationCommit": "6903da8731f29cb4c75a21064596d9ca94331694",
+  "component": "PanelHandle",
+  "date": "2026-10-09",
+  "local": {
+    "core": 24,
+    "webUnit": 21,
+    "chromiumE2E": 52,
+    "publishedSuiteAgainstLocalBuild": 12
+  },
+  "actions": {
+    "pages": "https://github.com/alldevitone-maker/Atlas-Project/actions/runs/38006057657",
+    "browser": "https://github.com/alldevitone-maker/Atlas-Project/actions/runs/38006057604",
+    "ci": "https://github.com/alldevitone-maker/Atlas-Project/actions/runs/38006057607",
+    "webBuild": "https://github.com/alldevitone-maker/Atlas-Project/actions/runs/38006057611",
+    "e2ePassed": 56,
+    "publishedSmokePassed": 12,
+    "deploy": "success"
+  },
+  "budget": {
+    "initialJsGzip": 106670,
+    "mapJsGzip": 279608,
+    "workerBytes": 507770
+  },
+  "manualPublished": {
+    "arrowClickBothPanels": "PASS",
+    "mouseDragBothPanels": "PASS",
+    "sidebarReachableWhenCollapsed": "PASS",
+    "municipalValidVotes": "108.628",
+    "screenshot": "panel-gestures-6903da8.jpg",
+    "cloudBrowserWebGL": "unavailable; screenshot proves panel UI; map rendering validated in Chromium CI"
+  },
+  "limitations": [
+    "Native touch tested in Chromium mobile; WebKit mobile covers mouse and keyboard, not a physical iOS device."
+  ],
+  "sourceDataChanged": false
+}
