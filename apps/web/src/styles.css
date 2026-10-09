@@ -49,3 +49,8 @@
 .comparison-controls,.comparison-choose,.analysis-controls{grid-template-columns:minmax(0,1fr)}
 .comparison-choose select,.analysis-controls select{width:100%;min-width:0}
 .candidate-map-legend{display:grid;gap:5px;margin-top:8px;font-size:11px;color:#eef4fa}.candidate-map-legend span{display:block}.candidate-map-legend i{display:inline-block;width:16px;height:12px;margin-right:6px;border:1px solid #adbdcc;vertical-align:middle}.candidate-map-legend a{color:#badcff}.method-badge:has(.candidate-map-legend){max-width:360px;max-height:35dvh;overflow:auto}@media(max-width:800px){.method-badge:has(.candidate-map-legend){max-width:none;max-height:26dvh}}
+.map-stage:has(.map-unavailable){display:flex;flex-direction:column;gap:12px;padding:12px;overflow:auto}
+.map-stage:has(.map-unavailable) .method-badge{position:relative;top:auto;left:auto;right:auto;order:-1;flex-shrink:0}
+.map-stage:has(.map-unavailable) .map-unavailable{position:relative;top:auto;left:auto;right:auto;margin:0;flex-shrink:0}
+.map-stage:has(.map-unavailable) .territory-selector{position:relative;bottom:auto;left:auto;align-self:flex-start;flex-shrink:0}
+@media(max-width:800px){.map-stage:has(.map-unavailable){padding-bottom:42dvh}}

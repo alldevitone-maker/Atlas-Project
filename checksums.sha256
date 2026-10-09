@@ -16,7 +16,7 @@ c89146fc1cf3d52b82af43e7415c2ff9197304bcfcb80a1f5189d8f618d9575b  apps/slice/sty
 a1c1b1f4e3736c66604469e2cbb014d51e490de44c1567944515d68a0c10433c  apps/web/README.md
 9ae0303a16f613a30713e006de2ed1c735ba6f82d6c16df93382934dbf43b1ef  apps/web/e2e-published/published.spec.ts
 c05791904780c98a67b4bcb49a0af5df23ebe86a1cc6dff0a53d72e99449467b  apps/web/e2e/safari.spec.ts
-8120d3aebaa0786bd25405def1b4f015fadf8997c3336d75f0346a8ca14de6df  apps/web/e2e/smoke.spec.ts
+2770ea314554def8c0eb5a12887a0236061196bc60a7945c2e53de2c179f7674  apps/web/e2e/smoke.spec.ts
 a75ac838f407ed7725e2e797a09af4688d94661d91314d4fdf44d9354998c111  apps/web/e2e/smoke.spec.ts-snapshots/neutral-map-desktop-chromium-linux.png
 1021e964bd7006e07e5d791a39802be7517ae566cd18af4a99c4ccc31b16e68e  apps/web/e2e/smoke.spec.ts-snapshots/neutral-map-mobile-chromium-linux.png
 6f90fffc84208dc18979a2586d496cc099c8c33d7804d763b2c02c4b8bbccefe  apps/web/e2e/smoke.spec.ts-snapshots/pair-primary-desktop-chromium-linux.png
@@ -78,7 +78,7 @@ c8f8ec72a46479e6f10320965f36a0dc89be406ee5a3ba4e2d8446cb9575c14b  apps/web/src/l
 6e93ecde1d9fff26c1bb7c736b9c0a88edd681b60e9d77baf62a2f172022a6b0  apps/web/src/lib/validated-data.test.ts
 82ea5d2c96e3ad282f063de03f33982cd8aeb871d08dfb43592a2fe74999d575  apps/web/src/lib/validated-data.ts
 b226cb93541a99181222186ca1acbc3020005c0a84a18a202092c534488e4324  apps/web/src/main.tsx
-e08d811240ce3532d1d981f8134f03484bda5e999ab2c6fce2b1e58e4d4ed3a3  apps/web/src/styles.css
+c52ad0d86fce3d92da18a78e2cbc95e1f9998d645dd33c7ecc82a23d145934ff  apps/web/src/styles.css
 934a162482b8fefb115f72ec2641e633851cbaebe6ec8c66c5a3d7b7c4f886d2  apps/web/src/types.ts
 a1ef39d725bf3a1b3067baa0f0d0d6dbe8ac6ee37d2e6f7eb9b02f939ffa9cb6  apps/web/tsconfig.json
 69d3c26e65cacf16ec803814e57571672902d3d88bbb3183cf0ce13842a1b43b  apps/web/vite.config.ts
@@ -176,7 +176,7 @@ d75b60c2a64d62552e4039081101b8c00d3f2ebf09673175924dfa3ebc6cc38c  docs/f4-verifi
 b9f65ad040dd148450d2682cc30aa8147eebc89511d877fd1e708530803830a8  docs/reference/roadmap-v3.2-execution.md
 5e94fe8c127907d1aac24672c4293871d4bdffa3d2e5ee9ac77ef1851f2c241f  docs/roadmap-candidate-colors.md
 79669c044fa76a1f1d173b62443658afe6f76691912bc2b7cd3f29e4067ba542  docs/roadmap-v3.2-gap-audit-2026-10-08.md
-3174d56b5d8f7e071f06e15a5a5f681f34f066ce206c825ed981804e4bc2fcf5  docs/roadmap.md
+e235fac5d00f104c370302d52334e69884ffa2bd4082b5d16bd1660695e0b051  docs/roadmap.md
 d624042415c59585016af79329a676e0d572bf2b48d0b169d1e748ff25e8b595  docs/stack.md
 96c095972e25360c395bdecd7a6b54bd5a5367a588b92e0e1a8288bf5eea51ae  docs/ux.md
 a5e5af88b3dac5d9b9b915330f41c6586c67b428fe84a35c4ea4d303def34364  docs/web-fixture-audit.json

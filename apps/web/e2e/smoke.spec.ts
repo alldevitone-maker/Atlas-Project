@@ -100,10 +100,16 @@ test('unknown pinned revision is not silently replaced', async ({ page }) => {
       return (original as any).call(this, type, ...args);
     } as any;
   });
-  await page.goto('/');
+  await page.goto('/?mapMode=legacy-pair');
   await expect(page.getByText('O mapa não está disponível neste navegador.', { exact: false })).toBeVisible();
   await expect(page.getByText('108.628')).toBeVisible();
   await expect(page.getByLabel('Selecionar território')).toBeVisible();
+  const legend=await page.locator('.method-badge').boundingBox();
+  const fallback=await page.locator('.map-unavailable').boundingBox();
+  const selector=await page.locator('.territory-selector').boundingBox();
+  expect(legend).not.toBeNull();expect(fallback).not.toBeNull();expect(selector).not.toBeNull();
+  expect(legend!.y+legend!.height).toBeLessThanOrEqual(fallback!.y);
+  expect(fallback!.y+fallback!.height).toBeLessThanOrEqual(selector!.y);
  });
 
  test('navigation, zoom controls and keyboard selection remain usable', async ({ page }, testInfo) => {
