@@ -16,3 +16,5 @@ ADRs previstos:
 - ADR-012 Reliability / suppression
 - ADR-013 Basemap and licensing
 - ADR-014 Hosting
+- ADR-015 Municipal comparison
+- ADR-016 Candidate presentation by inheritance

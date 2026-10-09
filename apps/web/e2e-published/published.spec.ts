@@ -1,5 +1,15 @@
 import {test,expect} from '@playwright/test';
 
+test('published exploratory palette preserves provenance and pair state',async({page})=>{
+ await page.goto('./?mapMode=legacy-pair');
+ await expect(page.getByText('108.628')).toBeVisible();
+ await expect(page.getByLabel('Legenda exploratória do par')).toContainText('Candidato azul:');
+ await expect(page.getByText(/Cores de rótulos do legado: não são resultados oficiais/)).toBeVisible();
+ await expect(page.locator('.maplibregl-canvas')).toBeVisible();
+ await page.reload();await expect(page).toHaveURL(/mapMode=legacy-pair/);
+ await expect(page.getByLabel('Legenda exploratória do par')).toBeVisible();
+});
+
 test('published application renders verified assets and neutral map',async({page},testInfo)=>{
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto('./');

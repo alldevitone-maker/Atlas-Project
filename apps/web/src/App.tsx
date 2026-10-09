@@ -12,7 +12,7 @@ import { loadElection, descriptorSchema, electionSchema, webRegistrySchema, cand
 import { extractMunicipalMeasure } from './lib/comparison';
 import { AtlasRuntime } from '../../../packages/runtime/src/index';
 import { Registry } from '../../../packages/registry/src/index';
-import { municipalCandidates } from '../../../packages/domain-elections/src/index';
+import { municipalCandidates,legacyPairPresentation } from '../../../packages/domain-elections/src/index';
 
 const number = new Intl.NumberFormat('pt-BR');
 const percent = new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 2 });
@@ -54,6 +54,9 @@ export default function App() {
   const [selectedMetric,setSelectedMetric] = useState(() => new URLSearchParams(location.search).get('metric') || 'valid-votes');
   const [candidateFilter,setCandidateFilter] = useState(() => new URLSearchParams(location.search).get('candidate') || '');
   const [theme, setTheme] = useState(() => new URLSearchParams(location.search).get('theme') === 'light' ? 'light' : 'dark');
+  const [mapMode,setMapMode]=useState(()=>new URLSearchParams(location.search).get('mapMode')==='legacy-pair' ? 'legacy-pair' : 'neutral');
+  const [mapA,setMapA]=useState(()=>new URLSearchParams(location.search).get('mapA') || '');
+  const [mapB,setMapB]=useState(()=>new URLSearchParams(location.search).get('mapB') || '');
   const initialFeature = useRef(new URLSearchParams(location.search).get('feature'));
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -156,6 +159,13 @@ export default function App() {
   }, []);
 
   const candidateRows = useMemo(() => dataset ? municipalCandidates(dataset,candidates) : [], [dataset,candidates]);
+  const mapConfig=registry?.candidateMapPresentation;
+  const pairA=candidateRows.find(item=>item.id===(mapA || mapConfig?.defaultPair.a)) ?? candidateRows[0];
+  const pairB=candidateRows.find(item=>item.id===(mapB || mapConfig?.defaultPair.b)) ?? candidateRows[1];
+  const colorEligible=Boolean(activeRef && mapConfig?.eligibleDatasets.includes(activeRef.id) && descriptor?.sourceStatus==='unverified-legacy' && dataset?.validVotesMeaning!=='nominal-bu');
+  const presentation=useMemo(()=>mapMode==='legacy-pair' && colorEligible && dataset && pairA && pairB && mapConfig ? {styles:legacyPairPresentation(dataset.rows,String(pairA.ballotNumber),String(pairB.ballotNumber),mapConfig.palette),neutral:mapConfig.palette.neutral} : undefined,[mapMode,colorEligible,dataset,pairA?.ballotNumber,pairB?.ballotNumber,mapConfig]);
+  const selectedStyle=selection && presentation?.styles[selection.label.normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase()];
+  useEffect(()=>{if(!registry)return;const params=new URLSearchParams(location.search);params.set('mapMode',mapMode);if(pairA)params.set('mapA',pairA.id);if(pairB)params.set('mapB',pairB.id);history.replaceState(null,'',`${location.pathname}?${params}${location.hash}`);runtime?.store.set({mapMode,mapA:pairA?.id,mapB:pairB?.id});},[registry,runtime,mapMode,pairA?.id,pairB?.id]);
   const basemap=registry?.basemaps?.find(item=>item.id===selectedBasemap) ?? registry?.basemaps?.[0];
   const metric = registry?.metrics?.find(item=>item.id === selectedMetric) ?? registry?.metrics?.[0];
   const primary = dataset && metric ? evaluateExpression(metric.expression,{...dataset.summary,validVotes:dataset.summary.validVotes ?? dataset.summary.valid,blankVotes:dataset.summary.blankVotes ?? dataset.summary.blank,eligible:dataset.summary.eligible ?? dataset.summary.apt}) : null;
@@ -189,12 +199,14 @@ export default function App() {
           setSelectedDatasetId(item.id);
           setComparisonPin({dataset:null,revision:null});
           setCandidateFilter('');
+          setMapA('');setMapB('');
           const params = new URLSearchParams(location.search); params.delete('feature'); history.replaceState(null,'',`${location.pathname}?${params}${location.hash}`);
           if (window.innerWidth <= 800) setSidebarOpen(false);
         }}>
           <span>{t(item.labelKey)}</span><small>{item.roundId ? t('period.round',{round:item.roundId}) : ''}</small>
         </button>)}
       </nav>
+      {mapConfig && <div className="analysis-controls"><label><input type="checkbox" checked={mapMode==='legacy-pair'} disabled={!colorEligible} onChange={event=>setMapMode(event.target.checked ? 'legacy-pair' : 'neutral')}/> {mapConfig.labels.toggle}</label>{!colorEligible && <small>Cores indisponíveis: sem associação territorial para esta fonte.</small>}{mapMode==='legacy-pair' && colorEligible && <><label htmlFor="map-candidate-a">{mapConfig.labels.a}</label><select id="map-candidate-a" value={pairA?.id ?? ''} onChange={event=>setMapA(event.target.value)}>{candidateRows.map(item=><option key={item.id} value={item.id} disabled={item.id===pairB?.id}>{item.officialName || `Número de urna ${item.ballotNumber}`}</option>)}</select><label htmlFor="map-candidate-b">{mapConfig.labels.b}</label><select id="map-candidate-b" value={pairB?.id ?? ''} onChange={event=>setMapB(event.target.value)}>{candidateRows.map(item=><option key={item.id} value={item.id} disabled={item.id===pairA?.id}>{item.officialName || `Número de urna ${item.ballotNumber}`}</option>)}</select><button onClick={()=>{setMapA(pairB?.id ?? '');setMapB(pairA?.id ?? '');}}>{mapConfig.labels.swap}</button></>}</div>}
       {descriptor && <div className="analysis-controls"><label htmlFor="dataset-revision">Revisão do dataset</label><select id="dataset-revision" value={initialPin.current.dataset===selectedDatasetId && initialPin.current.revision ? initialPin.current.revision : descriptor.revision} onChange={event=>{initialPin.current={dataset:selectedDatasetId,revision:event.target.value};setPinEpoch(value=>value+1);setRevisionUnavailable(false);}}>{revisionUnavailable && <option value={initialPin.current.revision ?? ''}>Revisão indisponível: {initialPin.current.revision}</option>}{runtime?.registry.listRevisions(selectedDatasetId).map(item=><option key={item.revision} value={item.revision}>{item.revision}</option>)}</select></div>}
       <div className="analysis-controls"><label htmlFor="basemap-choice">Fundo do mapa</label><select id="basemap-choice" value={basemap?.id ?? selectedBasemap} onChange={event=>setSelectedBasemap(event.target.value)}>{registry.basemaps?.map(item=><option key={item.id} value={item.id}>{t(item.labelKey)}</option>)}</select><label><input type="checkbox" checked={showTerritory} onChange={event=>setShowTerritory(event.target.checked)}/> Exibir malha exploratória</label><label htmlFor="metric-choice">Selecionar métrica municipal</label><select id="metric-choice" value={metric?.id ?? selectedMetric} onChange={event=>setSelectedMetric(event.target.value)}>{registry.metrics?.map(item=><option key={item.id} value={item.id}>{dataset?.validVotesMeaning === 'nominal-bu' && item.id === 'valid-votes' ? 'Votos nominais nos boletins' : t(item.labelKey)}</option>)}</select><label htmlFor="candidate-choice">Filtrar candidato</label><select id="candidate-choice" value={candidateFilter} onChange={event=>setCandidateFilter(event.target.value)}><option value="">Todos os candidatos</option>{candidateRows.map(candidate=><option key={candidate.id} value={candidate.id}>{candidate.officialName || `Número de urna ${candidate.ballotNumber} (nome não catalogado)`}</option>)}</select><button onClick={()=>{handleSelect({label:'',value:null});setCandidateFilter('');setSelectedMetric(registry.metric.id);}}>Limpar filtros e seleção</button></div>
       <div className="comparison-controls">
@@ -227,8 +239,8 @@ export default function App() {
     </aside>
 
     <section className="map-stage">
-      {dataset && <Suspense fallback={<p role="status">Carregando mapa…</p>}><AtlasMap geometry={geometry} geometryLabelField={registry.territory.geometryLabelField} dataset={dataset} datasetField={registry.join.datasetField} metricField={registry.metric.rowField} prototype={registry.join.prototype} metricLabel={t(registry.metric.labelKey)} showTerritory={showTerritory} basemap={basemap} selectedLabel={selection?.label ?? ''} onSelect={handleSelect} /></Suspense>}
-      {registry.join.prototype && <div className="method-badge">{t('method.prototype')} Malha exploratória, sem coloração eleitoral: associação espacial não auditada.</div>}
+      {dataset && <Suspense fallback={<p role="status">Carregando mapa…</p>}><AtlasMap geometry={geometry} geometryLabelField={registry.territory.geometryLabelField} dataset={dataset} datasetField={registry.join.datasetField} metricField={registry.metric.rowField} prototype={registry.join.prototype} metricLabel={t(registry.metric.labelKey)} showTerritory={showTerritory} basemap={basemap} selectedLabel={selection?.label ?? ''} onSelect={handleSelect} presentation={presentation} /></Suspense>}
+      {registry.join.prototype && <div className="method-badge">{t('method.prototype')} {presentation ? 'Cores de rótulos do legado: não são resultados oficiais por bairro nem residência dos eleitores.' : 'Malha exploratória, sem coloração eleitoral: associação espacial não auditada.'}{presentation && mapConfig && <div className="candidate-map-legend" aria-label="Legenda exploratória do par"><span><i style={{background:mapConfig.palette.a}}/>{mapConfig.labels.a}: {pairA?.officialName} · {mapConfig.labels.advantage}</span><span><i style={{background:mapConfig.palette.b}}/>{mapConfig.labels.b}: {pairB?.officialName} · {mapConfig.labels.advantage}</span><span><i style={{background:mapConfig.palette.neutral}}/>{mapConfig.labels.neutral}</span>{pairA?.id===pairB?.id && <strong>Selecione dois candidatos diferentes.</strong>}{selectedStyle && <span>Rótulo selecionado: {selectedStyle.category==='a' ? pairA?.officialName : selectedStyle.category==='b' ? pairB?.officialName : mapConfig.messages[selectedStyle.reason]}. Associação não auditada.</span>}<a href={mapConfig.sourceRef} target="_blank" rel="noreferrer">Paleta do mapa antigo</a></div>}</div>}
     </section>
 
     <section tabIndex={0} aria-label="Resumo eleitoral municipal" className={`bottom-sheet ${sheetExpanded ? 'expanded' : ''}`}>

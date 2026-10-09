@@ -1,3 +1,7 @@
+## Apresentação de candidatos — 2026-10-09
+
+Duas cores históricas configuráveis no modo exploratório explícito. Apresentação genérica por herança, adaptador eleitoral sem tags de candidatos e renderer desacoplado. Legenda, troca de posições, URL persistente e guardas de neutralidade; BU por seção sem coloração de bairro. [Roadmap e limites](docs/roadmap-candidate-colors.md).
+
 ## 0.2.2 — 2026-10-08
 
 Extração de BU vinculada à fonte, revisões imutáveis, integração do core e filtros/inspector/temas. Gates de contratos, integridade, AST, orçamento de assets e E2E Chromium/WebKit. Pendências científicas e de release estão no [relatório](docs/implementation-roadmap-2026-10-08.md); v0.3.0 não declarada concluída.

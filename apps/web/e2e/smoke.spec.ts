@@ -1,6 +1,43 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+test('config-driven exploratory pair paints both candidate roles and preserves shared state',async({page},testInfo)=>{
+ await page.goto('/?mapMode=legacy-pair');
+ await expect(page.getByText('108.628')).toBeVisible();
+ await expect(page.getByLabel('Legenda exploratória do par')).toContainText('Flávio Bolsonaro');
+ await expect(page.getByText(/Cores de rótulos do legado: não são resultados oficiais/)).toBeVisible();
+ await page.getByRole('button',{name:'Redefinir enquadramento do mapa'}).click();
+ await expect(page.locator('.atlas-map canvas')).toHaveScreenshot('pair-primary.png',{animations:'disabled',maxDiffPixelRatio:.015,threshold:.2});
+ await testInfo.attach('colored-map',{body:await page.screenshot(),contentType:'image/png'});
+ await page.getByLabel('Selecionar território').selectOption('Centro');
+ await expect(page.locator('.summary-grid article').last().locator('small')).toBeEmpty();
+ await page.reload();await expect(page).toHaveURL(/mapMode=legacy-pair/);
+ await expect(page.getByLabel('Selecionar território')).toHaveValue('Centro');
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await page.getByRole('button',{name:'Trocar cores do par'}).click();
+ await expect(page).toHaveURL(/mapA=ballot-13/);
+ await expect(page.getByLabel('Candidato azul',{exact:true})).toHaveValue('ballot-13');
+ await expect(page.getByLabel('Candidato vermelho',{exact:true})).toHaveValue('ballot-22');
+ await page.getByRole('checkbox',{name:'Cores do legado (exploratório)'}).uncheck();
+ await expect(page.getByLabel('Legenda exploratória do par')).toHaveCount(0);
+ await page.getByRole('checkbox',{name:'Cores do legado (exploratório)'}).check();
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await page.getByLabel('Selecionar território').selectOption('');
+ await expect(page.getByLabel('Legenda exploratória do par')).toContainText('Lula');
+ await page.getByRole('button',{name:'Redefinir enquadramento do mapa'}).click();
+ await expect(page.locator('.atlas-map canvas')).toHaveScreenshot('pair-secondary.png',{animations:'disabled',maxDiffPixelRatio:.015,threshold:.2});
+ const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();expect(axe.violations).toEqual([]);
+});
+
+test('source sections never inherit the exploratory neighborhood color association',async({page})=>{
+ await page.goto('/?dataset=elections-presidential-2026-r1-bu&mapMode=legacy-pair');
+ await expect(page.getByText('108.638')).toBeVisible();
+ if(test.info().project.name.startsWith('mobile'))await page.getByRole('button',{name:'Abrir ou fechar navegação'}).click();
+ await expect(page.getByRole('checkbox',{name:'Cores do legado (exploratório)'})).toBeDisabled();
+ await expect(page.getByLabel('Legenda exploratória do par')).toHaveCount(0);
+ await expect(page.getByText(/Cores indisponíveis: sem associação territorial/)).toBeVisible();
+});
+
 test('registry, map and electoral data render without a fake landing page', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByText('Projeto Atlas · Jaraguá do Sul')).toBeVisible();

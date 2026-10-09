@@ -1,6 +1,21 @@
+import {PairPresentation,type PairPalette} from '../../map-engine/src/presentation.js';
+
 export interface CandidateResult {
   candidateId: string;
   votes: number;
+}
+
+/** Presentation of legacy labels only. This is not a spatial crosswalk or residence estimate. */
+interface LegacyVoteRow {sourceUnitId:string;candidateVotes:Record<string,number>}
+export class ElectionPairPresentation extends PairPresentation<LegacyVoteRow> {
+ protected labelFor(row:LegacyVoteRow){return row.sourceUnitId;}
+ protected valuesFor(row:LegacyVoteRow,first:string,second:string):readonly [number|undefined,number|undefined]{
+  const valid=(value:number|undefined)=>typeof value==='number' && Number.isSafeInteger(value) && value>=0 ? value : undefined;
+  return [valid(row.candidateVotes[first]),valid(row.candidateVotes[second])];
+ }
+}
+export function legacyPairPresentation(rows:LegacyVoteRow[],first:string,second:string,palette:PairPalette) {
+ return new ElectionPairPresentation().render(rows,first,second,palette);
 }
 
 export function rankCandidates(results: CandidateResult[]): CandidateResult[] {

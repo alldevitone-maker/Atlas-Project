@@ -17,6 +17,7 @@ interface Props {
   metricField: string;
   metricLabel: string;
   prototype: boolean;
+  presentation?:{styles:Record<string,{fill:string}>;neutral:string};
   selectedLabel: string;
   showTerritory?:boolean;
   basemap?:{background:string;fill:string;line:string;highlight:string};
@@ -64,7 +65,7 @@ export function AtlasMap(props: Props) {
       return {
         ...feature,
         id: feature.id ?? index,
-        properties: { ...(feature.properties ?? {}), __atlasLabel: label, __atlasMetric: value !== null && Number.isFinite(value) ? value : null }
+        properties: { ...(feature.properties ?? {}), __atlasLabel: label, __atlasMetric: value !== null && Number.isFinite(value) ? value : null, __atlasFill:props.presentation?.styles[normalize(label)]?.fill ?? props.presentation?.neutral ?? null }
       };
     });
     const fc: FeatureCollection = { type: 'FeatureCollection', features };
@@ -99,7 +100,7 @@ export function AtlasMap(props: Props) {
     map.on('load', () => {
       new LayerManager(engine).mount({sources:[{id:'territory',spec:{type:'geojson',data:fc}}],layers:[
         {id:'territory-fill',sourceId:'territory',spec:{type:'fill',paint:{
-          'fill-color':['case',['!=',['get','__atlasMetric'],null],['interpolate',['linear'],['get','__atlasMetric'],min,'#162536',middle,'#315e89',upper,'#9fc4ff'],props.basemap?.fill ?? '#26313a'],'fill-opacity':0.9
+          'fill-color':props.presentation ? ['coalesce',['get','__atlasFill'],props.presentation.neutral] : ['case',['!=',['get','__atlasMetric'],null],['interpolate',['linear'],['get','__atlasMetric'],min,'#162536',middle,'#315e89',upper,'#9fc4ff'],props.basemap?.fill ?? '#26313a'],'fill-opacity':0.9
         }}},
         {id:'territory-line',sourceId:'territory',spec:{type:'line',paint:{'line-color':props.basemap?.line ?? 'rgba(238,244,248,.55)','line-width':1}}},
         {id:'territory-selected',sourceId:'territory',spec:{type:'line',filter:['==',['get','__atlasLabel'],props.selectedLabel || '__none__'],paint:{'line-color':props.basemap?.highlight ?? '#fff','line-width':3}}}
@@ -123,7 +124,7 @@ export function AtlasMap(props: Props) {
     });
 
     return () => { map.remove(); mapRef.current = null; engineRef.current=null; };
-  }, [props.geometry, props.dataset, props.geometryLabelField, props.datasetField, props.metricField, props.metricLabel, props.prototype, props.onSelect, props.basemap]);
+  }, [props.geometry, props.dataset, props.geometryLabelField, props.datasetField, props.metricField, props.metricLabel, props.prototype, props.onSelect, props.basemap,props.presentation]);
 
   useEffect(() => {
     setSelectedLabel(props.selectedLabel);

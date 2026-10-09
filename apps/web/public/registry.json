@@ -232,5 +232,37 @@
       "line": "#37566e",
       "highlight": "#18528a"
     }
-  ]
+  ],
+  "candidateMapPresentation": {
+    "palette": {
+      "a": "#2f6fff",
+      "b": "#ef445d",
+      "neutral": "#192631"
+    },
+    "defaultPair": {
+      "a": "ballot-22",
+      "b": "ballot-13"
+    },
+    "eligibleDatasets": [
+      "elections-presidential-2022-r1",
+      "elections-presidential-2022-r2",
+      "elections-presidential-2026-r1"
+    ],
+    "sourceRef": "https://github.com/alldevitone-maker/api-lab-faculdade/blob/da595c03d2ecb28645c23b5948d8a1c362810e94/public/jaragua-atlas/app.js",
+    "labels": {
+      "toggle": "Cores do legado (exploratório)",
+      "a": "Candidato azul",
+      "b": "Candidato vermelho",
+      "neutral": "Neutro: empate, ausência ou ambiguidade",
+      "advantage": "mais votos do par",
+      "swap": "Trocar cores do par"
+    },
+    "messages": {
+      "ambiguous": "Associação ambígua",
+      "missing": "Dados do par ausentes ou inválidos",
+      "tie": "Empate no par",
+      "zero": "Sem votos do par",
+      "higher": "Mais votos do par no rótulo legado"
+    }
+  }
 }

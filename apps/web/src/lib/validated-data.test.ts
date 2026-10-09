@@ -34,3 +34,9 @@ it('registry preserves generic metric expressions and requires catalog integrity
 it('candidate catalog rejects duplicate ballot identifiers',()=>{
  expect(()=>candidateCatalogSchema.parse([{id:'a',officialName:'Fixture',ballotNumber:'x'},{id:'b',officialName:'Other fixture',ballotNumber:'x'}])).toThrow(/Duplicate/);
 });
+it('map presentation rejects indistinguishable colors and duplicate default roles',()=>{
+ const colors=structuredClone(registry);colors.candidateMapPresentation.palette.b=colors.candidateMapPresentation.palette.a.toUpperCase();
+ expect(()=>webRegistrySchema.parse(colors)).toThrow(/Distinct map colors/);
+ const roles=structuredClone(registry);roles.candidateMapPresentation.defaultPair.b=roles.candidateMapPresentation.defaultPair.a;
+ expect(()=>webRegistrySchema.parse(roles)).toThrow();
+});
